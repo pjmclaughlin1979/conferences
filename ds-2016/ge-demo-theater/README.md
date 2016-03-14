@@ -3,9 +3,9 @@ Building interactive web apps using the JavaScript API's GeometryEngine
 
 Click the links below to access live views of the following samples used in this talk.
 
-* [Orchards](http://ekenes.github.io/conferences/ds-2016/ge-demo-theater/demos/ge-demo) - This simple editing app demos various capabilities of the GeometryEngine including geodesicArea, disjoint, equals, crosses, cut, union, within, intersects, difference, and offset. Use the cut operatiopn to see how fast the the Geometry Engine cuts and calculates the areas of geometries. Try adding a feature that overlaps existing features to see how you can "fix" geometries input by the user so they are topologically correct with existing geometries.
+* [Orchards](http://ekenes.github.io/conferences/ds-2016/ge-demo-theater/demos/ge-orchards) - This simple editing app demos various capabilities of the GeometryEngine including geodesicArea, disjoint, equals, crosses, cut, union, within, intersects, difference, and offset. Use the cut operatiopn to see how fast the the Geometry Engine cuts and calculates the areas of geometries. Try adding a feature that overlaps existing features to see how you can "fix" geometries input by the user so they are topologically correct with existing geometries.
 
-* [Requests avoided](http://ekenes.github.io/conferences/ds-2016/ge-demo-theater/demos/ge-demo/requests.html) - This is the same as the previous sample with the exception that the number of network requests avoided is printed to the bottom right of the view.
+* [Requests avoided](http://ekenes.github.io/conferences/ds-2016/ge-demo-theater/demos/ge-orchards/requests.html) - This is the same as the previous sample with the exception that the number of network requests avoided is printed to the bottom right of the view.
 
 * [GeometryEngine vs. GeometryService](http://ekenes.github.io/conferences/ds-2016/ge-demo-theater/demos/ge-gs) - This demo uses the 4.0 API to buffer 500 points (world cities) by 500 miles. This is done in two views. One uses the GeometryEngine, the other uses GeometryService. Both are timed. See how much faster the GeometryEngine calculates the buffers than the GeometryService.
 
