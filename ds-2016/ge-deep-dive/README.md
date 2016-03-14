@@ -17,7 +17,7 @@ Click the links below to access live views of the following samples used in this
 
 * [Missle launch in 2D](http://ekenes.github.io/conferences/ds-2016/ge-deep-dive/demos/missilelaunch/www) - This app depicts the difference between geodesicBuffer and buffer using missile ranges.
 
-* [Missle launch in 3D (using 4.0)](http://ekenes.github.io/conferences/ds-2016/demos/ge-deep-dive/missilelaunch4/www) - This app demonstrates the difference between geodesicBuffer and buffer using missile ranges in a 3D SceneView.
+* [Missle launch in 3D (using 4.0)](http://ekenes.github.io/conferences/ds-2016/ge-deep-dive/demos/missilelaunch4/www) - This app demonstrates the difference between geodesicBuffer and buffer using missile ranges in a 3D SceneView.
 
 * [Snapping](http://ekenes.github.io/conferences/ds-2016/ge-deep-dive/demos/ge-nearestvertex) - This demos how to enable snapping in custom editing apps using the GeometryEngine's nearestVertex and nearestCoordinate methods. 
 
