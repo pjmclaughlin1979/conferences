@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Missile Launch</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+
+
+    <style>
+        #post-load {
+            visibility: hidden;
+        }
+        
+        #timedout {
+            display: none;
+        }
+        
+        #pre-load {
+            /*background: url("images/preloader.gif") center center #21292f no-repeat;*/
+            background-color: white;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+    </style>
+    <script type="text/javascript" src="lib/modernizr.js"></script>
+</head>
+
+<body class="flat" class="unselectable" unselectable="on">
+
+    <div id="pre-load"></div>
+
+
+    <div id="post-load">
+
+        <div id="home" class="content">
+            <h2 id="launchPageTitle">MISSILE LAUNCH</h2>
+            <p class="strapline" id="launchPageStrapLine">Use this application to see the potential range of different missile types</p>
+            <div class="brand">
+                <img class="brand-avatar" src="assets/img/esri-logo.png">
+            </div>
+            <p><a class="btn btn-lg btn-success" id="launchPageGo">Lets get started</a></p>
+        </div>
+
+        <div id="analysis" class="zone">
+            <div id="map">
+            </div>
+
+
+          
+
+            <div id="menus">
+
+                <button type="button" id="zoomin-tool" data-toolname="zoomin" class="btn btn-info btn-maptool"><span class="glyphicon glyphicon-zoom-in"></span><span data-i18n="ns.common:menubar.zoomin">Zoom +</span></button>
+                <button type="button" id="zoomout-tool" data-toolname="zoomout" class="btn btn-info btn-maptool"><span class="glyphicon glyphicon-zoom-out"></span><span data-i18n="ns.common:menubar.zoomout">Zoom -</span></button>
+                <button type="button" id="pan-tool" data-maptool="true" data-toolname="pan" class="btn btn-info btn-maptool"><span class="glyphicon glyphicon-fullscreen"></span><span data-i18n="ns.common:menubar.pan">Pan</span></button>
+                <button type="button" id="position-tool" data-maptool="true" data-toolname="position" class="btn btn-info btn-maptool"><span class="glyphicon glyphicon-fullscreen"></span><span data-i18n="ns.common:menubar.pan">Locate</span></button>
+
+            </div>
+          
+            <section class="swiper-container" id="mainswipe">
+
+                <div class="swiper-wrapper" id="geochoice-panels">
+                    <div class="swiper-slide nothing-above" id="section-NewPage-2283af7f">
+                        <div class="swiper-slide-fullslide">
+
+
+
+                            <div class="do-section-up"><a class="btn btn-danger btn-section btn-section-up" geochoice-role="uppage"><i class="fa fa-chevron-up"></i></a></div>
+                            <div class="swiper-slide-content">
+                                <h2>
+    Missile Ranges</h2>
+                                <p>See the different missile ranges</p>
+
+
+
+                               
+
+
+                                <div class="form-group" id="section-NewPage-2283af7f-q-9f97c185">
+
+                                    <form role="form">
+                                        <label>Please Specify the type of missile?</label>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-0" value="0" data-range="20000"> GRAD
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-1" value="1" data-range="180000"
+                                                checked=""> SCUD A
+                                            </label>
+                                        </div>
+                                        
+                                          <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-1" value="1" data-range="300000"
+                                                checked=""> SCUD B
+                                            </label>
+                                        </div>
+                                        
+                                                <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-1" value="1" data-range="550000"
+                                                checked=""> SCUD C
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-2" value="2" data-range="70000"> FROG7
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-3" value="3" data-range="2200000"> TAEPODONG1
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-4" value="4" data-range="6000000"> TAEPODONG2
+                                            </label>
+                                        </div>
+                                        
+                                              <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-4" value="4" data-range="8000000"> TAEPODONG3
+                                            </label>
+                                        </div>
+                                        
+
+   <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-18" value="4000" data-range="4000000"> MUSUDAN
+                                            </label>
+                                        </div>
+                                        
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-5" value="5" data-range="330000"> HWASONG5
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-6" value="6"  data-range="120000"> TOKSA
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="type-of-missile" id="type-of-missile-7" value="7" data-range="12000"> QASSAM
+                                            </label>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+
+
+  <div class="form-group" id="section-NewPage-2283af7f-q-9f97c185">
+
+                                    <form role="form">
+                                        <label>The world is flat?</label>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="isgeodesic" id="isgeodesic-false" checked value="false"> Non Geodesic
+                                            </label>
+                                        </div>
+
+                                        <div class="radio">
+                                            <label>
+
+                                                <input type="radio" name="isgeodesic" id="isgeodesic-true" value="true" > Geodesic
+                                            </label>
+                                        </div>
+
+                                     
+                                    </form>
+                                </div>
+
+
+
+
+
+                                <p class="analysis-button-p" style="display: none;"><a class="btn btn-warning btn-lg analysis-button" geochoice-role="run-analysis"><i class="fa fa-play-circle"></i> ...</a></p>
+
+                            </div>
+
+                        
+                        </div>
+                    </div>
+
+
+
+
+                 
+                </div>
+
+
+
+            </section>
+            <div class="pagination-wrapper" id="main-pagination-wrapper">
+
+                <ul class="social">
+                    <!--    <li><a class="webicon facebook" href="#">Facebook</a></li>
+                    <li><a class="webicon googleplus" href="#">Google+</a></li>
+                    <li><a class="webicon twitter" href="#">Twitter</a></li>-->
+                    <li><a class="webicon esri" href="http://www.esriuk.com" target="_blank">Twitter</a></li>
+                </ul>
+
+                <div class="pagination">
+
+                    <div class="homepagination" style="display: block;"><span class="glyphicon glyphicon-home" geochoice-section="home"></span></div>
+                    <span class="swiper-pagination-switch swiper-visible-switch swiper-active-switch" geochoice-section="section-NewPage-2283af7f"></span>
+                   
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+    </div>
+
+
+
+    <div id="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            paths: {
+                "eve": location.pathname.replace(/\/[^/]+$/, "") + "/lib/eve",
+                "jquery": "//code.jquery.com/jquery",
+                "moment": location.pathname.replace(/\/[^/]+$/, "") + "/lib/moment"
+            },
+            packages: [{
+                "name": "missilelaunch",
+
+                "location": location.pathname.replace(/\/[^/]+$/, "") + "/js"
+            }, {
+                "name": "missilelaunchlib",
+                "location": location.pathname.replace(/\/[^/]+$/, "") + "/lib"
+            },
+            {
+                "name": "geomengine",
+                "location": location.pathname.replace(/\/[^/]+$/, "") + "/lib"
+            },
+            {
+                "name": "momentlocalelib",
+                "location": location.pathname.replace(/\/[^/]+$/, "") + "/lib"
+            }
+            ]
+        };
+    </script>
+
+    <script src="//js.arcgis.com/3.15compact"></script>
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+  
+    <script type="text/javascript" src="lib/underscore.js"></script>
+    <script type="text/javascript" src="lib/moment.js"></script>
+  
+    <script type="text/javascript" src="lib/jquery-ui-1.10.3.custom.min.js"></script>
+    
+   
+    <script>
+        require(["missilelaunch/controller", "jquery"],
+        function (Controller, jQuery) {
+            Controller.start();
+        });
+    </script>
+
+</body>
+
+</html>

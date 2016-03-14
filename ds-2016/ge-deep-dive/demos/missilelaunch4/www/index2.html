@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Missile Launch</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+<link rel="stylesheet" href="//js.arcgis.com/4.0beta3/esri/css/main.css">
+
+ 
+  
+</head>
+
+<body >
+    <div id="mapc" style="position: fixed; top:0; bottom: 300px; left: 0px; right: 00px; z-index: 10000000"  >
+        <div id="viewDiv" class="viewDiv" style="width: 900px; height: 900px;" ></div>
+    </div>
+  
+ 
+   
+
+    <script src="//js.arcgis.com/4.0beta3/"></script>
+   
+   
+   
+    <script>
+        require(["esri/Map","esri/views/SceneView", "dojo/domReady!"],
+        function (esriMap, SceneView) {
+             var map = new esriMap({
+                basemap: "streets"
+            });
+
+            var view= new SceneView({
+                container: "viewDiv",
+                map: map,
+                scale: 50000000,
+                center: [-101.17, 21, 78]
+            });   
+
+            view.then(function() {
+               console.log("hello") 
+            });
+        });
+    </script>
+
+</body>
+
+</html>

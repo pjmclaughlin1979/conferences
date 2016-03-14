@@ -1,0 +1,24 @@
+SmartMapping DemoTheater Notes
+===============================
+
+* Smart Mapping functions are available for generating on the fly visualizations with smart defaults. 
+
+- Great for when you don't know your data very well. Not necessarily production apps when same data is used and doesn't change much (you'll already have a renderer saved to the layer).
+
+
+* We have the Map Viewer in AGO. Why build a custom app? 
+
+1. You know the type of data you're dealing with, but not the data itself.
+	- You work with same field names frequently/across projects
+	- You can bake in normalization without having to select it manually each time you change the field
+	- You can filter data based on other attributes or geography
+	- Apply to other layer with same attributes/schema but different features
+
+2. You're familiar with the data, but it frequently changes.
+
+3. You want to simplify to only fit your needs to create a simpler user experience.
+
+4. Perhaps you want to add other functions...print, export renderer, etc.
+
+
+Let's dive into the example.
