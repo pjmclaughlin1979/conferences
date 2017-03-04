@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Demo</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="stylesheet" href="//js.arcgis.com/3.20/esri/css/esri.css">
+    <link rel="stylesheet" href="assets/css/editdemo.css?strv=CACHEBUSTPLACEHOLDER" />
+
+    <style>
+        #post-load {
+            visibility: hidden;
+        }
+        
+        #pre-load {
+            height: 100%;
+            font-size: 16px;
+            background: #00acc1;
+            color: #fff;
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+        
+        #pre-load .loader {
+            width: 400px;
+            position: absolute;
+            left: 50%;
+            margin-left: -200px;
+            top: 50%;
+            margin-top: -1.2rem;
+        }
+        
+        #pre-load h3 {
+            font-size: 2rem;
+            width: 400px;
+            position: absolute;
+            left: 50%;
+            margin-left: -200px;
+            top: 50%;
+            margin-top: -5.2rem;
+        }
+        
+        #pre-load h3 em {
+            font-style: normal;
+            font-weight: 900;
+        }
+        
+        @-webkit-keyframes scale {
+            0% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+            45% {
+                -webkit-transform: scale(0.1);
+                transform: scale(0.1);
+                opacity: 0.7;
+            }
+            80% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes scale {
+            0% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+            45% {
+                -webkit-transform: scale(0.1);
+                transform: scale(0.1);
+                opacity: 0.7;
+            }
+            80% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .ball-pulse > div:nth-child(0) {
+            -webkit-animation: scale 0.75s -0.36s infinite cubic-bezier(.2, .68, .18, 1.08);
+            animation: scale 0.75s -0.36s infinite cubic-bezier(.2, .68, .18, 1.08);
+        }
+        
+        .ball-pulse > div:nth-child(1) {
+            -webkit-animation: scale 0.75s -0.24s infinite cubic-bezier(.2, .68, .18, 1.08);
+            animation: scale 0.75s -0.24s infinite cubic-bezier(.2, .68, .18, 1.08);
+        }
+        
+        .ball-pulse > div:nth-child(2) {
+            -webkit-animation: scale 0.75s -0.12s infinite cubic-bezier(.2, .68, .18, 1.08);
+            animation: scale 0.75s -0.12s infinite cubic-bezier(.2, .68, .18, 1.08);
+        }
+        
+        .ball-pulse > div:nth-child(3) {
+            -webkit-animation: scale 0.75s 0s infinite cubic-bezier(.2, .68, .18, 1.08);
+            animation: scale 0.75s 0s infinite cubic-bezier(.2, .68, .18, 1.08);
+        }
+        
+        .ball-pulse > div {
+            background-color: #006064;
+            width: 10px;
+            height: 10px;
+            border-radius: 100%;
+            margin: 2px;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            display: inline-block;
+        }
+    </style>
+
+
+
+</head>
+
+<body class="flat" class="unselectable" unselectable="on">
+
+    <div id="pre-load">
+
+        <h3 class="center" id="instance-loaing-message" data-i18n="[html]app.applicationmessages.loadingmessage"></h3>
+
+        <div class="loader">
+            <div class="loader-inner ball-pulse center">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="errorloading">
+        <div class="timedout-container">
+            <div class="container">
+                <div class="row">
+                    <div class="span12 error-intro">
+                        <h1 data-i18n="app.applicationmessages.errorloading"></h1>
+                        <h3 data-i18n="app.applicationmessages.errorloadingstrapline"></h3>
+                        <a spring-role="sign-in">
+                            <span class="username" data-i18n="app.applicationmessages.signin"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="post-load">
+        <div class="wrapper">
+
+            <svg style="position: absolute; left: -100px; right: -90px; top: 0px; bottom: 0px;">
+
+
+                <defs>
+                    <marker id="midDimensionMarker" markerWidth="1" markerHeight="16" viewBox="-0.5 -8 1 16" refX="0" refY="0" markerUnits="strokeWidth"
+                    orient="auto">
+                        <polyline points="0,-8 0,8" stroke="rgba(255,255,255,1)" stroke-width="1px" />
+                        <polyline points="0,-8 0,8" stroke="rgba(0, 0, 255,0.4)" stroke-width="1px" />
+                    </marker>
+                </defs>
+
+                <div id="mainmenu" unselectable="on" class="hide-on-small-only unselectable">
+
+                    <nav class="esri-obj grey darken-4" role="navigation">
+
+                        <div class="nav-wrapper container">
+
+                            <a id="logo-container" class="brand-logo">
+                                <img src="assets/img/logo.png" id="sweet-logo-back">
+
+
+                            </a>
+
+
+
+                            <ul id="workflow-tools" class="right hide-on-small-only">
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="pan" data-maptool="true">
+                                        <i class="material-icons">pan_tool</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.pan"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="select" data-maptool="true">
+                                        <i class="material-icons select-icon">near_me</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.select"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="new" data-maptool="true">
+                                        <i class="material-icons">add_circle</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.new"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="append" data-maptool="true">
+                                        <i class="material-icons">add_circle_outline</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.append"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="subtract" data-maptool="true">
+                                        <i class="material-icons">remove_circle_outline</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.subtract"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="split" data-maptool="true">
+                                        <i class="material-icons">call_split</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.split"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="merge">
+                                        <i class="material-icons">call_merge</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.merge"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="effects" data-maptool="true">
+                                        <i class="material-icons">flash_on</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.effects"></span>
+                                    </a>
+                                </li>
+
+
+                                <li>
+                                    <a data-position="bottom" data-delay="50" data-toolname="delete">
+                                        <i class="material-icons">delete</i>
+                                        <span class="hide-on-med-and-down" data-i18n="app.menubar.delete"></span>
+                                    </a>
+                                </li>
+
+
+                            </ul>
+
+                        </div>
+
+                    </nav>
+
+                </div>
+
+
+
+
+                <div id="map-container" unselectable="on" class="hide-on-small-only unselectable">
+                    <div id="map" class="map">
+                    </div>
+                </div>
+
+                <div id="template-picker-panel">
+                    <div id="template-picker">
+                    </div>
+                </div>
+
+                <div id="effects-panel">
+                    <div class="row">
+
+                        <form class="col s12">
+                            <div class="row">
+                                <h3 data-i18n="app.menubar.effects"></h3>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s8">
+
+                                    <input id="shrink" type="number" class="validate">
+
+                                    <label for="shrink" data-i18n="app.menubar.shrink"></label>
+                                </div>
+                                <div class="col s4 form-field-button">
+                                    <a class="waves-effect waves-light btn" data-effectname="shrink" data-effecttool="true" data-effect-input="shrink" data-i18n="app.menubar.go"></a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s8">
+                                    <input id="grow" type="number" class="validate">
+                                    <label for="grow" data-i18n="app.menubar.grow"></label>
+                                </div>
+                                <div class="col s4 form-field-button">
+                                    <a class="waves-effect waves-light btn" data-effectname="grow" data-effecttool="true" data-effect-input="grow" data-i18n="app.menubar.go"></a>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                              <div class="col s12">
+                                    <label for="rotate" data-i18n="app.menubar.rotate"></label>
+                                    <p class="range-field">
+
+                                        <input type="range" id="rotate" min="-180" max="180" value="0" />
+                                    </p>
+                              </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <footer id="footer" class="grey darken-4 page-footer">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col m5 right">
+                                <ul class="right">
+                                    <li class="footer-measure-tool">
+                                        <a> <i class="material-icons">straighten</i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+
+        </div>
+
+    </div>
+
+
+    <script src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/hammer.min.js"></script>
+    <script type="text/javascript" src="lib/materialize.js"></script>
+
+    <script>
+        var dojoConfig = {
+            async: true,
+            rememberQueryData: location.search,   // Cache the Search,
+            rememberQueryHash: location.hash,      // Cache the Hash
+        
+            packages: [
+                {
+                     "name": "editdemo",
+                     "location": location.pathname.replace(/\/[^/]+$/, "") + "/js"
+                 }
+                 ]
+        };
+      
+  
+         // Set the Locale
+          if (location.search.match(/locale=([\w\-]+)/)) {
+            dojoConfig.locale = RegExp.$1;
+          }
+    </script>
+    <script src="//js.arcgis.com/3.20/"></script>
+
+
+
+    <script>
+        require(["editdemo/controller"],
+            function (Controller) {
+               Controller.start(dojoConfig.rememberQueryData, dojoConfig.rememberQueryHash);
+         });
+    </script>
+
+</body>
+
+</html>
