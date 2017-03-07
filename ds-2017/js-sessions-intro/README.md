@@ -8,18 +8,3 @@ Palm Springs Convention Center, Oasis 4
 ### Summary
 
 This session is designed to help you plan out your week. ArcGIS API for JavaScript presenters will be given 5 minutes to give you a sneak peek at what they will be covering in their sessions. We will also discuss possible pathways through the wide variety of web-focused sessions based on developer skillsets and interests. Come to this session to get the most out of the DevSummit.
-
-### Outline
-
-##### Intro
-
-
-
-### Demos
-
-#####
-
-
-#####
-
-#####

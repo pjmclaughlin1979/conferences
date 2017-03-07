@@ -209,13 +209,6 @@
         populationLyr2.renderer = renderer;
       }
 
-      document.getElementById("widthSlider").addEventListener("change", function (evt) {
-        changeSymbol({
-          width: evt.target.value
-        });
-        document.getElementById("width").innerText = evt.target.value + "m";
-      });
-
       document.getElementById("primitives").addEventListener("click", function (evt) {
         this.getElementsByClassName("selected")[0].classList.remove("selected");
         evt.target.className = "selected";
@@ -224,52 +217,8 @@
         });
       });
 
-      document.getElementById("atmEnable").addEventListener("click", function (evt) {
-        this.getElementsByClassName("selected")[0].classList.remove("selected");
-        evt.target.className = "selected";
-        view.environment.atmosphereEnabled = (evt.target.textContent === "On") ? true : false;
-      });
-      document.getElementById("quality").addEventListener("click", function (evt) {
-        this.getElementsByClassName("selected")[0].classList.remove("selected");
-        evt.target.className = "selected";
-        view.environment.atmosphere.quality = evt.target.textContent.toLowerCase();
-      });
-      document.getElementById("ambient").addEventListener("click", function (evt) {
-        this.getElementsByClassName("selected")[0].classList.remove("selected");
-        evt.target.className = "selected";
-        view.environment.lighting.ambientOcclusionEnabled = (evt.target.textContent === "On") ? true : false;
-      });
+     
       this.view = view;
-      // height slider
-      var sizeSlider = new SizeSlider({
-        statisticsVisible: false,
-        statistics: {
-          avg: 450,
-          count: 4000,
-          max: 2038,
-          min: 130,
-          stddev: 100,
-          sum: 50000,
-          variance: 100
-        },
-        visualVariable: {
-          type: "size",
-          field: "grid_code",
-          minSize: 100,
-          maxSize: 30000,
-          minDataValue: 130,
-          maxDataValue: 2100,
-          axis: "height"
-        }
-      }, "heightSlider");
-
-      sizeSlider.on("data-change", function () {
-        var newRenderer = populationLyr.renderer.clone();
-        newRenderer.visualVariables[1] = sizeSlider.visualVariable;
-        populationLyr.renderer = newRenderer;
-        populationLyr2.renderer = newRenderer;
-        console.log(populationLyr2);
-      })
 
     });
 </script>
@@ -279,25 +228,6 @@
   <div id="viewDiv"></div>
   <div id="controls">
     <div class="caption">
-      <h2>Environment</h2>
-      Atmosphere:
-      <ul id="atmEnable">
-        <li class="selected">On</li>
-        <li>Off</li>
-      </ul>
-      <br> Quality:
-      <ul id="quality">
-        <li class="selected">Low</li>
-        <li>High</li>
-      </ul>
-      <br> Ambient occlusion:
-      <ul id="ambient">
-        <li>On</li>
-        <li class="selected">Off</li>
-      </ul>
-      <br>
-    </div>
-    <div class="caption">
       <h2>Primitives</h2>
       <ul id="primitives">
         <li class="selected">Cone</li>
@@ -306,16 +236,6 @@
         <li>Tetrahedron</li>
       </ul>
       <br>
-    </div>
-    <div class="caption">
-      <h2>Width/Depth</h2>
-      <p>Width of symbol <span id="width">1500 m</span></p>
-      <input id="widthSlider" min=100 max=5000 value=1500 type="range" />
-      <br>
-    </div>
-    <div class="caption">
-      <h2>Height</h2>
-      <div id="heightSlider"></div>
     </div>
   </div>
 </body>

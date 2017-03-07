@@ -9,7 +9,3 @@ Palm Springs Convention Center, Primrose C - D
 
 The ArcGIS API for JavaScript lets you build powerful interactive mapping applications. Learn how you can turn your raw data into information with simple layer styling, rich pop-up windows, and interactive data-driven visualizations.
 
-### Outline
-
-
-### Demos
