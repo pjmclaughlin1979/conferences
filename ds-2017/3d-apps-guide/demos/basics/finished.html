@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Get started with SceneView - Create a 3D map</title>
+<style>
+  html,
+  body,
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+<script src="https://js.arcgis.com/4.3/"></script>
+
+<script>
+  require([
+    "esri/Map",
+    "esri/views/SceneView",
+    "esri/widgets/Expand",
+    "esri/widgets/BasemapGallery",
+    "esri/widgets/Search",
+    "esri/layers/FeatureLayer",
+    "esri/renderers/SimpleRenderer",
+    "esri/symbols/PolygonSymbol3D",
+    "esri/symbols/ObjectSymbol3DLayer",
+    "dojo/domReady!"
+  ], function(Map, SceneView, Expand, BasemapGallery, Search, FeatureLayer,
+              SimpleRenderer, PolygonSymbol3D, ObjectSymbol3DLayer) {
+
+    var layer = new FeatureLayer({
+      url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/us_housing_zip_codes/FeatureServer/0",
+      renderer: new SimpleRenderer({
+        symbol: new PolygonSymbol3D({
+          symbolLayers: [
+            new ObjectSymbol3DLayer({
+              width: 500,
+              depth: 500,
+              resource: { primitive: "cone" }
+            })
+          ]
+        }),
+        visualVariables: [{
+          type: "size",
+          axis: "width-and-depth",
+          useSymbolValue: true
+        }, {
+          type: "size",
+          axis: "height",
+          field: "AVGHINC_CY",
+          stops: [
+            { value: 40000, size: 250},
+            { value: 100000, size: 8000}
+          ]
+        }, {
+          type: "color",
+          field: "AVGHINC_CY",
+          stops: [
+            { value: 20000, color: "white" },
+            { value: 150000, color: "blue" }
+          ]
+        }]
+      })
+    });
+
+    var map = new Map({
+      basemap: "streets",
+      ground: "world-elevation",
+//      layers: [ layer ]
+    });
+
+     view = new SceneView({
+      container: "viewDiv",
+      map: map,
+//      viewingMode: "local",
+//      clippingArea: {
+//        spatialReference: { wkid: 3857 },
+//        xmin: -13007664,
+//        xmax: -12952679,
+//        ymin: 3992935,
+//        ymax: 4028266
+//      },
+      camera: {
+        position: {
+          latitude: 33.827504,
+          longitude: -116.492625,
+          z: 500,
+          spatialReference: { wkid: 3857 }
+        },
+        heading: 280,
+        tilt: 84.5
+      }
+    });
+
+    var bg = new BasemapGallery({
+      view: view,
+      container: document.createElement("div")
+    });
+
+    var bgExpand = new Expand({
+      view: view,
+      content: bg.domNode,
+      expandIconClass: "esri-icon-basemap"
+    });
+    view.ui.add(bgExpand, "top-left");
+
+    view.then(function(){
+
+//      view.goTo({
+//        center: [8.551574, 47.365645],
+//        zoom: 13,
+//        heading: 180,
+//        tilt: 83.5
+//      });
+
+    });
+
+  });
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

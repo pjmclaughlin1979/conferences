@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="//js.arcgis.com/3.20/esri/css/esri.css">
+    <style>
+        html,
+        body,
+        #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #settings {
+            position: fixed;
+            bottom: 20px;
+            right: 0px;
+            background-color: lightgrey;
+            height: 35px;
+            width: 230px;
+            padding: 30px 20px 20px 20px;
+        }
+    </style>
+    <script src="//js.arcgis.com/3.20/"></script>
+    <script>
+        var map;
+
+        require(["esri/map", "esri/arcgis/utils", "esri/graphic", "esri/geometry/geometryEngine", "esri/Color", 
+                 "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
+                 "esri/symbols/SimpleFillSymbol", "esri/geometry/Polygon", "esri/geometry/Polyline", "esri/geometry/Point","esri/geometry/Multipoint", 
+                 "esri/geometry/Extent","dojo/dom", "dojo/domReady!"], 
+                  function(Map,  esriArcgisUtils, esriGraphic, esriGeometryEngine, esriColor, SimpleMarkerSymbol, SimpleLineSymbol, 
+                  SimpleFillSymbol, esriPolygon, esriPolyline, esriPoint, esriMultiPoint, esriExtent, dojoDom ) 
+        {
+        
+        
+        // Define a Polygon
+        var poly = new esriPolygon({"rings":[[[-12077.050469056441,6744024.446579335],[-5962.088206245302,6742495.706013632],[-1681.6146222774987,6741884.209787351],[3516.103301111987,6741884.209787351],[10548.309903344809,6743718.698466195],[16051.775939874846,6741884.209787351],[20026.501410702098,6736992.239977102],[25835.715560372686,6733017.514506275],[31644.929710043274,6722927.826772637],[30727.68537062162,6713755.38337842],[29504.692918059387,6707946.169228749],[29504.692918059387,6703971.443757921],[26447.21178665379,6699690.970173954],[26447.21178665379,6696633.489042548],[22778.234428967116,6691130.023006018],[20026.501410702098,6687766.793761472],[16969.02027929653,6684403.564516926],[15746.027826734295,6680428.839046099],[16051.775939874846,6675842.61734899],[16051.775939874846,6672479.388104444],[1681.6146222686511,6668810.410746758],[-7796.576885088638,6668198.914520476],[-13300.042921618675,6666058.677728493],[-20943.745750132628,6666364.425841633],[-24612.7231078193,6666364.425841633],[-30116.189144349337,6669727.655086179],[-31033.43348377102,6671867.891878163],[-36536.899520301056,6674925.373009569],[-41734.61744369054,6674008.128670147],[-49989.8164984856,6677065.609801552],[-52130.053290469485,6679511.594706677],[-55493.282535015634,6685626.556969488],[-58245.01555328065,6690212.778666597],[-60691.00045840509,6699690.970173954],[-56410.52687443729,6706417.428663046],[-56410.52687443729,6716201.368283544],[-57327.77121385897,6723845.071112058],[-48155.32781964223,6731488.773940572],[-51518.55706418838,6733934.758845696],[-57022.02310071842,6737603.736203383],[-56410.52687443729,6740661.217334788],[-52435.801403610036,6744330.194692476],[-49072.572159063915,6746776.1795976],[-42651.861783112196,6747693.423937022],[-34090.91461517659,6749222.164502724],[-27364.45612608432,6748304.920163303],[-23389.730655257066,6744941.690918757],[-18192.01273186761,6744024.446579335],[-14828.783487382301,6743565.824409593],[-12077.050469056441,6744024.446579335]]],"spatialReference":{"wkid":102100}});
+        
+        // Create a Map
+        map = new Map("map", {
+          basemap: "topo",  
+          center: poly.getCentroid(),
+          zoom: 10
+        });
+        
+        
+        
+        
+        
+        // Create some symbols
+        var symb = new SimpleFillSymbol(SimpleFillSymbol.STYLE_NULL,  new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,  new esriColor([255,140,0]), 6),new esriColor([255,255,0,0.25]));
+        var msymb =  new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,new esriColor([255,0,0]), 1),new esriColor([255,0,0]));
+        var foundsymb =  new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 16, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,new esriColor([0,0,255]), 1),new esriColor([0,0,255]));
+        var foundlinesymb =   new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,new esriColor([0,0,255]), 4)
+       
+        // When the Map Is Loaded, Prepare the rest of the Demo
+        map.on("load", function() {
+            
+            // Add the Polygon as a Graphic
+            var g = new esriGraphic(poly, symb);
+            map.graphics.add(g)
+            
+            // Create a MultiPoint, and add the vertices as Graphics
+            var mp = new esriMultiPoint(map.spatialReference)
+            for(var z=0; z<g.geometry.rings[0].length; z++) {
+                mp.addPoint(g.geometry.getPoint(0,z));
+            }
+            
+            // Create the Graphic with the MultiPoint
+            var g2 = new esriGraphic(mp, msymb);
+            map.graphics.add(g2)
+        });
+        
+        
+        // Declare variables for use as the Closest Point, and Start and End Line Graphics
+        var eLine = null;
+        var ePoint = null;
+        var ePointEnd = null;
+        
+        
+        // When the Mouse Moves, Recalculate the closest point and line segment
+        map.on("mouse-move", function(evt) {
+            var nvertex = null;
+            var coordinate = null;
+            
+            // Determine if looking for closest point or closest vertex
+            if (dojoDom.byId("coordinatetype").checked==true) {
+                
+               // Find the closest Coordinate
+               nvertex = esriGeometryEngine.nearestCoordinate(poly, evt.mapPoint );
+               if (nvertex!==null) {
+                   coordinate = nvertex.coordinate;
+               }
+            }
+            else {
+               // Find the closest Vertex
+               nvertex = esriGeometryEngine.nearestVertex(poly, evt.mapPoint )
+               if (nvertex!==null) {
+                   coordinate = nvertex.coordinate;
+               }
+            }
+        
+        
+            // Remove the Old Graphics
+            if (ePoint !==null) { 
+                map.graphics.remove(ePoint);
+            }
+            if (ePointEnd !==null) { 
+                map.graphics.remove(ePointEnd);
+            }
+            if (eLine!==null) {
+                map.graphics.remove(eLine);
+            }
+            
+            // If there is a coordinate, add it to the map
+            if (coordinate!==null) {
+                
+                // Cordinate on the map
+                ePoint = new esriGraphic(coordinate, foundsymb);
+                map.graphics.add(ePoint);
+                
+                
+                // Current Mouse Location
+                ePointEnd = new esriGraphic(evt.mapPoint, foundsymb);
+                map.graphics.add(ePointEnd);
+                
+                
+                // Line joining the two together
+                var pline = new esriPolyline(map.spatialReference);
+                pline.addPath([[coordinate.x, coordinate.y ], [evt.mapPoint.x, evt.mapPoint.y]]);
+                eLine  = new esriGraphic(pline , foundlinesymb);
+                map.graphics.add(eLine);
+               
+                
+            }
+           
+        });
+        
+      });
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="settings">
+        Search for Nearest Coordinate:
+        <input type="checkbox" name="coordinatetype" id="coordinatetype">
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Create a scene layer from portal item</title>
+
+<style>
+  html,
+  body,
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+
+<script src="https://js.arcgis.com/4.3/"></script>
+
+<script>
+  require([
+    "esri/Map",
+    "esri/views/SceneView",
+    "esri/layers/Layer",
+    "esri/renderers/ClassBreaksRenderer",
+    "esri/symbols/MeshSymbol3D",
+    "esri/symbols/FillSymbol3DLayer",
+    "esri/widgets/Legend",
+    "dojo/domReady!"
+  ], function(
+    Map, SceneView, Layer, ClassBreaksRenderer, MeshSymbol3D, FillSymbol3DLayer, Legend
+  ) {
+
+    var map = new Map({
+      basemap: "dark-gray",
+      ground: "world-elevation"
+    });
+
+    var view = new SceneView({
+      map: map,
+      container: "viewDiv",
+      camera: {
+        position: {
+          x: -8241244,
+          y: 4967997,
+          z: 1050,
+          spatialReference: { wkid: 3857 }
+        },
+        heading: 53.6,
+        tilt: 69.5
+      }
+    });
+    
+    view.ui.add({
+      component: new Legend({
+        view: view
+      }),
+      position: "bottom-left"
+    });
+
+    /************************************************
+     *
+     * Create a layer from an existing Portal item hosted
+     * in ArcGIS Online using the ID of the item.
+     * 
+     *************************************************/
+    
+    view.then(function(){
+      
+      Layer.fromPortalItem({
+        portalItem: {
+          id: "4ac2a674fdb54bb79471abe8368fd7d4"
+        }
+      }).then(createVisualization)
+        .otherwise(rejection);
+
+    });
+  
+
+    /**
+     * Adds a renderer to the layer where color represents the year
+     * the building was built and opacity represents building height.
+     * The darker the shade of the building, the older it is. The more
+     * opaque it is, the taller.
+     * 
+     * @param {esri/layers/SceneLayer} lyr - A scene layer instance.
+     */
+    function createVisualization (lyr){
+      
+      lyr.title = "New York City buildings"
+      lyr.renderer = new ClassBreaksRenderer({
+        field: "CNSTRCT_YR",
+        legendOptions: { title: "Construction year" },
+        defaultSymbol: createSymbol("gray"),
+        classBreakInfos: [{
+          minValue:  1900,
+          maxValue: 1925,
+          symbol: createSymbol("#253494")  // FF4000
+        }, {
+          minValue:  1925,
+          maxValue: 1950,
+          symbol: createSymbol("#2c7fb8")  // 40FF00
+        }, {
+          minValue:  1950,
+          maxValue: 1975,
+          symbol: createSymbol("#41b6c4")  // 00C0FF
+        }, {
+          minValue:  1975,
+          maxValue: 2000,
+          symbol: createSymbol("#a2dab4")  // C000FF
+        }, {
+          minValue:  2000,
+          maxValue: 2025,
+          symbol: createSymbol("#ffffcc")  // FFEE00
+        }],
+        visualVariables: [{
+          type: "opacity",
+          field: "HEIGHTROOF",
+          legendOptions: {
+            title: "Building height (ft)"
+          },
+          stops: [
+            { value: 30, opacity: 0.2 },
+            { value: 1000, opacity: 1.0 }
+          ]
+        }]
+      });
+      
+      map.add(lyr);
+    }
+    
+    /**
+     * Creates a Mesh symbol used to colorize 3D object symbols.
+     * @param   {esri/Color} color - The color value used to distinguish the 
+     *                             symbol.
+     * @return {esri/symbols/MeshSymbol3D} The 3D symbol used to 
+     * represent 3D objects in a scene layer.                                      
+     */
+    function createSymbol (color){
+      return new MeshSymbol3D({
+        symbolLayers: [new FillSymbol3DLayer({
+          material: { color: color }
+        })]
+      });
+    }
+
+    function rejection (err) {
+      console.log("Layer failed to load: ", err);
+    }
+  });
+</script>
+  
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
