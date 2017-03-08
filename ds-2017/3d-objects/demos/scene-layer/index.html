@@ -76,10 +76,21 @@
         portalItem: {
           id: "4ac2a674fdb54bb79471abe8368fd7d4"
         }
-      }).then(createVisualization)
+      }).then(addLayer)
+        .then(createVisualization)
         .otherwise(rejection);
 
     });
+    
+    function addLayer(layer){
+      map.add(layer);
+      return layer;
+    }
+    
+    function addDefinitionExpression(layer){
+      layer.definitionExpression = "CNSTRCT_YR < 1925";
+      return layer;
+    }
   
 
     /**
@@ -131,7 +142,7 @@
         }]
       });
       
-      map.add(lyr);
+      return lyr;
     }
     
     /**
@@ -147,6 +158,30 @@
           material: { color: color }
         })]
       });
+    }
+    
+    /**
+     * Adds a popup template to the given layer.
+     * 
+     * @param {esri/layers/SceneLayer} layer A scene layer instance.
+     */
+    function addPopupTemplate(layer){
+      layer.popupTemplate = {
+        title: "Building: {NAME}",
+        content: [{
+          type: "fields",
+          fieldInfos: [{
+            fieldName: "CNSTRCT_YR",
+            label: "Construction year"
+          }, {
+            fieldName: "HEIGHTROOF",
+            label: "Height (ft)"
+          }, {
+            fieldName: "NUM_FLOORS",
+            label: "Floors"
+          }]
+        }]
+      };
     }
 
     function rejection (err) {
