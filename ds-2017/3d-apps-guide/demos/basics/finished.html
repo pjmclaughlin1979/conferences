@@ -77,14 +77,14 @@
      view = new SceneView({
       container: "viewDiv",
       map: map,
-//      viewingMode: "local",
-//      clippingArea: {
-//        spatialReference: { wkid: 3857 },
-//        xmin: -13007664,
-//        xmax: -12952679,
-//        ymin: 3992935,
-//        ymax: 4028266
-//      },
+      viewingMode: "local",
+      clippingArea: {
+        spatialReference: { wkid: 3857 },
+        xmin: -13007664,
+        xmax: -12952679,
+        ymin: 3992935,
+        ymax: 4028266
+      },
       camera: {
         position: {
           latitude: 33.827504,
@@ -111,12 +111,12 @@
 
     view.then(function(){
 
-//      view.goTo({
-//        center: [8.551574, 47.365645],
-//        zoom: 13,
-//        heading: 180,
-//        tilt: 83.5
-//      });
+      view.goTo({
+        center: [8.551574, 47.365645],
+        zoom: 13,
+        heading: 180,
+        tilt: 83.5
+      });
 
     });
 
