@@ -1,8 +1,11 @@
 # 2D Visualization with the ArcGIS API for JavaScript
 
 length: 60 min
+
 presenters: Jeremy Bartley, Kristian Ekenes
+
 Mar. 9, 2017 1:00 pm - 2:00 pm
+
 Palm Springs Convention Center, Primrose C - D
 
 ### Summary

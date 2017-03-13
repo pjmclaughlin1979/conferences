@@ -1,8 +1,11 @@
 # ArcGIS API for JavaScript: Using Arcade with your Apps
 
 length: 60 min
+
 presenters: Kristian Ekenes, Dave Bayer
+
 Mar. 9, 2017 5:30 p.m. - 6:30 p.m.
+
 Palm Springs Convention Center, Primrose A
 
 ### Summary

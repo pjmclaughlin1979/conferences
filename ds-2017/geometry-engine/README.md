@@ -1,8 +1,11 @@
 # Building Interactive Web Apps Using the JavaScript API's Geometry Engine
 
 length: 60 min
+
 presenters: Kristian Ekenes, Dave Bayer
+
 Mar. 9, 2017 10:30 a.m. - 11:30 a.m.
+
 Palm Springs Convention Center, Primrose C-D
 
 ### Summary

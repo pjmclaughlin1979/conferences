@@ -1,9 +1,12 @@
 # Bringing Your Data to Life in the ArcGIS API for JavaScript: 3D Objects
 
 length: 30 min
+
 presenters: Kristian Ekenes, Russell Roberts
+
 Mar. 7, 2017 5:30 pm - 6:00 pm
-Palm Springs Convention Center, Demo Theater 1- Oasis 1
+
+Palm Springs Convention Center, Demo Theater 1 - Oasis 1
 
 ### Summary
 
