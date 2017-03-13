@@ -1,8 +1,11 @@
 # Building a Web App for Data Exploration with Smart Mapping
 
 length: 30 min
+
 presenters: Kristian Ekenes, Jeremy Bartley
+
 Mar. 9, 2017 2:30 pm - 3:00 pm
+
 Palm Springs Convention Center, Demo Theater 1 - Oasis 1
 
 ### Summary

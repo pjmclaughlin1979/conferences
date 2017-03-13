@@ -1,8 +1,11 @@
 # Inside Scoop: Navigating Your way Through the ArcGIS API for JavaScript Sessions
 
 length: 60 min
+
 presenters: Kristian Ekenes, Rene Rubalcava, Jeremy Bartley, Julie Powell, Yann Cabon
+
 Mar. 7, 2017 1:00 pm - 2:00 pm
+
 Palm Springs Convention Center, Oasis 4
 
 ### Summary

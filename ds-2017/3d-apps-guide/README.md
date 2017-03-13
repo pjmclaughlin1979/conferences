@@ -1,8 +1,11 @@
 # Practical Guide to Building 3D Web Apps
 
 length: 60 min
+
 presenters: Kristian Ekenes, Russell Roberts
+
 Mar. 9, 2017 9:00 am - 10:00 am
+
 Palm Springs Convention Center, Primrose A
 
 ### Summary
