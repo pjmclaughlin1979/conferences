@@ -1,8 +1,42 @@
 # 2D Visualization with the ArcGIS API for JavaScript
 
+length: 30 min
+
+presenters: Kristian Ekenes, Praveen Ponnusamy
+
+July 11, 2017 10:00 am - 10:30 am
+July 12, 2017 2:00 pm - 2:30 pm
+
+San Diego Convention Center, Tech Theater 17 Exhibit Hall A
+
+## Summary
+
 The ArcGIS API for JavaScript lets you build powerful interactive mapping applications. Learn how you can turn your raw data into information with simple layer styling, rich pop-up windows, and interactive data-driven visualizations.
 
-Links to demos are included in the provided PowerPoint presentation.
+### Demos
+
+##### [Continuous size: Worldwide earthquakes](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/earthquakes/)
+
+This sample demonstrates how to create a continuous size visualization on a point layer to visualize worldwide earthquakes by magnitude.
+
+![size](../images/size.png)
+
+##### [Continuous color: Mexico education](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education/)
+
+This sample demonstrates how to create a continuous color visualization by shading fill symbols based on a numeric attribute. This app visualizes the percentage of adults in Mexico that did not participate in any formal education.
+
+##### [Predominance with Arcade: Educational attainment in Mexico](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education-predominance/)
+
+This sample uses an Arcade expression to visualize the predominant educational attainment acheived in each municipality of Mexico. An opacity visual variable is applied to show the strength of predominance.
+
+##### [Multivariate visualization: 2012 U.S. presidential election](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/multivariate-election/)
+
+This sample demonstrates how to create a multivariate visualization using several variables related to the 2012 U.S. presidential election. The color indicates the winner (or predominant vote-getter). Opacity indicates the strength of the win. Size indicates the total number of votes cast in the county.
+
+##### [Smart mapping for data exploration](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/smart-mapping/)
+
+This sample demonstrates how to create a data exploration app using the Smart Mapping APIs. You can use the slider widgets to modify the visualization based on variables related to the 2012 election.
+
 
 ## Resources
 
