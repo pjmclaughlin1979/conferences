@@ -1,10 +1,11 @@
 # 2D Visualization with the ArcGIS API for JavaScript
 
-length: 30 min
+Length: 30 min
 
-presenters: Kristian Ekenes, Praveen Ponnusamy
+Presenters: Kristian Ekenes, Praveen Ponnusamy
 
 July 11, 2017 10:00 am - 10:30 am
+
 July 12, 2017 2:00 pm - 2:30 pm
 
 San Diego Convention Center, Tech Theater 17 Exhibit Hall A

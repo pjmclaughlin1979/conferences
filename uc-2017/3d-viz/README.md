@@ -14,57 +14,36 @@ Learn how you can leverage modern browser technology and the ArcGIS API for Java
 
 ### Demos
 
-##### []()
+##### [Extrusion](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/extrusions/)
 
-Description...
+This sample demonstrates how to create a continuous size visualization on a point layer to visualize worldwide earthquakes by magnitude.
 
-## Topics to cover/outline
+[![extrusion](images/extrusion.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/extrusions/)
 
-* Visualization intro (~1 min)
-  * 2D viz and 3D viz are similar in many respects
-    - What does data-driven mean?
-      - value from attribute, expression, function
-    - Handled with the same renderers
-    - Principles of color, generalization, etc.
-    - Just because you can, doesn't mean you should :)
-* What can you do? (~10 min)
-  * Demo heavy
-  * Extrusions, paths, complex object symbols
-    - SDK sample with extrusions (thematic/real world)
-  * Visualize thematic data in the real world (types)
-    - colorMixMode with buildings.
-    - icons as thematic visualization with buildings
-  * Data exploration in 3D (smart mapping)
-    - Slider with cylinders
-    - Geoenriched buildings
-  * Create abstract 3D visualizations
-    - exaggerated elevation
-    - thematic elevation
+##### [Points of interest](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/points-of-interest/)
 
-* How do you do it? (~10 min.)
-  * Dive into code
-  * Brief overview of
-    - renderers
-    - symbols and symbol layers
-  * API reference
-  * Samples
-  * Extend WebGL engine
+This sample demonstrates how to create a continuous color visualization by shading fill symbols based on a numeric attribute. This app visualizes the percentage of adults in Mexico that did not participate in any formal education.
 
-* What's new with 3D in the API? (~5 min)
-  * More demos
-    - Callout
-    - Icon perspective
-    - Highlight!
-  * More code (in snippets)
+[![poi](images/poi.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/points-of-interest/)
 
-* What are some best practices? Things to keep in mind... (~5 min)
-  * SceneViewer
-  * Caveats
-* Check out available resources (~1 min)
-  * SDK (samples, API reference, test data)
-  * Blogs
-  * GeoNet
-  * Meet us at the showcase (until Thursday at 1:30 p.m.)
+##### [Data exploration with Smart Mapping](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/)
+
+This sample uses an Arcade expression to visualize the predominant educational attainment acheived in each municipality of Mexico. An opacity visual variable is applied to show the strength of predominance.
+
+[![smart-mapping](images/smart-mapping.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/)
+
+##### [Colorized buildings](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/)
+
+This sample demonstrates how to create a multivariate visualization using several variables related to the 2012 U.S. presidential election. The color indicates the winner (or predominant vote-getter). Opacity indicates the strength of the win. Size indicates the total number of votes cast in the county.
+
+[![types](images/types.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/)
+
+##### [Thematic callouts](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/thematic-callout/)
+
+This sample demonstrates how to create a data exploration app using the Smart Mapping APIs. You can use the slider widgets to modify the visualization based on variables related to the 2012 election.
+
+[![thematic-callout](images/thematic-callout.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/thematic-callout/)
+
 
 ## Resources
 
