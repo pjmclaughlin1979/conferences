@@ -19,7 +19,7 @@ The ArcGIS API for JavaScript lets you build powerful interactive mapping applic
 
 This sample demonstrates how to create a continuous size visualization on a point layer to visualize worldwide earthquakes by magnitude.
 
-![size](../images/size.png)
+![size](images/size.png)
 
 ##### [Continuous color: Mexico education](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education/)
 
