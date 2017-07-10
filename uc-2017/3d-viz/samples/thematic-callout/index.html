@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Earthquakes with callout</title>
+<style>
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#infoDiv {
+  background-color: white;
+  padding: 5px;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+<script src="https://js.arcgis.com/4.4/"></script>
+
+<script>
+require([
+  "esri/Map",
+  "esri/layers/CSVLayer",
+  "esri/views/SceneView",
+  "esri/renderers/SimpleRenderer",
+  "esri/symbols/PointSymbol3D",
+  "esri/symbols/IconSymbol3DLayer",
+  "esri/symbols/LabelSymbol3D",
+  "esri/symbols/TextSymbol3DLayer",
+  "esri/symbols/callouts/LineCallout3D",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "esri/widgets/Search",
+  "esri/widgets/Expand",
+  "esri/config",
+  "dojo/domReady!"
+], function(
+  Map,
+  CSVLayer,
+  SceneView,
+  SimpleRenderer,
+  PointSymbol3D,
+  IconSymbol3DLayer,
+  LabelSymbol3D,
+  TextSymbol3DLayer,
+  LineCallout3D,
+  Legend,
+  LayerList,
+  Search,
+  Expand,
+  esriConfig
+) {
+
+  // If CSV files are not on the same domain as your website, a CORS enabled server
+  // or a proxy is required.
+  var baseUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
+
+  esriConfig.request.corsEnabledServers.push(baseUrl);
+
+  var selectedTimeWindow;
+
+  function getUrl(timeWindow){
+    var relativeUrls = {
+      hour: "all_hour.csv",
+      day: "all_day.csv",
+      week: "all_week.csv",
+      month: "all_month.csv",
+    };
+
+    var url = (timeWindow && relativeUrls[timeWindow]) ? baseUrl + relativeUrls[timeWindow] : null;
+    return url;
+  }
+
+  // Paste the url into a browser's address bar to download and view the attributes
+  // in the CSV file. These attributes include:
+  // * mag - magnitude
+  // * type - earthquake or other event such as nuclear test
+  // * place - location of the event
+  // * time - the time of the event
+
+  var popupTemplate = {
+    title: "{title}",
+    content: [{
+      type: "fields",
+      fieldInfos: [{
+        fieldName: "place",
+        label: "Location",
+        visible: true
+      }, {
+        fieldName: "time",
+        label: "Date and time",
+        visible: true
+      }, {
+        fieldName: "mag",
+        label: "Magnitude",
+        visible: true
+      }, {
+        fieldName: "mmi",
+        label: "Intensity",
+        visible: true
+      }, {
+        fieldName: "depth",
+        label: "Depth",
+        visible: true
+      }, {
+        fieldName: "felt",
+        label: "Number who felt the quake",
+        visible: true,
+        format: {
+          digitSeparator: true,
+          places: 0
+        }
+      }, {
+        fieldName: "sig",
+        label: "Significance",
+        visible: true
+      }, {
+        fieldName: "url",
+        label: "More info",
+        visible: true
+      }]
+    }],
+    fieldInfos: [{
+      fieldName: "time",
+      format: {
+        dateFormat: "short-date-short-time"
+      }
+    }]
+  };
+
+  function createLayer (timeWindow){
+    var layer = new CSVLayer({
+      url: getUrl(timeWindow),
+      copyright: "USGS Earthquakes",
+      title: "Worldwide earthquakes from the last " + timeWindow,
+      popupTemplate: popupTemplate,
+      renderer: new SimpleRenderer({
+        symbol: new PointSymbol3D({
+          symbolLayers: [
+            new IconSymbol3DLayer({
+              resource: { primitive: "circle"},
+              material: { color:  "#FF0055" },
+              outline: {
+                width: 0.5,
+                color: "white",
+                style: "solid"
+              }
+            })
+          ],
+          verticalOffset: {
+            screenLength: 100,
+            maxWorldLength: 500000,
+            minWorldLength: 1500
+          },
+          callout: new LineCallout3D({
+            color: [ 255, 0, 85, 0.5 ],
+            size: 1
+          })
+        }),
+        visualVariables: [{
+          type: "size",
+          field: "mag", // earthquake magnitude
+          valueUnit: "unknown",
+          minDataValue: 2,
+          maxDataValue: 7,
+          minSize: 6,
+          maxSize: 60
+        }]
+      }),
+      elevationInfo: {
+        // billboards icons and places them
+        // relative to elevation and buildings
+        mode: "relative-to-scene"
+      },
+      labelsVisible: true,
+      labelingInfo: [{
+        labelExpressionInfo: {
+          value: "{mag}"
+        },
+        symbol: new LabelSymbol3D({
+          symbolLayers: [
+            new TextSymbol3DLayer({
+              material: {
+                color: "white"
+              },
+              // we set a halo on the font to make the labels more visible with any kind of background
+              halo: {
+                size: 1,
+                color: "#FF0055"
+              },
+              size: 10
+            })
+          ]
+        })
+      }]
+    });
+
+    return layer;
+  }
+
+  var map = new Map({
+    basemap: "hybrid",
+    ground: "world-elevation"
+  });
+
+  view = new SceneView({
+    container: "viewDiv",
+    center: [ 138, 35 ],
+    zoom: 4,
+    map: map
+  });
+  view.ui.add("infoDiv", "bottom-left");
+
+  var search = new Search({
+    view: view,
+    container: document.createElement("div")
+  });
+  var searchExpand = new Expand({
+    view: view,
+    content: search.container,
+    expandIconClass: "esri-icon-search"
+  });
+  view.ui.add(searchExpand, "top-left");
+
+  var legend = new Legend({
+    view: view,
+    container: document.createElement("div")
+  });
+  var legendExpand = new Expand({
+    view: view,
+    content: legend.container,
+    expandIconClass: "esri-icon-legend",
+    expanded: true
+  });
+  view.ui.add(legendExpand, "bottom-right");
+
+  view.then(function(){
+
+    var radioButtons = document.querySelectorAll("input[type=radio]");
+
+    radioButtons.forEach(function(radioButton){
+      selectedTimeWindow = radioButton.checked ? radioButton.value : selectedTimeWindow;
+      radioButton.addEventListener("click", getTimeInput);
+    });
+
+    getTimeInput();
+  });
+
+
+  function getTimeInput (evt){
+    var selectedTime = evt ? evt.target.value : null;
+
+    if (selectedTime !== selectedTimeWindow){
+      selectedTimeWindow = selectedTime ? selectedTime : selectedTimeWindow;
+      map.removeAll();
+      earthquakeLayer = createLayer(selectedTimeWindow);
+      map.add(earthquakeLayer);
+
+      queryEarthquakeCount(earthquakeLayer)
+        .then(function(count){
+          earthquakeLayer.title = count + " worldwide earthquakes in the last " + selectedTimeWindow
+        });
+    }
+  }
+
+  function queryEarthquakeCount(layer){
+    return view.whenLayerView(layer)
+      .then(function(layerView){
+        return layerView.queryFeatureCount();
+      });
+  }
+
+});
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="infoDiv">
+    View earthquakes from within the last...
+    <input type="radio" name="timeline" id="hour-radio" value="hour"> hour
+    <input type="radio" name="timeline" id="day-radio" value="day" checked> 24 hours
+    <input type="radio" name="timeline" id="week-radio" value="week"> 7 days
+    <input type="radio" name="timeline" id="month-radio" value="month"> 30 days
+  </div>
+</body>
+</html>

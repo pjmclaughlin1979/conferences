@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Multivariate elections</title>
+<style>
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#infoDiv {
+  background-color: white;
+  padding: 5px;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+<script src="https://js.arcgis.com/4.4/"></script>
+
+<script>
+require([
+  "esri/Map",
+  "esri/layers/FeatureLayer",
+  "esri/views/MapView",
+  "esri/renderers/SimpleRenderer",
+  "esri/symbols/SimpleMarkerSymbol",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "dojo/domReady!"
+], function(
+  Map,
+  FeatureLayer,
+  MapView,
+  SimpleRenderer,
+  SimpleMarkerSymbol,
+  Legend,
+  LayerList
+) {
+
+  function createSymbol(color, x, y){
+    return new SimpleMarkerSymbol({
+      color: [ 0,0,0,0 ],
+      outline: {
+        color: color,
+        width: 1
+      },
+      xoffset: x,
+      yoffset: y
+    });
+  }
+
+  var republicanLayer = new FeatureLayer({
+    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/us_election_2012_counties/FeatureServer/0",
+    outFields: [ "ROMNEY" ],
+    title: "Republican votes (2012) by county",
+    renderer: new SimpleRenderer({
+      symbol: createSymbol("#ed5151", 0, 4),
+      visualVariables: [{
+        type: "size",
+        field: "ROMNEY",
+        legendOptions: {
+          title: "Votes for Romney"
+        },
+        minDataValue: 100,
+        maxDataValue: 1000000,  //885333
+        minSize: "4px",
+        maxSize: "60px"
+      }]
+    })
+  });
+
+  var democratLayer = new FeatureLayer({
+    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/us_election_2012_counties/FeatureServer/0",
+    outFields: [ "OBAMA" ],
+    title: "Democrat votes (2012) by county",
+    renderer: new SimpleRenderer({
+      symbol: createSymbol("#149ece", -2, 0),
+      visualVariables: [{
+        type: "size",
+        field: "OBAMA",
+        legendOptions: {
+          title: "Votes for Obama"
+        },
+        minDataValue: 100,  // 5
+        maxDataValue: 1000000,  // 2216903
+        minSize: "4px",
+        maxSize: "60px"
+      }]
+    })
+  });
+
+  var otherLayer = new FeatureLayer({
+    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/us_election_2012_counties/FeatureServer/0",
+    outFields: [ "OTHERS" ],
+    title: "Other votes (2012) by county",
+    renderer: new SimpleRenderer({
+      symbol: createSymbol("#a7c636", 2, 0),
+      visualVariables: [{
+        type: "size",
+        field: "OTHERS",
+        legendOptions: {
+          title: "Votes for Others"
+        },
+        minDataValue: 100,  // 0
+        maxDataValue: 1000000,  // 78831
+        minSize: "4px",
+        maxSize: "60px"
+      }]
+    })
+  });
+
+  var map = new Map({
+    basemap: "gray",
+    layers: [ otherLayer, democratLayer, republicanLayer ]
+  });
+
+  var view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [ -95, 38 ],
+    zoom: 5
+  });
+
+  var legend = new Legend({
+    view: view
+  });
+  view.ui.add(legend, "bottom-left");
+
+});
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>
