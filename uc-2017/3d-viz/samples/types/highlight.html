@@ -15,7 +15,7 @@ body,
 }
 
 #infoDiv {
-  background-color: white;
+  background-color: rgba(255,255,255,0.7);
   padding: 5px;
   font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -61,12 +61,13 @@ require([
 ) {
 
   var buildingsLayer = new SceneLayer({
-    url: "https://services2.arcgis.com/cFEFS0EWrhfDeVw9/arcgis/rest/services/BuildingShellOsmPointPolygonAttrAdded/SceneServer/layers/0"
+    url: "https://services2.arcgis.com/cFEFS0EWrhfDeVw9/ArcGIS/rest/services/STM____F_Helsinki__Textured_buildings_with_attributes/SceneServer/layers/0",
+    title: "Helsinki buildings"
   });
 
   var appConfig = {
     layer: buildingsLayer,
-    field: "usageKayttotarkoitus"
+    field: "usage"
   };
 
   var selectElement = document.getElementById("building-type");
@@ -180,6 +181,8 @@ require([
 <body>
   <div id="viewDiv"></div>
   <div id="infoDiv">
+    Hover over one of the following building types </br>
+    to highlight them in the view.
     <ul id="building-type"></ul>
   </div>
 </body>
