@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  
+
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Create a scene layer from portal item</title>
@@ -36,7 +36,7 @@
     Map, SceneView, Layer, ClassBreaksRenderer, MeshSymbol3D, FillSymbol3DLayer, Legend
   ) {
 
-    var map = new Map({
+     map = new Map({
       basemap: "dark-gray",
       ground: "world-elevation"
     });
@@ -55,7 +55,7 @@
         tilt: 69.5
       }
     });
-    
+
     view.ui.add({
       component: new Legend({
         view: view
@@ -67,11 +67,11 @@
      *
      * Create a layer from an existing Portal item hosted
      * in ArcGIS Online using the ID of the item.
-     * 
+     *
      *************************************************/
-    
+
     view.then(function(){
-      
+
       Layer.fromPortalItem({
         portalItem: {
           id: "4ac2a674fdb54bb79471abe8368fd7d4"
@@ -81,28 +81,28 @@
         .otherwise(rejection);
 
     });
-    
+
     function addLayer(layer){
       map.add(layer);
       return layer;
     }
-    
+
     function addDefinitionExpression(layer){
       layer.definitionExpression = "CNSTRCT_YR < 1925";
       return layer;
     }
-  
+
 
     /**
      * Adds a renderer to the layer where color represents the year
      * the building was built and opacity represents building height.
      * The darker the shade of the building, the older it is. The more
      * opaque it is, the taller.
-     * 
+     *
      * @param {esri/layers/SceneLayer} lyr - A scene layer instance.
      */
     function createVisualization (lyr){
-      
+
       lyr.title = "New York City buildings"
       lyr.renderer = new ClassBreaksRenderer({
         field: "CNSTRCT_YR",
@@ -141,16 +141,16 @@
           ]
         }]
       });
-      
+
       return lyr;
     }
-    
+
     /**
      * Creates a Mesh symbol used to colorize 3D object symbols.
-     * @param   {esri/Color} color - The color value used to distinguish the 
+     * @param   {esri/Color} color - The color value used to distinguish the
      *                             symbol.
-     * @return {esri/symbols/MeshSymbol3D} The 3D symbol used to 
-     * represent 3D objects in a scene layer.                                      
+     * @return {esri/symbols/MeshSymbol3D} The 3D symbol used to
+     * represent 3D objects in a scene layer.
      */
     function createSymbol (color){
       return new MeshSymbol3D({
@@ -159,10 +159,10 @@
         })]
       });
     }
-    
+
     /**
      * Adds a popup template to the given layer.
-     * 
+     *
      * @param {esri/layers/SceneLayer} layer A scene layer instance.
      */
     function addPopupTemplate(layer){
@@ -189,7 +189,7 @@
     }
   });
 </script>
-  
+
 </head>
 
 <body>

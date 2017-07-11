@@ -16,31 +16,43 @@ Learn how you can leverage modern browser technology and the ArcGIS API for Java
 
 ##### [Extrusion](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/extrusions/)
 
-This sample demonstrates how to create a continuous size visualization on a point layer to visualize worldwide earthquakes by magnitude.
+This sample demonstrates how to create a data-driven visualization with extrusions. It also demonstrates how to drive the height of cone object symbols based on numeric data and how adding color to visualize the same variable can help users interpret data more clearly in 3D.
 
 [![extrusion](images/extrusion.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/extrusions/)
 
 ##### [Points of interest](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/points-of-interest/)
 
-This sample demonstrates how to create a continuous color visualization by shading fill symbols based on a numeric attribute. This app visualizes the percentage of adults in Mexico that did not participate in any formal education.
+This sample demonstrates how to add points of interest as icon symbols to a web scene. It takes advantage of symbol callouts and alters the size of icons based on their distance from the view's camera.
 
 [![poi](images/poi.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/points-of-interest/)
 
 ##### [Data exploration with Smart Mapping](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/)
 
-This sample uses an Arcade expression to visualize the predominant educational attainment acheived in each municipality of Mexico. An opacity visual variable is applied to show the strength of predominance.
+This sample shows how to create a data exploration app using the Smart Mapping APIs. It allows you to visualize buildings in New York geoenriched with housing data. You can also colorize features using themes in the color generators provided by Smart Mapping.
 
 [![smart-mapping](images/smart-mapping.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/)
 
+##### [Bivariate Smart Mapping](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/bivariate.html)
+
+This sample demonstrates how to create a bivariate data exporation app, allowing users to alter the size and color of features to explore potential correlation between two variables.
+
+[![bivariate](images/bivariate.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/bivariate.html)
+
 ##### [Colorized buildings](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/)
 
-This sample demonstrates how to create a multivariate visualization using several variables related to the 2012 U.S. presidential election. The color indicates the winner (or predominant vote-getter). Opacity indicates the strength of the win. Size indicates the total number of votes cast in the county.
+This sample demonstrates how to colorize buildings by adding color to building textures or replacing textures altogether with color on plain mesh symbols.
 
 [![types](images/types.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/)
 
+##### [Highlight by type](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/highlight.html)
+
+This sample demonstrates how to generate unique types based on a field using the type generators in the Smart Mapping APIs and highlight buildings when the user hovers over the generated type in a simple HTML list element.
+
+[![highlight](images/highlight.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/highlight.html)
+
 ##### [Thematic callouts](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/thematic-callout/)
 
-This sample demonstrates how to create a data exploration app using the Smart Mapping APIs. You can use the slider widgets to modify the visualization based on variables related to the 2012 election.
+This sample demonstrates how to create a continous size visualization with points and callouts on a global scale.
 
 [![thematic-callout](images/thematic-callout.png)](http://ekenes.github.io/conferences/uc-2017/3d-viz/samples/thematic-callout/)
 
