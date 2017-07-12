@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Point Cloud Renderers</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    #infoDiv {
+      background-color: white;
+      padding: 5px;
+      font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.4/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+
+      "esri/layers/PointCloudLayer",
+      "esri/renderers/PointCloudRGBRenderer",
+      "esri/renderers/PointCloudStretchRenderer",
+
+      "dojo/on",
+      "dojo/dom",
+      "dojo/domReady!"
+    ], function (
+      Map, SceneView, PointCloudLayer,
+      PointCloudRGBRenderer,
+      PointCloudStretchRenderer,
+      on, dom
+    ) {
+
+
+
+        var stretchRenderer = new PointCloudStretchRenderer({
+          field: "ELEVATION",
+
+          pointSizeAlgorithm: {
+            type: "fixed-size",
+            useRealWorldSymbolSizes: false,
+            size: 2
+          },
+          pointsPerInch: 30,
+
+          stops: [{
+            value: -0.78,
+            color: [61, 51, 158]
+          }, {
+            value: 1,
+            color: [73, 196, 196]
+          }, {
+            value: 2,
+            color: [104, 196, 73]
+          }, {
+            value: 3,
+            color: [235, 232, 84]
+          }, {
+            value: 4,
+            color: [235, 162, 84]
+          }, {
+            value: 12,
+            color: [235, 84, 84]
+          }, {
+            value: 20,
+            color: [100, 100, 100]
+          }]
+        });
+
+
+        /*
+
+
+        */
+
+        var rgbRenderer = new PointCloudRGBRenderer({
+          field: "RGB",
+           pointSizeAlgorithm: {
+            type: "fixed-size",
+            useRealWorldSymbolSizes: false,
+            size: 2
+          },
+
+          pointsPerInch: 30
+        });
+
+
+
+        barnegatPointClouds = new PointCloudLayer({
+          url: "https://tiles.arcgis.com/tiles/V6ZHFr6zdgNZuVG0/arcgis/rest/services/BARNEGAT_BAY_LiDAR_UTM/SceneServer",
+          renderer: rgbRenderer
+          // renderer: stretchRenderer
+        });
+
+
+
+        // create map and view
+        var map = new Map({
+          basemap: "dark-gray-vector",
+          layers: [barnegatPointClouds]
+        });
+
+        view = new SceneView({
+          container: "viewDiv",
+          map: map,
+
+          camera: {
+            position: {
+              "x": -8249698.38948121,
+              "y": 4830490.323715089,
+              "z": 51.35519232600927,
+              spatialReference: {
+                wkid: 3857
+              }
+            },
+            heading: 339,
+            tilt: 75
+          }
+        });
+
+
+      });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
