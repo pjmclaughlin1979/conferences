@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Thematic multivariate visualization (3D) - 4.3</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.3/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      font-family: sans-serif;
+    }
+    #controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      top: 0;
+      width: 320px;
+      padding: 0 20px;
+      background-color:#fff;
+      color:#0D2A56;
+      max-height: 100%;
+      overflow-y: auto;
+    }
+    ul{
+      list-style-type: none;
+      color: #0D2A56;
+      padding: 0;
+      padding-bottom: 20px;
+    }
+    li.selected{
+      /*background-color: #0D2A56;
+      color: #fff;*/
+      font-weight: bolder;
+    }
+    li {
+      float: left;
+      padding: 5px 10px;
+      border-right: 1px solid #0D2A56;
+      cursor: pointer;
+    }
+    li:last-child {
+      border-right: 0px;
+    }
+    li:hover {
+      background-color: #0D2A56;
+      color: #fff;
+    }
+    .caption {
+      border-bottom: 1px solid #ddd;
+    }
+    input {
+      width: 300px;
+    }
+
+  </style>
+
+<script>
+  require([
+    "esri/layers/FeatureLayer",
+    "esri/layers/TileLayer",
+    "esri/Map",
+    "esri/views/SceneView",
+    "esri/renderers/SimpleRenderer",
+    "esri/symbols/PointSymbol3D",
+    "esri/symbols/ObjectSymbol3DLayer",
+    "esri/widgets/SizeSlider",
+    "dojo/domReady!"
+  ], function (
+    FeatureLayer,
+    MapImageLayer,
+    Map, SceneView,
+    SimpleRenderer,
+    PointSymbol3D,
+    ObjectSymbol3DLayer,
+    SizeSlider
+  ) {
+
+      //background map
+      var imageLyr = new MapImageLayer({
+        url: "http://tilesdevext.arcgis.com/tiles/ub5ghbIZPi7Ea1y1/arcgis/rest/services/population200/MapServer",
+        spatialReference: {
+          wkid: 3857
+        }
+      });
+
+      // renderer for the population layer
+      var renderer = new SimpleRenderer({
+        symbol: new PointSymbol3D({
+          symbolLayers: [new ObjectSymbol3DLayer({
+            resource: {
+              primitive: "cone"
+            },
+            width: 1500
+          })]
+        }),
+        visualVariables: [{
+          type: "color",
+          field: "grid_code",
+          stops: [
+            {
+              value: 130,
+              color: "#fbf1bb"
+            },
+            {
+              value: 1800,
+              color: "#f91717"
+            }]
+        }, {
+          type: "size",
+          field: "grid_code",
+          stops: [
+            {
+              value: 130,
+              size: 1000
+            },
+            {
+              value: 1800,
+              size: 30000
+            }],
+          axis: "height"
+        }, {
+          type: "size",
+          axis: "width-and-depth",
+          useSymbolValue: true // uses the width value defined in the symbol layer (50,000)
+        }]
+      });
+
+      // set the renderer on the layer
+      var populationLyr = new FeatureLayer({
+        url: "http://servicesdev.arcgis.com/ub5ghbIZPi7Ea1y1/ArcGIS/rest/services/pop_130_247/FeatureServer/0",
+        renderer: renderer,
+        popupEnabled: true
+      });
+
+      var populationLyr2 = new FeatureLayer({
+        url: "http://servicesdev.arcgis.com/ub5ghbIZPi7Ea1y1/arcgis/rest/services/pop_247_3000/FeatureServer/0",
+        renderer: renderer,
+        popupEnabled: true
+      })
+
+      // add the layers to a new map
+      var map = new Map({
+        basemap: null,
+        layers: [populationLyr, populationLyr2, imageLyr]
+      });
+
+      // set the environment
+      var view = new SceneView({
+        map: map,
+        viewingMode: "local",
+        container: "viewDiv",
+        camera: {
+          position:
+          {
+            x: 614881.6557836005,
+            y: 5487070.528495997,
+            z: 100000,
+            spatialReference: { latestWkid: 3857, wkid: 102100 }
+          },
+          heading: 33.674173048137,
+          tilt: 80
+        },
+        padding: {
+          left: 350
+        },
+        spatialReference: {
+          wkid: 3857
+        },
+        environment: {
+          atmosphereEnabled: true,
+          atmosphere: {
+            quality: "high"
+          }//,
+//          lighting: {
+//            directShadowsEnabled: true,
+//            date: new Date("March 15, 2015 10:00:00")
+//          }
+        }
+      });
+
+      imageLyr.then(function () {
+        console.log(imageLyr.fullExtent);
+        view.clippingArea = imageLyr.fullExtent;
+      });
+
+      //create controls for the atmosphere, primitive, width/depth
+      function changeSymbol(attr) {
+
+        var renderer = populationLyr.renderer.clone();
+        if (attr.primitive) {
+          renderer.symbol.symbolLayers.getItemAt(0).resource.primitive = attr.primitive;
+          if (attr.primitive == "cube") {
+            renderer.symbol.symbolLayers.getItemAt(0).anchor = "bottom";
+          }
+        }
+        if (attr.width) {
+          renderer.symbol.symbolLayers.getItemAt(0).width = attr.width;
+        }
+        populationLyr.renderer = renderer;
+        console.log(populationLyr);
+        populationLyr2.renderer = renderer;
+      }
+
+      document.getElementById("primitives").addEventListener("click", function (evt) {
+        this.getElementsByClassName("selected")[0].classList.remove("selected");
+        evt.target.className = "selected";
+        changeSymbol({
+          primitive: evt.target.textContent.toLowerCase()
+        });
+      });
+
+     
+      this.view = view;
+
+    });
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="controls">
+    <div class="caption">
+      <h2>Primitives</h2>
+      <ul id="primitives">
+        <li class="selected">Cone</li>
+        <li>Cylinder</li>
+        <li>Cube</li>
+        <li>Tetrahedron</li>
+      </ul>
+      <br>
+    </div>
+  </div>
+</body>
+
+</html>

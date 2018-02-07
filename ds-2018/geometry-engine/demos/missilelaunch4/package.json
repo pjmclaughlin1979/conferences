@@ -1,0 +1,27 @@
+{
+  "name": "EditingDemo",
+  "description": "Editing Demo App",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    
+    "glob": "*",
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-compress": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-handlebars": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-less": "*",
+    "grunt-ts": "*",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "*"
+  },
+  "keywords": [
+    "esri"
+  
+  ]
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+  <title>Mexico Education Demographics</title>
+  <link rel="stylesheet" href="//js.arcgis.com/4.3/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="//js.arcgis.com/4.3/esri/css/main.css">
+  <script src="//js.arcgis.com/4.3/"></script>
+
+  <link rel="stylesheet" href="app.css">
+
+  <!----------------------------------------
+  <--
+  <--  ARCADE AND SQL EXPRESSIONS
+  <--
+  <---------------------------------------->
+
+  <script type="text/plain" id="arcade-no-school">
+    // % of population that didn't attend school
+
+    var value = $feature.EDUC01_CY;
+    var total = $feature.EDUCA_BASE;
+    return Round((value/total)*100, 2);
+  </script>
+
+  <script type="text/plain" id="sql-no-school">
+    (EDUC01_CY / EDUCA_BASE) * 100
+  </script>
+
+  <script type="text/plain" id="arcade-preschool">
+    // % of population that finished preschool or higher
+
+    var value = $feature.EDUC02_CY+$feature.EDUC03_CY+$feature.EDUC04_CY
+      +$feature.EDUC05_CY+$feature.EDUC06_CY+$feature.EDUC07_CY
+      +$feature.EDUC08_CY+$feature.EDUC09_CY+$feature.EDUC10_CY
+      +$feature.EDUC11_CY+$feature.EDUC12_CY+$feature.EDUC13_CY
+      +$feature.EDUC14_CY+$feature.EDUC15_CY;
+    var total = $feature.EDUCA_BASE;
+    return Round((value/total)*100, 2);
+  </script>
+
+  <script type="text/plain" id="sql-preschool">
+    ( (EDUC02_CY + EDUC03_CY + EDUC04_CY + EDUC05_CY + EDUC06_CY
+      + EDUC07_CY + EDUC08_CY + EDUC09_CY + EDUC10_CY
+      + EDUC11_CY + EDUC12_CY + EDUC13_CY
+      + EDUC14_CY + EDUC15_CY) / EDUCA_BASE ) * 100
+  </script>
+
+  <script type="text/plain" id="arcade-primary">
+    // % of population that finished primary school or higher
+
+    var value = $feature.EDUC04_CY
+      +$feature.EDUC05_CY+$feature.EDUC06_CY+$feature.EDUC07_CY
+      +$feature.EDUC08_CY+$feature.EDUC09_CY+$feature.EDUC10_CY
+      +$feature.EDUC11_CY+$feature.EDUC12_CY+$feature.EDUC13_CY
+      +$feature.EDUC14_CY+$feature.EDUC15_CY;
+    var total = $feature.EDUCA_BASE;
+    return Round((value/total)*100, 2);
+  </script>
+
+  <script type="text/plain" id="sql-primary">
+    ( (EDUC04_CY + EDUC05_CY + EDUC06_CY + EDUC07_CY
+      + EDUC08_CY + EDUC09_CY + EDUC10_CY
+      + EDUC11_CY + EDUC12_CY + EDUC13_CY
+      + EDUC14_CY + EDUC15_CY) / EDUCA_BASE ) * 100
+  </script>
+
+  <script type="text/plain" id="arcade-secondary">
+    // % of population that finished secondary school or higher
+
+    var value = $feature.EDUC06_CY
+      +$feature.EDUC08_CY+$feature.EDUC09_CY+$feature.EDUC10_CY
+      +$feature.EDUC11_CY+$feature.EDUC12_CY+$feature.EDUC13_CY
+      +$feature.EDUC14_CY+$feature.EDUC15_CY;
+    var total = $feature.EDUCA_BASE;
+    return Round((value/total)*100, 2);
+  </script>
+
+  <script type="text/plain" id="sql-secondary">
+    ( (EDUC06_CY + EDUC08_CY + EDUC09_CY + EDUC10_CY
+      + EDUC11_CY + EDUC12_CY + EDUC13_CY
+      + EDUC14_CY + EDUC15_CY) / EDUCA_BASE) * 100
+  </script>
+
+  <script type="text/plain" id="arcade-high-school">
+    // % of population that finished high school school or higher
+
+    var value = $feature.EDUC09_CY+$feature.EDUC10_CY
+      +$feature.EDUC11_CY+$feature.EDUC12_CY+$feature.EDUC13_CY
+      +$feature.EDUC14_CY+$feature.EDUC15_CY;
+    var total = $feature.EDUCA_BASE;
+    return Round((value/total)*100, 2);
+  </script>
+
+  <script type="text/plain" id="sql-high-school">
+    ( (EDUC09_CY + EDUC10_CY+ EDUC11_CY + EDUC12_CY
+      + EDUC13_CY + EDUC14_CY + EDUC15_CY) / EDUCA_BASE) * 100
+  </script>
+
+  <script type="text/plain" id="arcade-college">
+    // % of population that finished college or higher
+
+    var value = $feature.EDUC10_CY
+      +$feature.EDUC12_CY+$feature.EDUC13_CY
+      +$feature.EDUC14_CY+$feature.EDUC15_CY;
+    var total = $feature.EDUCA_BASE;
+    return Round((value/total)*100, 2);
+  </script>
+
+  <script type="text/plain" id="sql-college">
+    ( (EDUC10_CY + EDUC12_CY + EDUC13_CY
+      + EDUC14_CY + EDUC15_CY) / EDUCA_BASE) * 100
+  </script>
+
+  <script src="app.js"></script>
+
+  </head>
+  <body class="claro">
+    <div id="viewDiv"></div>
+    <div id="side-panel"><div style="padding: 8px;">
+      <div id="title"><h2>Mexico Education</h2></div>
+      <div id="attSelection">
+        <div class="elements">
+          Attribute:
+          <select id="select-field">
+            <option value="noschool" selected>No school</option>
+            <option value="preschool">Preschool</option>
+            <option value="primary">Primary School</option>
+            <option value="secondary">Secondary School</option>
+            <option value="preparatory">High School (prepratory)</option>
+            <option value="college">College</option>
+            <option value="womenToMen">Women:men</option>
+          </select>
+        </div>
+
+        <div class="elements">
+          Filter by population > <span id="population-display">0</span><br><br>
+          0 <input id="population-filter" type="range" min="0" max="100000" step="500"
+        value="0">100,000
+        </div>
+
+        <div class="elements">
+          <button class="btn" id="extent-filter">Filter by extent</button>
+          <button class="btn" id="clear-extent-filter">Clear extent filter</button>
+        </div>
+
+<!--
+        <div class="elements">
+          Theme:
+          <select id="color-renderer-theme" style="margin-right:1rem;">
+            <option value="high-to-low" selected>High to low</option>
+            <option value="above-and-below">Above and below</option>
+            <option value="centered-on">Centered on</option>
+            <option value="extremes">Extremes</option>
+          </select><button class="btn">Print</button>
+        </div>
+-->
+
+      </div>
+      </div>
+      <div id="color-slider-container"></div>
+    </div>
+  </body>
+</html>

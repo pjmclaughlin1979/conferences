@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Get started with SceneView - Create a 3D map - 4.2</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+    #infoDiv{
+      padding: 8px;
+      font-size: 22pt;
+      background-color: #21BAED;
+      color: white;
+      max-width: 120px;
+      opacity: 0.85;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.3/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/geometry/Point",
+      "esri/geometry/Polyline",
+      "esri/geometry/geometryEngine",
+      "esri/geometry/support/webMercatorUtils",
+      "esri/geometry/ScreenPoint",
+      "esri/Graphic",
+
+      "esri/symbols/PointSymbol3D",
+      "esri/symbols/ObjectSymbol3DLayer",
+      "esri/symbols/LineSymbol3D",
+      "esri/symbols/PathSymbol3DLayer",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/widgets/BasemapToggle",
+
+      "esri/request",
+      "esri/config",
+      "dojo/dom",
+      "dojo/on",
+      "dojo/domReady!"
+    ], function(
+      Map, MapView, Point, Polyline, geometryEngine, webMercatorUtils, ScreenPoint, Graphic,
+      PointSymbol3D, ObjectSymbol3DLayer, LineSymbol3D, PathSymbol3DLayer, SimpleLineSymbol,
+      BasemapToggle, esriRequest, esriConfig, dom, on) {
+
+      var options = {
+        feature: null,
+        intersectingFeature: null
+      };
+
+      var map = new Map({
+        basemap: "dark-gray"
+      });
+
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        zoom: 14,
+        center: [-116.49859, 33.82434]
+      });
+      view.ui.add("infoDiv", "top-right");
+
+      view.then(function(){
+        on(view, "click", getPoint);
+        on(view, "pointer-move", draw);
+        on(view, "double-click", finishDrawing);
+      });
+
+      function getPoint (evt){
+        if(options.intersectingFeature){
+          return;
+        }
+
+        var point = evt.mapPoint;
+        if(!options.feature){
+          var line = createLine(point, point);
+          options.feature = new Graphic({
+            geometry: line,
+            symbol: new SimpleLineSymbol({
+              color: "#21BAED",
+              width: 1.5
+            })
+          });
+          view.graphics.add(options.feature);
+        } else {
+          var newLine = addVertex(options.feature.geometry, point);
+          updateFeature(newLine);
+        }
+      }
+
+      function draw (evt){
+        if(!options.feature){
+          console.log("no feature");
+          return;
+        }
+
+        var screenPoint = new ScreenPoint({
+          x: evt.x,
+          y: evt.y
+        });
+        var point = view.toMap(screenPoint);
+        var updatedLine = replaceLastVertex(options.feature.geometry, point);
+        updateFeature(updatedLine);
+      }
+
+      function updateFeature(polyline){
+        view.graphics.removeAll();
+
+        var newFeature = new Graphic({
+          geometry: polyline,
+          symbol: new SimpleLineSymbol({
+            color: "#21BAED",
+            width: 2.5
+          })
+        });
+        options.feature = newFeature;
+        if(options.intersectingFeature){
+          view.graphics.addMany([newFeature, options.intersectingFeature]);
+        } else {
+          view.graphics.add(newFeature);
+          if(options.intersectingFeature && view.graphics.includes(options.intersectingFeature)){
+            view.graphics.remove(options.intersectingFeature);
+          }
+
+        }
+      }
+
+      function createLine (startPosition, endPosition){
+
+        if(!startPosition || !endPosition){
+          console.error("You must specify a start position and end position.");
+          return;
+        }
+
+        var startPoint = [
+          startPosition.x,
+          startPosition.y,
+        ];
+
+        var endPoint = [
+          endPosition.x,
+          endPosition.y,
+        ];
+
+        return new Polyline({
+          spatialReference: { wkid: 3857 },
+          hasZ: false,
+          paths: [[
+            startPoint,
+            endPoint
+          ]]
+        });
+      }
+
+      function addVertex (line, newPoint){
+        var polyline = line.clone();
+        var lastPointIndex = line.paths[0].length;
+        polyline.insertPoint(0,lastPointIndex, newPoint);
+        return polyline;
+      }
+
+      function replaceLastVertex (line, newPoint){
+
+
+        var polyline = line.clone();
+        var lastPointIndex = line.paths[0].length - 1;
+        polyline.setPoint(0,lastPointIndex,newPoint);
+
+        var intersectResults = isSelfIntersecting(polyline);
+        var selfIntersects = intersectResults.selfIntersects;
+        if(selfIntersects){
+          options.intersectingFeature = new Graphic({
+            geometry: intersectResults.finalSegment,
+            symbol: new SimpleLineSymbol({
+              style: "short-dot",
+              width: 2.5,
+              color: "yellow"
+            })
+          });
+
+        } else {
+           options.intersectingFeature = null;
+        }
+
+        return polyline;
+      }
+
+      function finishDrawing (evt){
+        if (!options.feature || options.intersectingFeature){
+          evt.stopPropagation();
+          return;
+        }
+        evt.stopPropagation();
+        var point = evt.mapPoint;
+        var polyline = options.feature.geometry;
+        var finalLine = addVertex(polyline, point);
+        updateFeature(finalLine);
+        options.feature = null;
+      }
+
+      function isSelfIntersecting(line) {
+        if(line.paths[0].length < 3){
+          return {
+            selfIntersects: false
+          };
+        }
+        var existingLine = line.clone();
+        var lastXYPoint = existingLine.removePoint(0,existingLine.paths[0].length-1);
+        var existingLineFinalPoint = existingLine.getPoint(0,existingLine.paths[0].length-1);
+        var finalSegment = new Polyline({
+          spatialReference: { wkid: 3857 },
+          hasZ: false,
+          paths: [[
+            [existingLineFinalPoint.x, existingLineFinalPoint.y],
+            [lastXYPoint.x, lastXYPoint.y]
+          ]]
+        });
+
+        return {
+          selfIntersects: geometryEngine.crosses(finalSegment, existingLine),
+          finalSegment: finalSegment
+        };
+      }
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="infoDiv">Click to add a vertex. Double-click to finish.</div>
+</body>
+</html>

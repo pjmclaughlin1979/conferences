@@ -1,0 +1,66 @@
+﻿
+
+
+
+
+/*The following are CSS for ensuring the the page behaves well on Mobile Devices with Touch*/
+body
+{
+    touch-action: none;
+    -webkit-touch-callout: none;
+    /* overflow: hidden; */
+    font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.scrollable
+{
+    -webkit-overflow-scrolling: touch;
+}
+
+*.unselectable
+{
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none; /* Prevents dragging of images/divs etc */
+    user-drag: none;
+    -webkit-touch-callout: none;
+}
+
+
+div.scrollWrapper
+{
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+div.scrollableArea
+{
+	position: relative;
+	width: auto;
+	height: 100%;
+}
+
+body ::-webkit-scrollbar {
+    width: 12px;
+}
+ 
+body ::-webkit-scrollbar-track {
+    background-color: #000;
+}
+ 
+body ::-webkit-scrollbar-thumb {
+    background-color: #f1564a;
+}
+
+
+
+
+.inline-div
+{
+    display: inline;
+}
