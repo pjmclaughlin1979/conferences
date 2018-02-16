@@ -45,6 +45,7 @@ This app demonstrates how to use Arcade in simple and complex labeling expressio
 
 The calculation for determining wind direction (N/S/E/W) is done using a field that contains the compass direction of the wind (0-360).
 
+[See a 3D version of this app](https://developers.arcgis.com/javascript/latest/sample-code/layers-featurelayer-labeling-3d/live/index.html)
 
 ##### [Wind Chill](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/wind-chill/)
 
@@ -53,23 +54,27 @@ This sample shows how to use Arcade for performing larger calculations and logic
 
 ##### [Earthquake dates](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/earthquakes-day-night/)
 
-This sample demonstrates how to use the date functions and time offsets to render data based on the local time in the time zone in which the event occured. In this case we render earthquakes from the last month based on whether or not they occurred in the morning or evening in the local time of the event.
+This sample demonstrates how to use the date functions and time offsets to render data based on the local time in the time zone in which the event occurred. In this case we render earthquakes from the last month based on whether or not they occurred in the morning or evening in the local time of the event.
 
 
 ##### [Earthquake times of day](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/earthquakes-morning/)
 
 This sample demonstrates how to use the date functions and time offsets to render data based on the local time in the time zone in which the event occured. In this case we render earthquakes from the last month based on whether or not they occurred in the morning, afternoon, evening, or nighttime of the local time of the event.
 
-
-##### [Bivariate Color (advanced Arcade example)](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/bivariate-color/)
-
-This app generates an Arcade expression that is used to categorize features in one of several bins for a bivariate color visualization. The inspiration for this app was derived from the research of Cynthia Brewer on the topic of bivariate color and [this blog post by Joshua Stevens](http://www.joshuastevens.net/cartography/make-a-bivariate-choropleth-map/).
-
-The Arcade expression demonstrates how writing custom functions within Arcade can be useful for writing more efficient or readable code.
-
-
 ##### [Portability: RendererList](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/renderer-list/)
 
 This app uses the LayerList widget to provide options to the user for setting different renderers on the same data source. Therefore the app avoids making duplicate layer/data queries when loading the visualizations saved in a web map. This sample demonstrates the portability of Arcade since most of the renderers were authored with Arcade in the ArcGIS Online map viewer, but can be read into a custom web application using the ArcGIS API for JavaScript. 
 
 The renderers and data used in this sample were loaded from the [Mexico educational attainment](https://jsapi.maps.arcgis.com/home/item.html?id=8bcfd58b039a4477a0eb734fe6c8d4fe) web map.
+
+
+##### [Reference Arcade expressions in PopupTemplate](https://developers.arcgis.com/javascript/latest/sample-code/popuptemplate-arcade/live/index.html)
+
+This sample demonstrates how to display values returned from an Arcade expression in a PopupTemplate defined on a FeatureLayer. Arcade is useful for creating visualizations in a FeatureLayer based on a value calculated from an expression executed on the client. PopupTemplates can reference the same expressions used in renderers to effectively communicate the data-driven visualization.
+
+
+##### [Elevation options](https://developers.arcgis.com/javascript/latest/sample-code/scene-elevationinfo/live/index.html)
+
+This sample shows how to change the elevation information of a 2D FeatureLayer for 3D visualization. Various options are available to customize the elevation of features in a 3D scene by modifying the elevationInfo property of a FeatureLayer.
+
+An Arcade expression can be used to offset the elevation of features from the surface in a 3D app.
