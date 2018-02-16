@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
 <title>Geometry Engine: Overlay</title>
-<link rel="stylesheet" href="http://js.arcgis.com/3.20/esri/css/esri.css">
+<link rel="stylesheet" href="http://js.arcgis.com/3.23/esri/css/esri.css">
 <style>
 html, body, #map {
   height: 100%;
@@ -40,7 +40,7 @@ html, body, #map {
 }
 </style>
 
-<script src="http://js.arcgis.com/3.20/"></script>
+<script src="http://js.arcgis.com/3.23/"></script>
 <script>
 var map, landLyr, utahLyr, pieChart, buffGeom;
 require(["esri/map",
@@ -95,7 +95,7 @@ require(["esri/map",
   //map event handlers  
   on(map, "click", createBuffer);
   on(map, "mouse-drag", createBuffer);
-  on(map, "update-end", function(){
+  on(utahLyr, "update-end", function(){
     update++;
     if(update === 1){
       var fakeEvt = {};
