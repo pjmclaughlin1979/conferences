@@ -1,244 +1,202 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Get started with SceneView - Create a 3D map - 4.2</title>
+  <title>Prevent self-intersecting lines</title>
+
+  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.7/esri/css/main.css">
+  <script src="https://jsdev.arcgis.com/4.7/"></script>
+
   <style>
     html,
     body,
     #viewDiv {
-      padding: 0;
-      margin: 0;
       height: 100%;
       width: 100%;
-    }
-    #infoDiv{
-      padding: 8px;
-      font-size: 22pt;
-      background-color: #21BAED;
-      color: white;
-      max-width: 120px;
-      opacity: 0.85;
+      margin: 0;
+      padding: 0;
     }
   </style>
-
-  <link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.3/"></script>
 
   <script>
     require([
       "esri/Map",
       "esri/views/MapView",
-      "esri/geometry/Point",
+      "esri/views/2d/draw/Draw",
+      "esri/Graphic",
       "esri/geometry/Polyline",
       "esri/geometry/geometryEngine",
-      "esri/geometry/support/webMercatorUtils",
-      "esri/geometry/ScreenPoint",
-      "esri/Graphic",
 
-      "esri/symbols/PointSymbol3D",
-      "esri/symbols/ObjectSymbol3DLayer",
-      "esri/symbols/LineSymbol3D",
-      "esri/symbols/PathSymbol3DLayer",
-      "esri/symbols/SimpleLineSymbol",
-      "esri/widgets/BasemapToggle",
-
-      "esri/request",
-      "esri/config",
-      "dojo/dom",
-      "dojo/on",
       "dojo/domReady!"
     ], function(
-      Map, MapView, Point, Polyline, geometryEngine, webMercatorUtils, ScreenPoint, Graphic,
-      PointSymbol3D, ObjectSymbol3DLayer, LineSymbol3D, PathSymbol3DLayer, SimpleLineSymbol,
-      BasemapToggle, esriRequest, esriConfig, dom, on) {
-
-      var options = {
-        feature: null,
-        intersectingFeature: null
-      };
-
+      Map, MapView,
+      Draw, Graphic,
+      Polyline, geometryEngine
+    ) {
       var map = new Map({
-        basemap: "dark-gray"
+        basemap: "streets-night-vector"
       });
 
       var view = new MapView({
         container: "viewDiv",
         map: map,
-        zoom: 14,
+        zoom: 12,
         center: [-116.49859, 33.82434]
       });
-      view.ui.add("infoDiv", "top-right");
 
-      view.then(function(){
-        on(view, "click", getPoint);
-        on(view, "pointer-move", draw);
-        on(view, "double-click", finishDrawing);
+      // add the button for the draw tool
+      view.ui.add("line-button", "top-left");
+
+      view.when(function(evt) {
+        var draw = new Draw({
+          view: view
+        });
+
+        // ********************
+        // draw polyline button
+        // ********************
+        var drawLineButton = document.getElementById("line-button");
+        drawLineButton.onclick = function() {
+          view.graphics.removeAll();
+          enableCreateLine(draw, view);
+        }
       });
 
-      function getPoint (evt){
-        if(options.intersectingFeature){
-          return;
-        }
+      function enableCreateLine(draw, view) {
+        // creates and returns an instance of PolyLineDrawAction 
+        var action = draw.create("polyline");
 
-        var point = evt.mapPoint;
-        if(!options.feature){
-          var line = createLine(point, point);
-          options.feature = new Graphic({
-            geometry: line,
-            symbol: new SimpleLineSymbol({
-              color: "#21BAED",
-              width: 1.5
-            })
-          });
-          view.graphics.add(options.feature);
-        } else {
-          var newLine = addVertex(options.feature.geometry, point);
-          updateFeature(newLine);
+        // focus the view to activate keyboard shortcuts for sketching
+        view.focus();
+
+        // listen to vertex-add event on the polyline draw action
+        action.on("vertex-add", updateVertices);
+
+        // listen to vertex-remove event on the polyline draw action
+        action.on("vertex-remove", updateVertices);
+
+        // listen to cursor-update event on the polyline draw action
+        action.on("cursor-update", createGraphic);
+
+        // listen to draw-complete event on the polyline draw action
+        action.on("draw-complete", updateVertices);
+
+      }
+
+      // This function is called from the "vertex-add" and "vertex-remove"
+      // events. Checks if the last vertex is making the line intersect itself.
+      function updateVertices(evt) {
+        // create a polyline from returned vertices
+        var result = createGraphic(evt);
+
+        // if the last vertex is making the line intersects itself,
+        // prevent "vertex-add" or "vertex-remove" from firing
+        if (result.selfIntersects) {
+          evt.preventDefault();
         }
       }
 
-      function draw (evt){
-        if(!options.feature){
-          console.log("no feature");
-          return;
-        }
-
-        var screenPoint = new ScreenPoint({
-          x: evt.x,
-          y: evt.y
-        });
-        var point = view.toMap(screenPoint);
-        var updatedLine = replaceLastVertex(options.feature.geometry, point);
-        updateFeature(updatedLine);
-      }
-
-      function updateFeature(polyline){
+      // create a new graphic presenting the polyline that is being drawn on the view
+      function createGraphic(evt) {
+        var vertices = evt.vertices;
         view.graphics.removeAll();
 
-        var newFeature = new Graphic({
-          geometry: polyline,
-          symbol: new SimpleLineSymbol({
-            color: "#21BAED",
-            width: 2.5
-          })
-        });
-        options.feature = newFeature;
-        if(options.intersectingFeature){
-          view.graphics.addMany([newFeature, options.intersectingFeature]);
-        } else {
-          view.graphics.add(newFeature);
-          if(options.intersectingFeature && view.graphics.includes(options.intersectingFeature)){
-            view.graphics.remove(options.intersectingFeature);
+        // a graphic representing the polyline that is being drawn
+        var graphic = new Graphic({
+          geometry: new Polyline({
+            paths: vertices,
+            spatialReference: view.spatialReference
+          }),
+          symbol: {
+            type: "simple-line", // autocasts as new SimpleFillSymbol
+            color: "#f442ee",
+            width: 4,
+            cap: "round",
+            join: "round"
           }
+        });
 
+        // check the polyline intersects itself.
+        var intersectingFeature = getIntersectingFeature(graphic.geometry);
+
+        // Add a new graphic for the intersecting segment.
+        if (intersectingFeature) {
+          view.graphics.addMany([graphic, intersectingFeature]);
+        }
+        // Just add the graphic representing the polyline if no intersection
+        else {
+          view.graphics.add(graphic);
+        }
+
+        // return the graphic and intersectingSegment
+        return {
+          graphic: graphic,
+          selfIntersects: intersectingFeature
         }
       }
 
-      function createLine (startPosition, endPosition){
-
-        if(!startPosition || !endPosition){
-          console.error("You must specify a start position and end position.");
-          return;
+      // function that checks if the line intersects itself
+      function isSelfIntersecting(polyline) {
+        if (polyline.paths[0].length < 3) {
+          return false
         }
+        var line = polyline.clone();
 
-        var startPoint = [
-          startPosition.x,
-          startPosition.y,
-        ];
+        //get the last segment from the polyline that is being drawn
+        var lastSegment = getLastSegment(polyline);
+        line.removePoint(0, line.paths[0].length - 1);
 
-        var endPoint = [
-          endPosition.x,
-          endPosition.y,
-        ];
+        // returns true if the line intersects itself, false otherwise
+        return geometryEngine.crosses(lastSegment, line);
+      }
+
+      // Checks if the line intersects itself. If yes, changes the last 
+      // segment's symbol giving a visual feedback to the user.
+      function getIntersectingFeature(polyline) {
+        if (isSelfIntersecting(polyline)) {
+          return new Graphic({
+            geometry: getLastSegment(polyline),
+            symbol: {
+              type: "simple-line", // autocasts as new SimpleLineSymbol
+              style: "short-dot",
+              width: 3.5,
+              color: "white"
+            }
+          });
+        }
+        return null;
+      }
+
+      // Get the last segment of the polyline that is being drawn
+      function getLastSegment(polyline) {
+        var line = polyline.clone();
+        var lastXYPoint = line.removePoint(0, line.paths[0].length - 1);
+        var existingLineFinalPoint = line.getPoint(0, line.paths[0].length -
+          1);
 
         return new Polyline({
-          spatialReference: { wkid: 3857 },
+          spatialReference: view.spatialReference,
           hasZ: false,
-          paths: [[
-            startPoint,
-            endPoint
-          ]]
+          paths: [
+            [
+              [existingLineFinalPoint.x, existingLineFinalPoint.y],
+              [lastXYPoint.x, lastXYPoint.y]
+            ]
+          ]
         });
       }
-
-      function addVertex (line, newPoint){
-        var polyline = line.clone();
-        var lastPointIndex = line.paths[0].length;
-        polyline.insertPoint(0,lastPointIndex, newPoint);
-        return polyline;
-      }
-
-      function replaceLastVertex (line, newPoint){
-
-
-        var polyline = line.clone();
-        var lastPointIndex = line.paths[0].length - 1;
-        polyline.setPoint(0,lastPointIndex,newPoint);
-
-        var intersectResults = isSelfIntersecting(polyline);
-        var selfIntersects = intersectResults.selfIntersects;
-        if(selfIntersects){
-          options.intersectingFeature = new Graphic({
-            geometry: intersectResults.finalSegment,
-            symbol: new SimpleLineSymbol({
-              style: "short-dot",
-              width: 2.5,
-              color: "yellow"
-            })
-          });
-
-        } else {
-           options.intersectingFeature = null;
-        }
-
-        return polyline;
-      }
-
-      function finishDrawing (evt){
-        if (!options.feature || options.intersectingFeature){
-          evt.stopPropagation();
-          return;
-        }
-        evt.stopPropagation();
-        var point = evt.mapPoint;
-        var polyline = options.feature.geometry;
-        var finalLine = addVertex(polyline, point);
-        updateFeature(finalLine);
-        options.feature = null;
-      }
-
-      function isSelfIntersecting(line) {
-        if(line.paths[0].length < 3){
-          return {
-            selfIntersects: false
-          };
-        }
-        var existingLine = line.clone();
-        var lastXYPoint = existingLine.removePoint(0,existingLine.paths[0].length-1);
-        var existingLineFinalPoint = existingLine.getPoint(0,existingLine.paths[0].length-1);
-        var finalSegment = new Polyline({
-          spatialReference: { wkid: 3857 },
-          hasZ: false,
-          paths: [[
-            [existingLineFinalPoint.x, existingLineFinalPoint.y],
-            [lastXYPoint.x, lastXYPoint.y]
-          ]]
-        });
-
-        return {
-          selfIntersects: geometryEngine.crosses(finalSegment, existingLine),
-          finalSegment: finalSegment
-        };
-      }
-
     });
   </script>
 </head>
 
 <body>
-  <div id="viewDiv"></div>
-  <div id="infoDiv">Click to add a vertex. Double-click to finish.</div>
+  <div id="viewDiv">
+    <div id="line-button" class="esri-widget-button esri-widget esri-interactive" title="Draw polyline">
+      <span class="esri-icon-polyline"></span>
+    </div>
+  </div>
 </body>
+
 </html>
