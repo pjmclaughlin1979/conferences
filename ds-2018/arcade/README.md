@@ -78,3 +78,8 @@ This sample demonstrates how to display values returned from an Arcade expressio
 This sample shows how to change the elevation information of a 2D FeatureLayer for 3D visualization. Various options are available to customize the elevation of features in a 3D scene by modifying the elevationInfo property of a FeatureLayer.
 
 An Arcade expression can be used to offset the elevation of features from the surface in a 3D app.
+
+
+##### [Create a Geofence](https://developers.arcgis.com/javascript/3/samples/streamlayer_arcade_geofence/)
+
+This sample demonstrates how to leverage geometry operations within Arcade expressions. A StreamLayer is loaded representing fictional locations of city buses in Los Angeles. The renderer of the layer indicates whether a bus is located within a 3-mile buffer of the LA Convention Center. This is computed using the BufferGeodetic() function included in the Arcade language. Arcade is also used in the popup to compute the distance of each bus from the convention center in miles.

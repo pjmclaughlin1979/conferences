@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Intro to SceneView - Create a 3D map - 4.7</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      font-family: verdana;
+    }
+
+    #topbar {
+      background: #fff;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 10px;
+    }
+
+    .action-button {
+      font-size: 16px;
+      background-color: transparent;
+      border: 1px solid #D3D3D3;
+      color: #6e6e6e;
+      height: 32px;
+      width: 32px;
+      text-align: center;
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+    }
+
+    .action-button:hover,
+    .action-button:focus {
+      background: #0079c1;
+      color: #e4e4e4;
+    }
+
+    .active {
+      background: #0079c1;
+      color: #e4e4e4;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.7/esri/css/main.css">
+  <script src="https://jsdev.arcgis.com/4.7/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Sketch/SketchViewModel",
+      "esri/Graphic",
+      "esri/layers/GraphicsLayer",
+      "esri/geometry/geometryEngine",
+      "esri/widgets/Legend",
+      "dojo/domReady!"
+    ], function(Map, SceneView, FeatureLayer,
+      SketchViewModel, Graphic, GraphicsLayer, ge, Legend
+    ) {
+
+      const mtrHeight = {
+        type: "size",
+        valueExpression: `
+          var maxRestriction = When(
+            $feature.elvnumcl == 0 && $feature.elvnumflr < 9000, 9000,
+            $feature.elvnumcl == 0 && $feature.elvnumflr >= 16000, 26000, 
+            $feature.elvnumcl == 0 && $feature.elvnumflr >= 9000, 16000,
+            $feature.elvnumcl);
+          var minRestriction = $feature.elvnumflr;
+          return maxRestriction - minRestriction;
+        `,
+        valueUnit: "feet"
+      };
+
+      var tempGraphicsLayer = new GraphicsLayer();
+      var submitBtn = document.getElementById("submitBtn");
+
+      submitBtn.addEventListener("click", updateRenderer);
+
+      
+      function createVisual(params){
+        const projectGeometry = params.projectGeometry;
+        const height = params.projectHeight;
+
+        if(!projectGeometry || !height){
+          console.log("Missing parameters. Please draw a project area and enter a project height.");
+          return;
+        }
+
+        var riskLevels = {
+          low: 300,
+          medium: 200,
+          high: 100
+        };
+
+        var riskLevelBuffers = {};
+        // buffering outside of renderer function boosts performance
+        for (var level in riskLevels){
+          riskLevelBuffers[level] = ge.geodesicBuffer(projectGeometry, riskLevels[level], "feet");
+        }
+
+        let classifyFeatures = function (graphic){
+          var ceilingValue = graphic.attributes.elvnumcl;
+          var floorValue = graphic.attributes.elvnumflr;
+          var geom = graphic.geometry;
+          var minRestriction = floorValue;
+
+          var risk = "none";  // none | low | medium | high
+          // var riskLevels = {
+          //   low: 300,
+          //   medium: 200,
+          //   high: 100
+          // };
+
+          // for (var level in riskLevels){
+          //   let bufferValue = riskLevels[level];
+          //   let heightRisk = height >= (floorValue - bufferValue);
+          //   let xyRisk = ge.intersects(projectGeometry, ge.geodesicBuffer(geom, bufferValue, "feet"));
+          //   risk = heightRisk && xyRisk ? level : risk;
+          // }
+
+          for (var level in riskLevels){
+            let bufferValue = riskLevels[level];
+            let heightRisk = height >= (floorValue - bufferValue);
+            let xyRisk = ge.intersects(geom, riskLevelBuffers[level]);
+            risk = heightRisk && xyRisk ? level : risk;
+          }
+
+          return risk;
+        }
+
+        return {
+          type: "unique-value",
+          field: classifyFeatures,
+          uniqueValueInfos: [{
+            value: "high",
+            symbol: createSymbol([244, 66, 66, 0.5], [244, 66, 66]),
+            label: "High"
+          }, {
+            value: "medium",
+            symbol: createSymbol([244, 146, 65, 0.5], [244, 146, 65]),
+            label: "Medium"
+          }, {
+            value: "low",
+            symbol: createSymbol([244, 238, 65, 0.5], [244, 238, 65]),
+            label: "Low"
+          }],
+          defaultSymbol: createSymbol([112, 244, 65, 0.5], [112, 244, 65]),
+          defaultLabel: "None",
+          visualVariables: [ mtrHeight ]
+        };
+      }
+
+
+      function createSymbol(color, useEdges){
+        const edges = {
+          type: "solid",
+          color: useEdges,
+          size: 2
+        };
+
+        return {
+          type: "polygon-3d",
+          symbolLayers: [{
+            type: "extrude",
+            material: {
+              color: color
+            },
+            edges: useEdges ? edges : null
+          }]
+        };
+      }
+
+      // military encroachment report
+      // likelihood of project interfering with military space
+      // 3 classes: high, medium, low
+      // 
+      // project type
+      // height
+      // number of turbines
+      //
+
+      // e.g. if project is 300 feet...
+      // buffer on each end of floor and ceiling
+      // likelihood of impact
+
+      // input with area of interest.
+      // bounding box or multipoint polygon
+
+      // app determines if it is a certain distance
+      // intersects within 100 feet = high
+      // 200 medium
+      // 300 low
+
+      var mtr = new FeatureLayer({
+        portalItem: {
+          // d608b7d7b5494aefaced3302c636e119 (original)
+          // d22480fc05004dad8fbf4e8aad9759e5 (densified 50m)
+          id: "d608b7d7b5494aefaced3302c636e119"
+        },
+        popupTemplate: {
+          content: "{*}"
+        },
+        renderer: {
+          type: "simple",
+          symbol: {
+            type: "polygon-3d",
+            symbolLayers: [{
+              type: "extrude",
+              material: {
+                color: [128,0,0,0.5]
+              }
+            }]
+          },
+          visualVariables: [ mtrHeight ]
+        },
+        elevationInfo: {
+          mode: "relative-to-ground",
+          featureExpressionInfo: {
+            expression: "$feature.elvnumflr"
+          },
+          unit: "feet"
+        }
+      });
+
+      var map = new Map({
+        basemap: "satellite",
+        ground: "world-elevation",
+        layers: [ mtr, tempGraphicsLayer ]
+      });
+
+      view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        camera: {
+          position: {
+            spatialReference: {
+              latestWkid: 3857,
+              wkid: 102100
+            },
+            x: -12067533,
+            y: 4104506,
+            z: 76850
+          },
+          heading: 320,
+          tilt: 65
+        }
+      });
+
+      view.when(function() {
+        initializeSketch();
+        view.ui.add(new Legend({ view: view }), "bottom-right");
+      });
+
+      function updateRenderer(){
+        //mtr.renderer = null;
+        var sketchGraphic = tempGraphicsLayer.graphics.getItemAt(0);
+        var height = document.getElementById("heightInput").value;
+        if(!sketchGraphic || !height){
+          console.log("Missing parameters. Please draw a project area and enter a project height.");
+          return;
+        }
+
+        var rendererParams = {
+          projectGeometry: sketchGraphic.geometry,
+          projectHeight: parseInt(height)
+        }
+
+        var classifiedRenderer = createVisual(rendererParams);
+        mtr.renderer = classifiedRenderer;
+      }
+
+      function initializeSketch(){
+        // create a new sketch view model
+        var sketchViewModel = new SketchViewModel({
+          view: view,
+          layer: tempGraphicsLayer,
+          polygonSymbol: { // symbol used for polygons
+            type: "simple-fill", // autocasts as new SimpleMarkerSymbol()
+            color: [255,255,255,0.5],
+            style: "solid",
+            outline: {
+              color: "white",
+              width: 1
+            }
+          }
+        });
+
+        sketchViewModel.on("draw-complete", function(evt) {
+          // add the graphic to the graphics layer
+          tempGraphicsLayer.add(evt.graphic);
+          setActiveButton();
+        });
+
+        var drawPolygonButton = document.getElementById("polygonButton");
+        drawPolygonButton.onclick = function() {
+          // set the sketch to create a polygon geometry
+          tempGraphicsLayer.removeAll();
+          sketchViewModel.create("polygon");
+          setActiveButton(this);
+        };
+
+        // reset button
+        document.getElementById("resetBtn").onclick = function() {
+          mtr.renderer = null;
+          tempGraphicsLayer.removeAll();
+          sketchViewModel.reset();
+          setActiveButton();
+        };
+
+        function setActiveButton(selectedButton) {
+          // focus the view to activate keyboard shortcuts for sketching
+          view.focus();
+          var elements = document.getElementsByClassName("active");
+          for (var i = 0; i < elements.length; i++) {
+            elements[i].classList.remove("active");
+          }
+          if (selectedButton) {
+            selectedButton.classList.add("active");
+          }
+        }
+      }
+
+      // not used in this app. Can use when 4.x supports Arcade geometries
+
+      // function generateArcade(params){
+      //   var projectGeometry = JSON.stringify(params.projectGeometry.toJSON());
+      //   var height = params.projectHeight;
+        
+      //   var arcadeExp = [ "var height = ", height, ";\n",
+      //     "var projectGeometry = Polygon(", projectGeometry, ");\n",
+      //     `
+      //     var status;
+      //     var maxRestriction = When(
+      //       $feature.elvnumcl == 0 && $feature.elvnumflr < 9000, 9000,
+      //       $feature.elvnumcl == 0 && $feature.elvnumflr >= 16000, 26000, 
+      //       $feature.elvnumcl == 0 && $feature.elvnumflr >= 9000, 16000,
+      //       $feature.elvnumcl);
+      //     var minRestriction = $feature.elvnumflr;
+          
+      //     if(Intersects(Geometry($feature), projectGeometry)){
+      //       // blah blah
+      //     } else {
+      //       status = 'low';
+      //     }
+          
+      //     `
+      //   ].join("");
+      // }
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv">
+    <div id="topbar">
+      Sketch project area <button class="action-button esri-icon-polygon" id="polygonButton" type="button"
+        title="Draw polygon"></button>
+      <button class="action-button esri-icon-trash" id="resetBtn" type="button" title="Clear graphics"></button>
+      <div>
+        Enter project height <input id="heightInput" class="esri-widget" type="number">
+      </div>
+      <button class="esri-widget" id="submitBtn" type="button" title="Submit">Generate prelim results</button>
+    </div>
+  </div>
+</body>
+</html>
