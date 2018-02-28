@@ -117,12 +117,13 @@ require([
   "esri/symbols/SimpleMarkerSymbol",
   "esri/symbols/SimpleLineSymbol",
   "esri/Color",
+  "esri/geometry/Extent",
   "esri/dijit/Legend",
   "esri/dijit/PopupTemplate",
   "dojo/domReady!"
 ], function(
   Map, FeatureLayer, smartMapping, UniqueValueRenderer, SimpleRenderer, SimpleMarkerSymbol,
-  SimpleLineSymbol, Color, Legend, PopupTemplate
+  SimpleLineSymbol, Color, Extent, Legend, PopupTemplate
 ) {
 
   // The expressionInfos reference Arcade expressions and
@@ -195,8 +196,8 @@ require([
   // Creates a SimpleMarkerSymbol based on an input color
   function createSymbol (color){
     var outline = new SimpleLineSymbol()
-      .setColor(new Color([38, 132, 188,0.5]))
-      .setWidth(1);
+      .setColor(new Color([38, 132, 188,1]))
+      .setWidth(1.2);
 
     return new SimpleMarkerSymbol()
       .setSize(8)
@@ -273,6 +274,41 @@ require([
   };
 
   map.on("load", function(evt){
+
+    var zoomBtn = document.getElementById("zoom-btn");
+
+    var extentCounter = 0;
+    zoomBtn.addEventListener("click", function(e){
+      extentCounter++;
+
+      var extents = [
+        new Extent({
+          "type": "extent",
+          "xmin": -8238544.850102447,
+          "ymin": 4966856.0857561305,
+          "xmax": -8213760.143681012,
+          "ymax": 4980748.515646942,
+          "spatialReference": {
+            "wkid": 102100,
+            "latestWkid": 3857
+          }
+        }),
+        new Extent({
+          "type": "extent",
+          "xmin": -8234773.160487806,
+          "ymin": 4983755.834978475,
+          "xmax": -8222380.807277089,
+          "ymax": 4990702.049923881,
+          "spatialReference": {
+            "wkid": 102100,
+            "latestWkid": 3857
+          }
+        })
+      ];
+
+      map.setExtent(extents[extentCounter%2]);
+    });
+
     var legend = new Legend({
       map: map,
       layerInfos: [{
@@ -294,11 +330,14 @@ require([
     });
 
     var complaintSelect = document.getElementById("complaint-type-select");
+
     complaintSelect.addEventListener("change", function(event){
+
       var newValue = event.target.value;
       var defExp = newValue ? "Complaint_Type = '" + newValue + "'" : null;
       layer.setDefinitionExpression(defExp);
       map.infoWindow.hide();
+
     });
 
     var clusteringCheckbox = document.getElementById("use-clustering");
@@ -314,12 +353,15 @@ require([
   // Sets feature reduction on the layer if not previously done so.
   // If indicated, then feature reduction is disabled. The initial
   // feature reduction settings are enabled if indicated.
+  
   function toggleFeatureReduction(checked){
     if(checked){
       if(!layer.getFeatureReduction()){
+
         layer.setFeatureReduction({
-          type: "cluster"
+          type: "cluster"  // future types: thinning | binning
         });
+
       } else {
         layer.enableFeatureReduction();
       }
@@ -384,5 +426,6 @@ require([
     </div>
     <div id="legendDiv"></div>
   </div>
+  <button class="action-button esri-icon-zoom-in-fixed" id="zoom-btn" type="button" title="Zoom to extent"></button>
 </body>
 
