@@ -15,10 +15,10 @@ The ArcGIS JavaScript API lets you build applications where users can explore da
 
 ### Demos
 
-##### [Mexico Demographics](http://ekenes.github.io/conferences/ds-2017/smart-mapping/demos/mexico-demographics/)
+##### [Mexico Demographics](https://ekenes.github.io/conferences/ds-2017/smart-mapping/demos/mexico-demographics/)
 
 Demonstrates how to generate a continuous color renderer using the Smart Mapping API in the 4.3 version of the ArcGIS API for JavaScript. This app also shows how to plug in a color slider to a layer's renderer so you can dynamically change the renderer when the slider handles are moved.
 
-##### [Seattle Demographics](http://ekenes.github.io/conferences/ds-2017/smart-mapping/demos/seattle-demographics/)
+##### [Seattle Demographics](https://ekenes.github.io/conferences/ds-2017/smart-mapping/demos/seattle-demographics/)
 
 This sample similarly demonstrates how to work with Smart Mapping in a custom web app built on the ArcGIS API for JavaScript. The main difference is that this app was built with the 3.20 API, which has more functionality than the 4.3 Smart Mapping API as of the time this presentation was given.
