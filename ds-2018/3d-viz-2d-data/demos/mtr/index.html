@@ -59,9 +59,10 @@
       "esri/layers/GraphicsLayer",
       "esri/geometry/geometryEngine",
       "esri/widgets/Legend",
+      "esri/widgets/BasemapToggle",
       "dojo/domReady!"
     ], function(Map, SceneView, FeatureLayer,
-      SketchViewModel, Graphic, GraphicsLayer, ge, Legend
+      SketchViewModel, Graphic, GraphicsLayer, ge, Legend, BasemapToggle
     ) {
 
       const mtrHeight = {
@@ -138,25 +139,27 @@
         return {
           type: "unique-value",
           field: classifyFeatures,
+          legendOptions: {
+            title: "Risk of Encroachment"
+          },
           uniqueValueInfos: [{
             value: "high",
-            symbol: createSymbol([244, 66, 66, 0.5], [244, 66, 66]),
+            symbol: createSymbol([244, 66, 66, 0.1], [244, 66, 66]),
             label: "High"
           }, {
             value: "medium",
-            symbol: createSymbol([244, 146, 65, 0.5], [244, 146, 65]),
+            symbol: createSymbol([244, 146, 65, 0.1], [244, 146, 65]),  //, [244, 146, 65]
             label: "Medium"
           }, {
             value: "low",
-            symbol: createSymbol([244, 238, 65, 0.5], [244, 238, 65]),
+            symbol: createSymbol([244, 238, 65, 0.1], [244, 238, 65]),  // , [244, 238, 65]
             label: "Low"
           }],
-          defaultSymbol: createSymbol([112, 244, 65, 0.5], [112, 244, 65]),
+          defaultSymbol: createSymbol([112, 244, 65, 0.1], [112, 244, 65]),  // , [112, 244, 65]
           defaultLabel: "None",
           visualVariables: [ mtrHeight ]
         };
       }
-
 
       function createSymbol(color, useEdges){
         const edges = {
@@ -204,8 +207,30 @@
           // d22480fc05004dad8fbf4e8aad9759e5 (densified 50m)
           id: "d608b7d7b5494aefaced3302c636e119"
         },
+        title: "Military Training Routes",
         popupTemplate: {
-          content: "{*}"
+          title: "MTR {mtr_ident}",
+          content: [{
+            type: "fields",
+            fieldInfos: [{
+              fieldName: "service",
+              label: "Jurisdiction"
+            }, {
+              fieldName: "elvnumflr",
+              label: "Elevation Floor (ft)",
+              format: {
+                digitSeparator: true,
+                places: 0
+              }
+            }, {
+              fieldName: "elvnumcl",
+              label: "Elevation Ceiling (ft)",
+              format: {
+                digitSeparator: true,
+                places: 0
+              }
+            }]
+          }]
         },
         renderer: {
           type: "simple",
@@ -214,7 +239,11 @@
             symbolLayers: [{
               type: "extrude",
               material: {
-                color: [128,0,0,0.5]
+                color: [255,255,255,0]
+              },
+              edges: {
+                type: "solid",
+                color: [155, 95, 12]
               }
             }]
           },
@@ -230,7 +259,7 @@
       });
 
       var map = new Map({
-        basemap: "satellite",
+        basemap: "topo",
         ground: "world-elevation",
         layers: [ mtr, tempGraphicsLayer ]
       });
@@ -253,10 +282,24 @@
         }
       });
 
+      var toggle = new BasemapToggle({
+        view: view,
+        nextBasemap: "hybrid"
+      });
+      view.ui.add(toggle, "bottom-left");
+
       view.when(function() {
         initializeSketch();
         view.ui.add(new Legend({ view: view }), "bottom-right");
       });
+
+      function displayInPopup(graphics){
+        view.popup.open({
+          features: graphics,
+          featureMenuOpen: true,
+          updateLocationEnabled: true
+        });
+      }
 
       function updateRenderer(){
         //mtr.renderer = null;
@@ -283,11 +326,11 @@
           layer: tempGraphicsLayer,
           polygonSymbol: { // symbol used for polygons
             type: "simple-fill", // autocasts as new SimpleMarkerSymbol()
-            color: [255,255,255,0.5],
+            color: [173, 66, 244,0.1],
             style: "solid",
             outline: {
-              color: "white",
-              width: 1
+              color: [173, 66, 244,1],
+              width: 2
             }
           }
         });
@@ -308,7 +351,7 @@
 
         // reset button
         document.getElementById("resetBtn").onclick = function() {
-          mtr.renderer = null;
+          // mtr.renderer = null;
           tempGraphicsLayer.removeAll();
           sketchViewModel.reset();
           setActiveButton();
