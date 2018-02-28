@@ -4,11 +4,11 @@ Learn how to visualize data in 3D with the ArcGIS 4.0 API for JavaScript. In thi
 
 ## Demos
 
-* [Billboarding vs. Draped icons - with elevation](http://ekenes.github.io/conferences/uc-2016/3d-viz/samples/billboard-draped-elevation-comparison.html)
-* [Billboarding vs. Draped icons - flat surface](http://ekenes.github.io/conferences/uc-2016/3d-viz/samples/icons-billboard-draped-comparison.html)
-* [2d buildings vs. 3d buildings](http://ekenes.github.io/conferences/uc-2016/3d-viz/samples/buildings-comparison.html)
-* [3D thematic extrusion - control scale](http://ekenes.github.io/conferences/uc-2016/3d-viz/samples/multivariate-tamps-urban-extrude.html)
-* [flat vs. volumetric Size comparison](http://ekenes.github.io/conferences/uc-2016/3d-viz/samples/size-comparison.html)
+* [Billboarding vs. Draped icons - with elevation](https://ekenes.github.io/conferences/uc-2016/3d-viz/samples/billboard-draped-elevation-comparison.html)
+* [Billboarding vs. Draped icons - flat surface](https://ekenes.github.io/conferences/uc-2016/3d-viz/samples/icons-billboard-draped-comparison.html)
+* [2d buildings vs. 3d buildings](https://ekenes.github.io/conferences/uc-2016/3d-viz/samples/buildings-comparison.html)
+* [3D thematic extrusion - control scale](https://ekenes.github.io/conferences/uc-2016/3d-viz/samples/multivariate-tamps-urban-extrude.html)
+* [flat vs. volumetric Size comparison](https://ekenes.github.io/conferences/uc-2016/3d-viz/samples/size-comparison.html)
 * [Get started with visualization](https://developers.arcgis.com/javascript/latest/sample-code/get-started-visualization/index.html)
 
 ## Topics to cover/outline

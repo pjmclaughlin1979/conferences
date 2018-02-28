@@ -16,35 +16,35 @@ The ArcGIS API for JavaScript lets you build powerful interactive mapping applic
 
 ### Demos
 
-##### [Continuous size: Worldwide earthquakes](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/earthquakes/)
+##### [Continuous size: Worldwide earthquakes](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/earthquakes/)
 
 This sample demonstrates how to create a continuous size visualization on a point layer to visualize worldwide earthquakes by magnitude.
 
-[![quakes](images/quakes.png)](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/earthquakes/)
+[![quakes](images/quakes.png)](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/earthquakes/)
 
-##### [Continuous color: Mexico education](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education/)
+##### [Continuous color: Mexico education](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education/)
 
 This sample demonstrates how to create a continuous color visualization by shading fill symbols based on a numeric attribute. This app visualizes the percentage of adults in Mexico that did not participate in any formal education.
 
-[![color](images/color.png)](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education/)
+[![color](images/color.png)](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education/)
 
-##### [Predominance with Arcade: Educational attainment in Mexico](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education-predominance/)
+##### [Predominance with Arcade: Educational attainment in Mexico](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education-predominance/)
 
 This sample uses an Arcade expression to visualize the predominant educational attainment acheived in each municipality of Mexico. An opacity visual variable is applied to show the strength of predominance.
 
-[![mexico-education-predominance](images/mexico-education-predominance.png)](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education-predominance/)
+[![mexico-education-predominance](images/mexico-education-predominance.png)](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/mexico-education-predominance/)
 
-##### [Multivariate visualization: 2012 U.S. presidential election](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/multivariate-election/)
+##### [Multivariate visualization: 2012 U.S. presidential election](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/multivariate-election/)
 
 This sample demonstrates how to create a multivariate visualization using several variables related to the 2012 U.S. presidential election. The color indicates the winner (or predominant vote-getter). Opacity indicates the strength of the win. Size indicates the total number of votes cast in the county.
 
-[![multivariate](images/multivariate.png)](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/multivariate-election/)
+[![multivariate](images/multivariate.png)](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/multivariate-election/)
 
-##### [Smart mapping for data exploration](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/smart-mapping/)
+##### [Smart mapping for data exploration](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/smart-mapping/)
 
 This sample demonstrates how to create a data exploration app using the Smart Mapping APIs. You can use the slider widgets to modify the visualization based on variables related to the 2012 election.
 
-[![smart-mapping](images/smart-mapping.png)](http://ekenes.github.io/conferences/uc-2017/2d-viz/samples/smart-mapping/)
+[![smart-mapping](images/smart-mapping.png)](https://ekenes.github.io/conferences/uc-2017/2d-viz/samples/smart-mapping/)
 
 ## Resources
 

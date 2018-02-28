@@ -15,39 +15,37 @@ This session delves into the ArcGIS API for JavaScript GeometryEngine and demons
 
 ### Demos
 
-##### [Editing demo](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/)
+##### [Editing demo](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/)
 
 This sample was featured in [this blog post](http://blogs.esri.com/esri/arcgis/2015/09/09/geometryengine-part-1-testing-spatial-relationships-and-editing/) in [a series featuring ways to use GeometryEngine](http://blogs.esri.com/esri/arcgis/tag/geometryengine/) in the ArcGIS API for JavaScript.
 
-[![ge-demo](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-editing.png)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/)
+[![ge-demo](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-editing.png)](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/)
 
 This app demonstrates how you can use the GeometryEngine to test spatial relationships of your features without making repeated network requests using a GeometryService. This can enhance the user experience while editing data. The edits and tests can be done client-side before they are pushed to the server.
 
 [View the code](https://github.com/ekenes/conferences/tree/master/ds-2018/geometry-engine/demos/ge-demo/index.html)
 
-[View the live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/)
+[View the live sample](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/)
 
-[Click here](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/requests.html) to view the number of network requests avoided in this app by using GeometryEngine
+[Click here](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-demo/requests.html) to view the number of network requests avoided in this app by using GeometryEngine
 
 ##### Other editing demos
 
 The following demos demonstrate the various ways you can use GeometryEngine in editing apps to enforce topology rules interactively prior to pushing edits to the server.
 
-* [Snapping/nearest vertex](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-nearestvertex/)
-* [Simplify geometries](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-simplify/)
-* [Prevent self-intersecting lines](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/simple-editing/)
+* [Snapping/nearest vertex](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-nearestvertex/)
+* [Simplify geometries](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-simplify/)
+* [Prevent self-intersecting lines](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/simple-editing/)
 
 ##### Buffer demos
 
 The following demos illustrate the visual difference between geodesic and planar buffers in a Web Mercator projection. When using a Web Mercator or WGS-84 projection, you always want to use geodesic buffers to minimize distortion.
 
-* [Buffer in 2D vs. 3D view](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-buffer/)
-* [Missile Launch (3.x)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/missilelaunch/www/)
-* [Missile Launch (4.x - 3D)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/missilelaunch4/www/)
+* [Buffer in 2D vs. 3D view](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-buffer/)
 
-##### [GeometyEngine vs. GeometryService](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-gs/)
+##### [GeometyEngine vs. GeometryService](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-gs/)
 
-[![ge-gs](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-gs.png)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-gs/)
+[![ge-gs](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-gs.png)](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-gs/)
 
 This app times GeometryEngine and GeometryService performing the same operation and compares the two. *Spoiler Alert*: GeometryEngine wins, by a lot. 
 
@@ -55,48 +53,34 @@ Note that the speed difference depends on network speed, the browser and version
 
 [View the code](https://github.com/ekenes/conferences/tree/master/ds-2018/geometry-engine/demos/ge-gs/)
 
-[View the live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-gs/))
+[View the live sample](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-gs/))
 
 ##### GeometryEngine measurement demos
 
 The following samples were featured in the [blog post](http://blogs.esri.com/esri/arcgis/2015/09/16/geometryengine-part-2-measurement/) demonstrating the various measurement features of GeometryEngine.
 
-##### [Geodesic vs Planar buffer](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-geodesic-planar-buffer/)
+##### [Geodesic vs Planar length](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/)
 
-[![ge-geodesic-planar-buffer](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-buffers.png)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-geodesic-planar-buffer/)
-
-This sample shows the difference between geodesic buffer and planar buffer in GeometryEngine. Refer to [this blog post](http://blogs.esri.com/esri/arcgis/2015/09/16/geometryengine-part-2-measurement/) for an explanation of when to use each.
-
-[View the code](https://github.com/ekenes/conferences/tree/master/ds-2018/geometry-engine/demos/ge-geodesic-planar-buffer)
-
-[View the live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-geodesic-planar-buffer/)
-
-##### [Geodesic vs Planar length](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/)
-
-[![ge-geodesic-planar-length](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-length.png)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/)
+[![ge-geodesic-planar-length](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-length.png)](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/)
 
 This sample shows the difference between geodesic buffer and planar buffer in GeometryEngine using a Web Mercator Projection. Refer to [this blog post](http://blogs.esri.com/esri/arcgis/2015/09/16/geometryengine-part-2-measurement/) for an explanation of when to use each.
 
 [View the code](https://github.com/ekenes/conferences/tree/master/ds-2018/geometry-engine/demos/ge-length)
 
-[View the Web Mercator live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/)
+[View the Web Mercator live sample](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/)
 
-[View the PCS live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/state-plane.html)
-
-[View the Goode's Homosoline live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-length/homosoline.html)
-
-##### [GeometryEngine overlay demo](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-overlay/)
+##### [GeometryEngine overlay demo](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-overlay/)
 
 The following sample was featured in the [blog post](http://blogs.esri.com/esri/arcgis/2015/09/23/geometryengine-part-3-overlay-analysis/) demonstrating the GeometryEngine's overlay methods.
 
-[![ge-overlay](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-overlay2.gif)](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-overlay/)
+[![ge-overlay](http://blogs.esri.com/esri/arcgis/files/2015/09/ge-overlay2.gif)](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-overlay/)
 
 This sample shows the difference between geodesic buffer and planar buffer in GeometryEngine using a Web Mercator Projection. Refer to [this blog post](http://blogs.esri.com/esri/arcgis/2015/09/23/geometryengine-part-3-overlay-analysis/) for an explanation of when to use each.
 
 [View the code](https://github.com/ekenes/conferences/tree/master/ds-2018/geometry-engine/demos/ge-overlay)
 
-[View the live sample](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-overlay/)
+[View the live sample](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/ge-overlay/)
 
-##### [International Space Station: speed approximation](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/iss/)
+##### [International Space Station: speed approximation](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/iss/)
 
-[This app](http://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/iss/) requests the location of the International Space Station every second and draws its path using a geodesic line. It also calculates the approximate distance travelled since the start of tracking in the app as well as the approximate speed of the space station.
+[This app](https://ekenes.github.io/conferences/ds-2018/geometry-engine/demos/iss/) requests the location of the International Space Station every second and draws its path using a geodesic line. It also calculates the approximate distance travelled since the start of tracking in the app as well as the approximate speed of the space station.
