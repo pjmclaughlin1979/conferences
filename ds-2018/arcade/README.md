@@ -57,7 +57,7 @@ This sample shows how to use Arcade for performing larger calculations and logic
 This sample demonstrates how to use the date functions and time offsets to render data based on the local time in the time zone in which the event occurred. In this case we render earthquakes from the last month based on whether or not they occurred in the morning or evening in the local time of the event.
 
 
-##### [NYC 311 calls](https://ekenes.github.io/esri-js-samples/3/visualization/clustering/)
+##### [NYC 311 calls](https://ekenes.github.io/conferences/ds-2018/plenary/clustering/)
 
 This sample demonstrates how to use the date functions and time offsets to render data based on the local time in the time zone in which the event occurred. In this case we visualize 311 calls in New York City (2015 data) based on whether or not they occurred in the morning, afternoon, evening, or nighttime of the local time of the event.
 

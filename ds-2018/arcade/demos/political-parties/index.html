@@ -6,8 +6,17 @@
 
 <title>Create a custom visualization using Arcade - 4.2</title>
 
-<link rel="stylesheet" href="https://js.arcgis.com/4.3/esri/themes/dark/main.css">
-<script src="https://js.arcgis.com/4.3/"></script>
+<link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/themes/dark/main.css">
+
+<script>
+  var dojoConfig = {
+    has: {
+      "esri-featurelayer-webgl": 1
+    }
+  }
+</script>
+
+<script src="https://js.arcgis.com/4.7/"></script>
 
 <style>
   html,
@@ -20,11 +29,13 @@
   }
 </style>
 
-<!----------------------------
-<-------ARCADE SCRIPTS--------
-<----------------------------->
+<!--
+<-ARCADE SCRIPTS
+->
 
-<!--PREDOMINANT POLITICAL PARTY-->
+<!
+<-  PREDOMINANT POLITICAL PARTY
+-->
 
 <!--
 <- Arcade expression that determines the predominant political
@@ -204,7 +215,7 @@ require([
       title: "Dominant political party by number of registered voters for each U.S. County"
     }]
   });
-  view.ui.add(legend, "bottom-left");
+  // view.ui.add(legend, "bottom-left");
 
   // Creates a SimpleFillSymbol based on an input color
 
