@@ -4,49 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Intro to SceneView - Create a 3D map - 4.7</title>
-  <style>
-    html,
-    body,
-    #viewDiv {
-      padding: 0;
-      margin: 0;
-      height: 100%;
-      width: 100%;
-      font-family: verdana;
-    }
-
-    #topbar {
-      background: #fff;
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      padding: 10px;
-    }
-
-    .action-button {
-      font-size: 16px;
-      background-color: transparent;
-      border: 1px solid #D3D3D3;
-      color: #6e6e6e;
-      height: 32px;
-      width: 32px;
-      text-align: center;
-      box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
-    }
-
-    .action-button:hover,
-    .action-button:focus {
-      background: #0079c1;
-      color: #e4e4e4;
-    }
-
-    .active {
-      background: #0079c1;
-      color: #e4e4e4;
-    }
-  </style>
 
   <link rel="stylesheet" href="https://jsdev.arcgis.com/4.7/esri/css/main.css">
+  <link rel="stylesheet" href="droptarget.css">
+  <link rel="stylesheet" href="app.css">
+
+  <script>
+    var path = location.href.substring(0, location.href.lastIndexOf('/') + 1);
+    var dojoConfig = {
+      paths: {
+        app: `${path}`
+      }
+    };
+   </script>
+
   <script src="https://jsdev.arcgis.com/4.7/"></script>
 
   <script>
@@ -54,16 +25,29 @@
       "esri/Map",
       "esri/views/SceneView",
       "esri/layers/FeatureLayer",
+      "esri/layers/GroupLayer",
       "esri/widgets/Sketch/SketchViewModel",
       "esri/Graphic",
       "esri/layers/GraphicsLayer",
       "esri/geometry/geometryEngine",
+      "esri/geometry/Multipoint",
       "esri/widgets/Legend",
+      "esri/widgets/LayerList",
       "esri/widgets/BasemapToggle",
+      "esri/widgets/Expand",
+      "esri/widgets/DirectLineMeasurement3D",
+      "esri/Camera",
+      "esri/layers/CSVLayer",
+      "app/DropTarget",
       "dojo/domReady!"
-    ], function(Map, SceneView, FeatureLayer,
-      SketchViewModel, Graphic, GraphicsLayer, ge, Legend, BasemapToggle
+    ], function(Map, SceneView, FeatureLayer, GroupLayer,
+      SketchViewModel, Graphic, GraphicsLayer, ge, Multipoint, Legend, LayerList, BasemapToggle,
+      Expand, DirectLineMeasurement3D, Camera, CSVLayer, DropTarget
     ) {
+
+      let windmillLayer = null;
+
+      var DropTargetWidget = DropTarget.default;
 
       const mtrHeight = {
         type: "size",
@@ -79,20 +63,34 @@
         valueUnit: "feet"
       };
 
+      const initialRenderer = {
+        type: "simple",
+        symbol: {
+          type: "polygon-3d",
+          symbolLayers: [{
+            type: "extrude",
+            material: {
+              color: [255,255,255,0]
+            },
+            edges: {
+              type: "solid",
+              color: [155, 95, 12]
+            }
+          }]
+        },
+        visualVariables: [ mtrHeight ]
+      };
+
       var tempGraphicsLayer = new GraphicsLayer();
       var submitBtn = document.getElementById("submitBtn");
 
-      submitBtn.addEventListener("click", updateRenderer);
+      submitBtn.addEventListener("click", function(){
+        updateRenderer(currentGeometry);
+      });
 
-      
-      function createVisual(params){
+      function createClassification(params){
         const projectGeometry = params.projectGeometry;
         const height = params.projectHeight;
-
-        if(!projectGeometry || !height){
-          console.log("Missing parameters. Please draw a project area and enter a project height.");
-          return;
-        }
 
         var riskLevels = {
           low: 300,
@@ -113,18 +111,6 @@
           var minRestriction = floorValue;
 
           var risk = "none";  // none | low | medium | high
-          // var riskLevels = {
-          //   low: 300,
-          //   medium: 200,
-          //   high: 100
-          // };
-
-          // for (var level in riskLevels){
-          //   let bufferValue = riskLevels[level];
-          //   let heightRisk = height >= (floorValue - bufferValue);
-          //   let xyRisk = ge.intersects(projectGeometry, ge.geodesicBuffer(geom, bufferValue, "feet"));
-          //   risk = heightRisk && xyRisk ? level : risk;
-          // }
 
           for (var level in riskLevels){
             let bufferValue = riskLevels[level];
@@ -180,31 +166,44 @@
         };
       }
 
-      // military encroachment report
-      // likelihood of project interfering with military space
-      // 3 classes: high, medium, low
-      // 
-      // project type
-      // height
-      // number of turbines
-      //
+      let currentGeometry;
 
-      // e.g. if project is 300 feet...
-      // buffer on each end of floor and ceiling
-      // likelihood of impact
+      const craneRenderer = {
+        type: "simple",
+        symbol: {
+          type: "web-style",
+          name: "Tower_Crane",
+          styleName: "EsriRealisticTransportationStyle"
+        },
+        visualVariables: [{
+          type: "size",
+          field: "total_ht",
+          axis: "height",
+          valueUnit: "feet"
+        }]
+      };
 
-      // input with area of interest.
-      // bounding box or multipoint polygon
-
-      // app determines if it is a certain distance
-      // intersects within 100 feet = high
-      // 200 medium
-      // 300 low
+      const windmillRenderer = {
+        type: "simple",
+        symbol: {
+          type: "point-3d",
+          symbolLayers: [{
+            type: "icon",
+            style: "kite",
+            material: {
+              color: "purple"
+            },
+            size: 6,
+            outline: {
+              color: "white",
+              size: 1.5
+            }
+          }]
+        },
+      };
 
       var mtr = new FeatureLayer({
         portalItem: {
-          // d608b7d7b5494aefaced3302c636e119 (original)
-          // d22480fc05004dad8fbf4e8aad9759e5 (densified 50m)
           id: "d608b7d7b5494aefaced3302c636e119"
         },
         title: "Military Training Routes",
@@ -232,23 +231,7 @@
             }]
           }]
         },
-        renderer: {
-          type: "simple",
-          symbol: {
-            type: "polygon-3d",
-            symbolLayers: [{
-              type: "extrude",
-              material: {
-                color: [255,255,255,0]
-              },
-              edges: {
-                type: "solid",
-                color: [155, 95, 12]
-              }
-            }]
-          },
-          visualVariables: [ mtrHeight ]
-        },
+        renderer: initialRenderer,
         elevationInfo: {
           mode: "relative-to-ground",
           featureExpressionInfo: {
@@ -258,13 +241,13 @@
         }
       });
 
-      var map = new Map({
+      const map = new Map({
         basemap: "topo",
         ground: "world-elevation",
         layers: [ mtr, tempGraphicsLayer ]
       });
 
-      view = new SceneView({
+      const view = new SceneView({
         container: "viewDiv",
         map: map,
         camera: {
@@ -282,15 +265,106 @@
         }
       });
 
+      const dropTarget = new DropTargetWidget({ view });
+
+      dropTarget.on("drop",  event => {
+        reset();
+
+        const files = event.dataTransfer.files;
+        const file = files[0];
+        const url = URL.createObjectURL(file);
+
+        const projectPointsIcons = new CSVLayer({ 
+          url: url, 
+          delimiter: ",",
+          spatialReference: {
+            wkid: 3857
+          },
+          renderer: windmillRenderer,
+          elevationInfo: {
+            mode: "on-the-ground"
+          }
+        });
+
+        const projectPointsCranes = new CSVLayer({ 
+          url: url, 
+          delimiter: ",",
+          spatialReference: {
+            wkid: 3857
+          },
+          renderer: craneRenderer,
+          elevationInfo: {
+            mode: "on-the-ground"
+          }
+        });
+
+        windmillLayer = new GroupLayer({
+          title: "Proposed Wind Locations",
+          layers: [ projectPointsIcons, projectPointsCranes ],
+          listMode: "hide-children",
+          visibilityMode: "inherited"
+        });
+
+        map.add(windmillLayer);
+
+        let statsQuery = projectPointsIcons.createQuery();
+        statsQuery.outStatistics = [{
+          statisticType: "max",
+          onStatisticField: "total_ht",
+          outStatisticFieldName: "maxHeight"
+        }];
+
+        let maxHeight = 0;
+
+        projectPointsIcons.queryFeatures(statsQuery)
+          .then(results => {
+            const stats = results.features[0].attributes;
+            maxHeight = stats.maxHeight;
+            heightInputElem.value = maxHeight;
+            return projectPointsIcons.queryFeatures();
+          })
+          .then(results => {
+            var graphics = results.features;
+
+            let multipointGeom = new Multipoint({
+              spatialReference: { wkid: 3857 }
+            });
+
+            graphics.forEach(f => {
+              var point = f.geometry;
+              multipointGeom.addPoint(point);
+            });
+
+            currentGeometry = multipointGeom;
+            updateRenderer(multipointGeom, maxHeight);
+          });
+      });
+
+      view.ui.add(dropTarget);
+
       var toggle = new BasemapToggle({
         view: view,
         nextBasemap: "hybrid"
       });
       view.ui.add(toggle, "bottom-left");
 
+      // view.ui.add(new Expand({
+      //   view: view,
+      //   content: new DirectLineMeasurement3D({
+      //     view: view,
+      //     unit: "feet"
+      //   }),
+      //   expandIconClass: "esri-icon-polyline"
+      // }), "top-left");
+
       view.when(function() {
         initializeSketch();
-        view.ui.add(new Legend({ view: view }), "bottom-right");
+        view.ui.add(new Legend({ 
+          view: view,
+          layerInfos: [{
+            layer: mtr
+          }]
+        }), "bottom-right");
       });
 
       function displayInPopup(graphics){
@@ -301,31 +375,40 @@
         });
       }
 
-      function updateRenderer(){
-        //mtr.renderer = null;
+      let heightInputElem = document.getElementById("heightInput");
+
+      function updateRenderer(geometry, height){
         var sketchGraphic = tempGraphicsLayer.graphics.getItemAt(0);
-        var height = document.getElementById("heightInput").value;
-        if(!sketchGraphic || !height){
+        var inputHeight = heightInputElem.value;
+        var projectGeometry = geometry ? geometry : sketchGraphic.geometry;
+        var projectHeight = height ? height : parseInt(inputHeight);
+
+        if(!projectGeometry || !projectHeight){
           console.log("Missing parameters. Please draw a project area and enter a project height.");
           return;
         }
 
         var rendererParams = {
-          projectGeometry: sketchGraphic.geometry,
-          projectHeight: parseInt(height)
+          projectGeometry: projectGeometry,
+          projectHeight: projectHeight
         }
 
-        var classifiedRenderer = createVisual(rendererParams);
+        var classifiedRenderer = createClassification(rendererParams);
         mtr.renderer = classifiedRenderer;
       }
 
+      //
+      // SKETCHING IS NOT OFFICIALLY SUPPORTED IN SCENEVIEW in 4.x
+      // THIS WAS JUST A QUICK WAY TO PROVIDE AN INPUT GEOMETRY 
+      // TO THE RENDERER FOR EVALUATION
+      //
       function initializeSketch(){
         // create a new sketch view model
         var sketchViewModel = new SketchViewModel({
           view: view,
           layer: tempGraphicsLayer,
-          polygonSymbol: { // symbol used for polygons
-            type: "simple-fill", // autocasts as new SimpleMarkerSymbol()
+          polygonSymbol: {
+            type: "simple-fill",
             color: [173, 66, 244,0.1],
             style: "solid",
             outline: {
@@ -343,19 +426,23 @@
 
         var drawPolygonButton = document.getElementById("polygonButton");
         drawPolygonButton.onclick = function() {
-          // set the sketch to create a polygon geometry
-          tempGraphicsLayer.removeAll();
+          reset();
           sketchViewModel.create("polygon");
           setActiveButton(this);
         };
 
         // reset button
-        document.getElementById("resetBtn").onclick = function() {
-          // mtr.renderer = null;
+        document.getElementById("resetBtn").onclick = reset;
+
+        function reset(){
+          currentGeometry = null;
+          map.remove(windmillLayer);
+          windmillLayer = null;
+          mtr.renderer = initialRenderer;
           tempGraphicsLayer.removeAll();
           sketchViewModel.reset();
           setActiveButton();
-        };
+        }
 
         function setActiveButton(selectedButton) {
           // focus the view to activate keyboard shortcuts for sketching
@@ -370,46 +457,35 @@
         }
       }
 
-      // not used in this app. Can use when 4.x supports Arcade geometries
-
-      // function generateArcade(params){
-      //   var projectGeometry = JSON.stringify(params.projectGeometry.toJSON());
-      //   var height = params.projectHeight;
-        
-      //   var arcadeExp = [ "var height = ", height, ";\n",
-      //     "var projectGeometry = Polygon(", projectGeometry, ");\n",
-      //     `
-      //     var status;
-      //     var maxRestriction = When(
-      //       $feature.elvnumcl == 0 && $feature.elvnumflr < 9000, 9000,
-      //       $feature.elvnumcl == 0 && $feature.elvnumflr >= 16000, 26000, 
-      //       $feature.elvnumcl == 0 && $feature.elvnumflr >= 9000, 16000,
-      //       $feature.elvnumcl);
-      //     var minRestriction = $feature.elvnumflr;
-          
-      //     if(Intersects(Geometry($feature), projectGeometry)){
-      //       // blah blah
-      //     } else {
-      //       status = 'low';
-      //     }
-          
-      //     `
-      //   ].join("");
-      // }
+      const zoomBtn = document.getElementById("zoomBtn");
+      view.ui.add(zoomBtn, "top-left");
+      zoomBtn.addEventListener("click", function(){
+        view.goTo(new Camera({
+          position: {
+            spatialReference: {
+              latestWkid: 3857,
+              wkid: 102100
+            },
+            x: -12198525,
+            y: 4274266,
+            z: 1989
+          },
+          "heading": 290.5,
+          "tilt": 88.6
+        }));
+      });
     });
   </script>
 </head>
 
 <body>
   <div id="viewDiv">
+    <button class="action-button esri-icon-zoom-in-fixed" id="zoomBtn" title="Zoom in"></button>
     <div id="topbar">
-      Sketch project area <button class="action-button esri-icon-polygon" id="polygonButton" type="button"
-        title="Draw polygon"></button>
-      <button class="action-button esri-icon-trash" id="resetBtn" type="button" title="Clear graphics"></button>
-      <div>
-        Enter project height <input id="heightInput" class="esri-widget" type="number">
-      </div>
-      <button class="esri-widget" id="submitBtn" type="button" title="Submit">Generate prelim results</button>
+      Height (ft): <input id="heightInput" class="esri-widget" type="number">
+      <button class="action-button esri-icon-polygon" id="polygonButton" title="Draw polygon"></button>
+        <button class="action-button esri-icon-check-mark" id="submitBtn" title="Submit"></button>
+      <button class="action-button esri-icon-trash" id="resetBtn" title="Clear graphics"></button>
     </div>
   </div>
 </body>
