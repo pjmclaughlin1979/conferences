@@ -4,9 +4,18 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
   <title>Mexico Education Demographics</title>
-  <link rel="stylesheet" href="//js.arcgis.com/4.6/dijit/themes/claro/claro.css">
-  <link rel="stylesheet" href="//js.arcgis.com/4.6/esri/css/main.css">
-  <script src="//js.arcgis.com/4.6/"></script>
+  <link rel="stylesheet" href="//jsdev.arcgis.com/4.7/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="//jsdev.arcgis.com/4.7/esri/css/main.css">
+
+  <script>
+    var dojoConfig = {
+      has: {
+        "esri-featurelayer-webgl": 1
+      }
+    };
+  </script>
+
+  <script src="//jsdev.arcgis.com/4.7/"></script>
 
   <link rel="stylesheet" href="app.css">
 
@@ -139,7 +148,7 @@
           <button class="btn" id="clear-extent-filter">Clear extent filter</button>
         </div>
 
-<!--
+
         <div class="elements">
           Theme:
           <select id="color-renderer-theme" style="margin-right:1rem;">
@@ -149,7 +158,7 @@
             <option value="extremes">Extremes</option>
           </select><button class="btn">Print</button>
         </div>
--->
+
 
       </div>
       </div>

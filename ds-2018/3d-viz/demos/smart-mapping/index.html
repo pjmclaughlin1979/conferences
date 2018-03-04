@@ -5,9 +5,9 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>Generate continuous color visualization for 3D buildings - 4.4</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.4/dijit/themes/claro/claro.css">
-  <script src="https://js.arcgis.com/4.4/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.7/dijit/themes/claro/claro.css">
+  <script src="https://js.arcgis.com/4.7/"></script>
 
   <style>
     html,
@@ -27,13 +27,12 @@
 
     #title {
       font-size: 14pt;
-      font
     }
   </style>
 
   <script>
     require([
-      "esri/Map",
+      "esri/WebScene",
       "esri/views/SceneView",
       "esri/layers/SceneLayer",
       "esri/renderers/smartMapping/creators/color",
@@ -42,58 +41,33 @@
       "esri/core/lang",
       "dojo/domReady!"
     ], function(
-      Map, SceneView, SceneLayer, colorRendererCreator,
+      WebScene, SceneView, SceneLayer, colorRendererCreator,
       histogram, ColorSlider, lang
     ) {
 
-      // New York buildings enriched with values for
-      // % population that own a home and
-      // average home value
+      // San Francisco buildings
 
-      var layer = new SceneLayer({
+      const layer = new SceneLayer({
         portalItem: {
-          id: "d76ae6b9ae2f4de39e4f876bbf76bb84"
+          id: "f5c497819a374941b0ce8d9b0e979819"
         },
         popupTemplate: {
-          content: [{
-            type: "fields",
-            fieldInfos: [
-            {
-              fieldName: "OWNER_P",
-              label: "% home owners"
-            }, {
-              fieldName: "AVGVAL_CY",
-              label: "Average home value"
-            }, {
-              fieldName: "CNSTRCT_YR",
-              label: "Construction year"
-            }]
-          }]
+          content: "{walkTimeToStopsInService} minutes"
         }
       });
 
       // Create a map and add it to a SceneView
 
-      var map = new Map({
-        basemap: "gray",
+      const webscene = new WebScene({
+        portalItem: {
+          id: "e6d95b9eec6f4917adf2c7eb9973e3a8"
+        },
         layers: [ layer ]
       });
 
-      var view = new SceneView({
+      const view = new SceneView({
         container: "viewDiv",
-        map: map,
-        camera: {
-          heading: 24,
-          tilt: 77,
-          position: {
-            x: -8240208,
-            y: 4965848,
-            z: 960,
-            spatialReference: {
-              wkid: 3857
-            }
-          }
-        },
+        map: webscene,
         popup: {
           dockEnabled: true,
           dockOptions: {
@@ -104,19 +78,11 @@
       });
       view.ui.add("containerDiv", "bottom-left");
 
-      var fieldSelect;
       var themeSelect;
       var colorSlider;
 
-      view.then(function(){
-        fieldSelect = document.getElementById("color-field-select");
+      view.when(function(){
         themeSelect = document.getElementById("theme-options");
-
-        fieldSelect.addEventListener("change", function(event){
-          createRenderer({
-            field: event.target.value
-          });
-        });
 
         themeSelect.addEventListener("change", function(event){
           createRenderer({
@@ -144,9 +110,10 @@
 
         var colorParams = {
           layer: params && params.layer ? params.layer : layer,
-          basemap: params && params.basemap ? params.basemap : map.basemap,
-          field: params && params.field ? params.field : fieldSelect.value,
-          theme: params && params.theme ? params.theme : themeSelect.value
+          basemap: params && params.basemap ? params.basemap : webscene.basemap,
+          field: "walkTimeToStopsInService",
+          theme: params && params.theme ? params.theme : themeSelect.value,
+          maxValue: 20
         };
 
         return colorRendererCreator.createContinuousRenderer(colorParams)
@@ -206,12 +173,8 @@
 <body class="claro">
   <div id="viewDiv"></div>
   <div id="containerDiv" class="widget-background">
-    Field: <select id="color-field-select">
-      <option value="OWNER_P" selected>% home owners</option>
-      <option value="AVGVAL_CY">Average home value</option>
-      <option value="CNSTRCT_YR">Construction year</option>
-    </select><br>
-    Theme: <select id="theme-options">
+    <div id="title">Walk time to metro stops (minutes)</div>
+    Theme: <select id="theme-options" class="esri-widget">
       <option value="high-to-low" selected>High to low</option>
       <option value="centered-on">Centered on</option>
       <option value="extremes">Extremes</option>

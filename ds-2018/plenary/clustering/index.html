@@ -333,8 +333,10 @@ require([
 
     complaintSelect.addEventListener("change", function(event){
 
-      var newValue = event.target.value;
-      var defExp = newValue ? "Complaint_Type = '" + newValue + "'" : null;
+      // Filter layer by complaint
+
+      const newValue = event.target.value;
+      const defExp = newValue ? `Complaint_Type = '${newValue}'` : null;
       layer.setDefinitionExpression(defExp);
       map.infoWindow.hide();
 

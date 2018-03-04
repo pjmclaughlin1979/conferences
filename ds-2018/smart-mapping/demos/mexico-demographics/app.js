@@ -218,10 +218,12 @@ require([
   ////
   ////////////////////////////////////////////////////
 
-  view.then(function(){
-    mexicoLayer.then(function(){
-      return view.goTo(mexicoLayer.fullExtent);
-    }).then(updateSmartMapping);
+  view.when(function(){
+    mexicoLayer.when(function(){
+      return view.goTo(mexicoLayer.fullExtent).then(function(){
+        updateSmartMapping();
+      });
+    });
   });
 
   /**
@@ -239,7 +241,7 @@ require([
 
     var basemap = params.newBasemap ? params.newBasemap : view.map.basemap;
     var layer = params.layer ? params.layer : mexicoLayer;
-    var theme = "high-to-low"; // params.theme ? params.theme : dom.byId("color-renderer-theme").value;
+    var theme = params.theme ? params.theme : dom.byId("color-renderer-theme").value;
     var fieldName = dataValue.field;
     var normFieldName = dataValue.normalizationField;
     var valueExpression = dataValue.valueExpression;
@@ -255,9 +257,10 @@ require([
       field: fieldName,
       normalizationField: normFieldName,
       valueExpression: valueExpression,
-      sqlExpression: sqlExpression,
+      // sqlExpression: sqlExpression,
       theme: theme,
-      legendOptions: legendOptions
+      legendOptions: legendOptions,
+      view: view
     }).then(function (rendererResponse){
       if (!layer.visible) {
         layer.visible = true;
@@ -274,8 +277,9 @@ require([
         field: fieldName,
         normalizationField: normFieldName,
         valueExpression: valueExpression,
-        sqlExpression: sqlExpression,
-        numBins: 50
+        // sqlExpression: sqlExpression,
+        numBins: 50,
+        view: view
       }).then(function (histogramResponse){
 
         //
@@ -287,6 +291,7 @@ require([
             statistics: rendererResponse.statistics,
             histogram: histogramResponse,
             numHandles: getNumHandles(theme),
+            syncedHandles: true,
             container: "color-slider-container"
           });
         } else {
@@ -294,6 +299,7 @@ require([
           colorSlider.statistics = rendererResponse.statistics;
           colorSlider.histogram = histogramResponse;
           colorSlider.numHandles = getNumHandles(theme);
+          colorSlider.syncedHandles = true;
           colorSlider.maxValue = rendererResponse.statistics.max;
           colorSlider.minValue = rendererResponse.statistics.min;
         }
@@ -305,7 +311,8 @@ require([
         //
         ///////////////////////////////////////////////////////////////
 
-        on(colorSlider, "handle-value-change", function (sliderValueChange){
+        on(colorSlider, "data-change", function (sliderValueChange){
+          console.log("yep");
           var renderer = layer.renderer.clone();
           renderer.visualVariables = [esriLang.clone(colorSlider.visualVariable)];
           layer.renderer = renderer;
@@ -423,12 +430,12 @@ require([
 
   // If the theme changes, update the renderer and the slider
 
-//  on(dom.byId("color-renderer-theme"), "change", function(evt){
-//    updateSmartMapping({
-//      layer: mexicoLayer,
-//      theme: evt.target.value
-//    });
-//  });
+ on(dom.byId("color-renderer-theme"), "change", function(evt){
+   updateSmartMapping({
+     layer: mexicoLayer,
+     theme: evt.target.value
+   });
+ });
 
   on(dom.byId("select-field"), "change", updateSmartMapping);
   on(populationSlider, "change", populationFilter);

@@ -51,15 +51,7 @@
 
       const mtrHeight = {
         type: "size",
-        valueExpression: `
-          var maxRestriction = When(
-            $feature.elvnumcl == 0 && $feature.elvnumflr < 9000, 9000,
-            $feature.elvnumcl == 0 && $feature.elvnumflr >= 16000, 26000, 
-            $feature.elvnumcl == 0 && $feature.elvnumflr >= 9000, 16000,
-            $feature.elvnumcl);
-          var minRestriction = $feature.elvnumflr;
-          return maxRestriction - minRestriction;
-        `,
+        valueExpression: "$feature.elvnumcl - $feature.elvnumflr",
         valueUnit: "feet"
       };
 
@@ -82,8 +74,8 @@
         visualVariables: [ mtrHeight ]
       };
 
-      var tempGraphicsLayer = new GraphicsLayer();
-      var submitBtn = document.getElementById("submitBtn");
+      const tempGraphicsLayer = new GraphicsLayer();
+      const submitBtn = document.getElementById("submitBtn");
 
       submitBtn.addEventListener("click", function(){
         updateRenderer(currentGeometry);
@@ -93,27 +85,27 @@
         const projectGeometry = params.projectGeometry;
         const height = params.projectHeight;
 
-        var riskLevels = {
+        const riskLevels = {
           low: 300,
           medium: 200,
           high: 100
         };
 
-        var riskLevelBuffers = {};
+        let riskLevelBuffers = {};
         // buffering outside of renderer function boosts performance
-        for (var level in riskLevels){
+        for (let level in riskLevels){
           riskLevelBuffers[level] = ge.geodesicBuffer(projectGeometry, riskLevels[level], "feet");
         }
 
         let classifyFeatures = function (graphic){
-          var ceilingValue = graphic.attributes.elvnumcl;
-          var floorValue = graphic.attributes.elvnumflr;
-          var geom = graphic.geometry;
-          var minRestriction = floorValue;
+          let ceilingValue = graphic.attributes.elvnumcl;
+          let floorValue = graphic.attributes.elvnumflr;
+          let geom = graphic.geometry;
+          let minRestriction = floorValue;
 
-          var risk = "none";  // none | low | medium | high
+          let risk = "none";  // none | low | medium | high
 
-          for (var level in riskLevels){
+          for (let level in riskLevels){
             let bufferValue = riskLevels[level];
             let heightRisk = height >= (floorValue - bufferValue);
             let xyRisk = ge.intersects(geom, riskLevelBuffers[level]);
@@ -135,14 +127,14 @@
             label: "High"
           }, {
             value: "medium",
-            symbol: createSymbol([244, 146, 65, 0.1], [244, 146, 65]),  //, [244, 146, 65]
+            symbol: createSymbol([244, 146, 65, 0.1], [244, 146, 65]),
             label: "Medium"
           }, {
             value: "low",
-            symbol: createSymbol([244, 238, 65, 0.1], [244, 238, 65]),  // , [244, 238, 65]
+            symbol: createSymbol([244, 238, 65, 0.1], [244, 238, 65]),
             label: "Low"
           }],
-          defaultSymbol: createSymbol([112, 244, 65, 0.1], [112, 244, 65]),  // , [112, 244, 65]
+          defaultSymbol: createSymbol([112, 244, 65, 0.1], [112, 244, 65]),
           defaultLabel: "None",
           visualVariables: [ mtrHeight ]
         };
@@ -169,12 +161,21 @@
 
       let currentGeometry;
 
-      const craneRenderer = {
+
+        // symbol: {
+        //   type: "web-style",
+        //   name: "Tower_Crane",
+        //   styleName: "EsriRealisticTransportationStyle"
+        // },
+
+      // https://www.turbosquid.com/3d-models/free-wind-turbine-3d-model/642388
+
+      const turbineRenderer = {
         type: "simple",
         symbol: {
           type: "web-style",
-          name: "Tower_Crane",
-          styleName: "EsriRealisticTransportationStyle"
+          styleUrl: "https://www.arcgis.com/sharing/rest/content/items/635f270120664b6fa510ff5dd2ba099a/data",
+          name: "Turbines"
         },
         visualVariables: [{
           type: "size",
@@ -197,15 +198,17 @@
             size: 6,
             outline: {
               color: "white",
-              size: 1.5
+              size: 1.2
             }
           }]
         },
       };
 
-      var mtr = new FeatureLayer({
+      // https://ais-faa.opendata.arcgis.com/datasets/0c6899de28af447c801231ed7ba7baa6_0?geometry=-118.045%2C31.838%2C-103.038%2C37.499&mapSize=map-maximize
+
+      let mtr = new FeatureLayer({
         portalItem: {
-          id: "d608b7d7b5494aefaced3302c636e119"
+          id: "c28c414f6ec9419e8b1accaa758e9ff5"
         },
         title: "Military Training Routes",
         popupTemplate: {
@@ -233,6 +236,8 @@
           }]
         },
         renderer: initialRenderer,
+
+
         elevationInfo: {
           mode: "relative-to-ground",
           featureExpressionInfo: {
@@ -240,7 +245,17 @@
           },
           unit: "feet"
         }
+
+
       });
+
+      // layer.elevationInfo = {
+      //   mode: "relative-to-ground",
+      //   featureExpressionInfo: {
+      //     expression: "$feature.elvnumflr"
+      //   },
+      //   unit: "feet"
+      // }
 
       const map = new Map({
         basemap: "topo",
@@ -269,13 +284,14 @@
       const dropTarget = new DropTargetWidget({ view });
 
       dropTarget.on("drop",  event => {
-        // reset();
+
+        // Clear previous results if new CSV is dropped
 
         currentGeometry = null;
-          map.remove(windmillLayer);
-          windmillLayer = null;
-          mtr.renderer = initialRenderer;
-          tempGraphicsLayer.removeAll();
+        map.remove(windmillLayer);
+        windmillLayer = null;
+        mtr.renderer = initialRenderer;
+        tempGraphicsLayer.removeAll();
 
         const files = event.dataTransfer.files;
         const file = files[0];
@@ -293,21 +309,40 @@
           }
         });
 
-        const projectPointsCranes = new CSVLayer({ 
+        const turbineLayer = new CSVLayer({ 
           url: url, 
           delimiter: ",",
           spatialReference: {
             wkid: 3857
           },
-          renderer: craneRenderer,
+          renderer: turbineRenderer,
           elevationInfo: {
             mode: "on-the-ground"
+          },
+          popupTemplate: {
+            title: "{model} {type_tower}",
+            content: [{
+              type: "fields",
+              fieldInfos: [{
+                fieldName: "manufac",
+                label: "Manufacturer"
+              }, {
+                fieldName: "total_ht",
+                label: "Total Height (ft)"
+              }, {
+                fieldName: "tower_h",
+                label: "Tower Height (ft)"
+              }, {
+                fieldName: "blade_l",
+                label: "Blade Length (ft)"
+              }]
+            }]
           }
         });
 
         windmillLayer = new GroupLayer({
           title: "Proposed Wind Locations",
-          layers: [ projectPointsIcons, projectPointsCranes ],
+          layers: [ projectPointsIcons, turbineLayer ],
           listMode: "hide-children",
           visibilityMode: "inherited"
         });
@@ -349,20 +384,11 @@
 
       view.ui.add(dropTarget);
 
-      var toggle = new BasemapToggle({
+      const toggle = new BasemapToggle({
         view: view,
         nextBasemap: "hybrid"
       });
       view.ui.add(toggle, "bottom-left");
-
-      // view.ui.add(new Expand({
-      //   view: view,
-      //   content: new DirectLineMeasurement3D({
-      //     view: view,
-      //     unit: "feet"
-      //   }),
-      //   expandIconClass: "esri-icon-polyline"
-      // }), "top-left");
 
       view.when(function() {
         initializeSketch();
@@ -395,12 +421,12 @@
           return;
         }
 
-        var rendererParams = {
+        let rendererParams = {
           projectGeometry: projectGeometry,
           projectHeight: projectHeight
         }
 
-        var classifiedRenderer = createClassification(rendererParams);
+        let classifiedRenderer = createClassification(rendererParams);
         mtr.renderer = classifiedRenderer;
       }
 
@@ -431,7 +457,7 @@
           setActiveButton();
         });
 
-        var drawPolygonButton = document.getElementById("polygonButton");
+        const drawPolygonButton = document.getElementById("polygonButton");
         drawPolygonButton.onclick = function() {
           reset();
           sketchViewModel.create("polygon");
@@ -446,6 +472,7 @@
           map.remove(windmillLayer);
           windmillLayer = null;
           mtr.renderer = initialRenderer;
+          heightInputElem.value = null;
           tempGraphicsLayer.removeAll();
           sketchViewModel.reset();
           setActiveButton();
@@ -454,7 +481,7 @@
         function setActiveButton(selectedButton) {
           // focus the view to activate keyboard shortcuts for sketching
           view.focus();
-          var elements = document.getElementsByClassName("active");
+          let elements = document.getElementsByClassName("active");
           for (var i = 0; i < elements.length; i++) {
             elements[i].classList.remove("active");
           }
