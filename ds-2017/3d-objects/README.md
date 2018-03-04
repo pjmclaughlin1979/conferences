@@ -14,7 +14,7 @@ Build a 3D web application from the ground up starting with finding 3D data to c
 
 ### Demos
 
-##### [Read a Scene layer](http://ekenes.github.io/conferences/ds-2017/3d-objects/demos/scene-layer/)
+##### [Read a Scene layer](https://ekenes.github.io/conferences/ds-2017/3d-objects/demos/scene-layer/)
 
 This app demonstrates how to load a SceneLayer to a custom JS app from a portal item. Once loaded, a scene layer's properties can be accessed and modified. This sample shows how to modify a layer's renderer after it has been loaded from the portal.
 

@@ -15,10 +15,10 @@ Learn how to build 3D interactive web applications using the 4.0 version of the 
 
 ### Demos
 
-##### [3D buildings](http://ekenes.github.io/conferences/ds-2017/3d-apps-guide/demos/3d-buildings/)
+##### [3D buildings](https://ekenes.github.io/conferences/ds-2017/3d-apps-guide/demos/3d-buildings/)
 
 This app demonstrates how to load a web scene with the ArcGIS Portal API and modify its properties. You can leverage the slides API to apply layers, basemaps, and view properties to the view instance referencing the scene. You can also manipulate the filter and visualization of operational layers.
 
-##### [Basic scene](http://ekenes.github.io/conferences/ds-2017/3d-apps-guide/demos/basics/)
+##### [Basic scene](https://ekenes.github.io/conferences/ds-2017/3d-apps-guide/demos/basics/)
 
 This sample demonstrates how to construct a simple 3D app using the SceneView.

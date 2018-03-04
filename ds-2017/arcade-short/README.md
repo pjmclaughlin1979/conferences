@@ -29,19 +29,19 @@ The playground allows you to choose an Arcade profile and experiment with any ex
 3. % population that didn't report education
 
 
-##### [Weather](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/weather/)
+##### [Weather](https://ekenes.github.io/conferences/ds-2017/arcade-long/demos/weather/)
 
 This app demonstrates how to use Arcade in simple and complex labeling expressions. As of the time of this presentation, the labeling profile is supported only in the 3.x versions of the ArcGIS API for JavaScript.
 
 The calculation for determining wind direction (N/S/E/W) is done using a field that contains the compass direction of the wind (0-360).
 
 
-##### [Predominance in JS app](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/political-parties/)
+##### [Predominance in JS app](https://ekenes.github.io/conferences/ds-2017/arcade-long/demos/political-parties/)
 
 This app visualizes the predominant political party among registered voters in the county level accross the United States. The `Decode()` function of Arcade matches the maximum count of all relevant fields to a string value representing the respective party. This prevents the user or GIS analyst from unecessarily preforming a series of field calculations in new fields. If the expression is incorrect in any way, it is relatively simple to fix the script as opposed to recalculating fields. Also note that an Arcade expression is used to drive opacity. More opaque features represent counties where the predominant political party is relatively strong. Transparent counties incidate the predominant party barely edges the rival parties based on total count.
 
 
-##### [Wind Chill](http://ekenes.github.io/conferences/ds-2017/arcade-long/demos/wind-chill/)
+##### [Wind Chill](https://ekenes.github.io/conferences/ds-2017/arcade-long/demos/wind-chill/)
 
 This sample shows how to use Arcade for performing larger calculations and logicial tests. In this case, wind chill and heat index are calculated based on other field values that are potentially updated very frequently. The math operations aren't very complex, but you can use Arcade to automatically create pseudo-fields such as "Apparent temperature" to display calculated data based on fields that are frequently updated, such as weather data.
 
