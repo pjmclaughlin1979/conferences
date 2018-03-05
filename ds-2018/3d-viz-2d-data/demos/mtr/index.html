@@ -508,6 +508,12 @@
           "tilt": 88.6
         }));
       });
+
+      const downloadBtn = document.getElementById("downloadBtn");
+      downloadBtn.addEventListener("click", function(){
+        window.open("az_fake_windmills.csv");
+      });
+
     });
   </script>
 </head>
@@ -518,7 +524,8 @@
     <div id="topbar">
       Height (ft): <input id="heightInput" class="esri-widget" type="number">
       <button class="action-button esri-icon-polygon" id="polygonButton" title="Draw polygon"></button>
-        <button class="action-button esri-icon-check-mark" id="submitBtn" title="Submit"></button>
+      <button class="action-button esri-icon-check-mark" id="submitBtn" title="Submit"></button>
+      <button class="action-button esri-icon-down-arrow-circled" id="downloadBtn" title="Download CSV"></button>
       <button class="action-button esri-icon-trash" id="resetBtn" title="Clear graphics"></button>
     </div>
   </div>
