@@ -17,16 +17,22 @@
   }
 </style>
 
-<link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
-<script src="https://js.arcgis.com/4.4/"></script>
+<link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/css/main.css">
+
+<script>
+  var dojoConfig = {
+    has: {
+      "esri-featurelayer-webgl": 1
+    }
+  }
+</script>
+<script src="https://js.arcgis.com/4.7/"></script>
 
 <script>
 require([
   "esri/Map",
   "esri/layers/CSVLayer",
   "esri/views/MapView",
-  "esri/renderers/SimpleRenderer",
-  "esri/symbols/SimpleMarkerSymbol",
   "esri/config",
   "esri/widgets/Legend",
   "dojo/domReady!"
@@ -34,8 +40,6 @@ require([
   Map,
   CSVLayer,
   MapView,
-  SimpleRenderer,
-  SimpleMarkerSymbol,
   esriConfig,
   Legend
 ) {
@@ -95,17 +99,19 @@ require([
   };
 
   // set the renderer on the layer
-  earthquakesLayer.renderer = new SimpleRenderer({
-    symbol: new SimpleMarkerSymbol({
+  earthquakesLayer.renderer = {
+    type: "simple",
+    symbol: {
+      type: "simple-marker",
       size: "10px",
       color: [ 100, 0, 0, 1 ],
       outline: {
         color: "white",
         width: 0.5
       }
-    }),
+    },
     visualVariables: [ magnitudeWithSize ]
-  });
+  };
 
   var map = new Map({
     basemap: "topo",
