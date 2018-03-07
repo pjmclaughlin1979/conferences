@@ -7,9 +7,18 @@
 
   <title>Generate above and below color visualization in 3D - 4.4</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.4/dijit/themes/claro/claro.css">
-  <script src="https://js.arcgis.com/4.4/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.7/dijit/themes/claro/claro.css">
+
+  <script>
+    var dojoConfig = {
+      has: {
+        "esri-featurelayer-webgl": 1
+      }
+    }
+  </script>
+
+  <script src="https://js.arcgis.com/4.7/"></script>
 
   <style>
     html,
@@ -316,7 +325,7 @@
               // when the user slides the handle(s), update the renderer
               // with the updated size visual variable objects
 
-              sizeSlideEvent = sizeSlider.on("handle-value-change", function() {
+              sizeSlideEvent = sizeSlider.on("data-change", function() {
 
                 var renderer = layer.renderer.clone();
                 var visualVariables = lang.clone(renderer.visualVariables);
@@ -423,7 +432,7 @@
               // when the user slides the handle(s), update the renderer
               // with the updated color visual variable object
 
-              colorSlideEvent = colorSlider.on("handle-value-change", function() {
+              colorSlideEvent = colorSlider.on("data-change", function() {
                 var renderer = layer.renderer.clone();
 
                 var visualVariables = lang.clone(renderer.visualVariables);

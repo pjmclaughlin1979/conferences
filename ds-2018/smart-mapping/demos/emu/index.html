@@ -114,74 +114,6 @@
       colorRendererCreator, histogram, lang
     ) {
 
-      cameras = [
-        new Camera({
-          "position": {
-            "x": 8850935.645084891,
-            "y": -921808.3183676039,
-            "z": 160543.9681539568,
-            "spatialReference": {
-              "latestWkid": 3857,
-              "wkid": 102100
-            }
-          },
-          "heading": 330.5273575155239,
-          "tilt": 73.04547326633931
-        }),
-        new Camera({
-          "position": {
-            "x": 7075662.431307213,
-            "y": -545287.4081817305,
-            "z": 111211.68987328262,
-            "spatialReference": {
-              "latestWkid": 3857,
-              "wkid": 102100
-            }
-          },
-          "heading": 49.39331284529598,
-          "tilt": 73.44244171562167
-        }),
-        new Camera({
-          "position": {
-            "x": 7457802.314663684,
-            "y": 1960883.931150024,
-            "z": 322974.3554561713,
-            "spatialReference": {
-              "latestWkid": 3857,
-              "wkid": 102100
-            }
-          },
-          "heading": 154.95236074822157,
-          "tilt": 69.07578877351612
-        }),
-        new Camera({
-          "position": {
-            "x": 9264486.06881108,
-            "y": 1295052.9606176852,
-            "z": 580613.4903679888,
-            "spatialReference": {
-              "latestWkid": 3857,
-              "wkid": 102100
-            }
-          },
-          "heading": 233.54868888028503,
-          "tilt": 58.15915641825212
-        }),
-        new Camera({
-          "position": {
-            "x": 9666069.505875772,
-            "y": 99896.44748392468,
-            "z": 79413.60489667486,
-            "spatialReference": {
-              "latestWkid": 3857,
-              "wkid": 102100
-            }
-          },
-          "heading": 281.5423300724199,
-          "tilt": 78.20606310700948
-        })
-      ];
-
       SnapshotController.prototype._maxFeatures.point = 100000;
 
        //////////////////////////////////////////////
@@ -263,7 +195,7 @@
         }
       });
 
-      view = new SceneView({
+      var view = new SceneView({
         container: "viewDiv",
         viewingMode: "local",
         map: map,
@@ -417,7 +349,7 @@
       }
 
       // Create SceneLayer and add to the map
-      layer = new FeatureLayer({
+      var layer = new FeatureLayer({
         title: "EMU data points",
         portalItem: {
           id: "cfbc577e961342688b6c5dc6d246c58f"
@@ -905,17 +837,6 @@
               colorSlider.set(colorSliderParams);
             }
           });
-      }
-
-      rotate = function(cams, index){
-        var i = index ? index : 0;
-        if (i === cams.length){
-          view.goTo(cams[0], { duration: 5000, easing: "ease-in-out" })
-          return;
-        }
-        return view.goTo(cams[i], { duration: 5000, easing: "ease-in-out" }).then(function(){
-          return rotate(cams, i+1);
-        });
       }
 
     });
