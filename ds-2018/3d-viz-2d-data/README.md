@@ -27,13 +27,13 @@ A client-side 3D analysis exploring whether input project areas (hand drawn or f
 
 [Code](https://github.com/ekenes/conferences/ds-2018/3d-viz-2d-data/demos/mtr)
 
-##### [3D elevation contours](https://github.com/RalucaNicola/JSAPI_demos/tree/master/malta-contour-lines)
+##### [3D elevation contours](https://ralucanicola.github.io/JSAPI_demos/malta-contour-lines/)
 
 A 3D thematic representation of contour data.
 
-[Live app](https://github.com/RalucaNicola/JSAPI_demos/tree/master/malta-contour-lines)
+[Live app](https://ralucanicola.github.io/JSAPI_demos/malta-contour-lines/)
 
-[Code](https://ralucanicola.github.io/JSAPI_demos/malta-contour-lines/)
+[Code](https://github.com/RalucaNicola/JSAPI_demos/tree/master/malta-contour-lines)
 
 
 
