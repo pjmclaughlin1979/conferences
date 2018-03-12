@@ -11,26 +11,15 @@ The ArcGIS API 4.x for JavaScript provides a set of APIs allowing you to build p
 
 ### Demos
 
-#####  [Draped vs. Billboarded icons](https://ekenes.github.io/conferences/ds-2017/3d-viz/demos/billboard-draped-elevation-comparison/)
+#####  [Buildings with Visual Variables and Edges](https://ekenes.github.io/conferences/ds-2018/3d-viz/demos/thematic-edges/)
 
-Demonstrates the visual difference between draped and billboarded icons when located in areas of varying elevation.
+San Francisco buildings visualized with a color visual variable showing walk times. Edges can be toggled on and off of the buildings.
 
-##### [Draped vs. Billboarded icons (flat)](https://ekenes.github.io/conferences/ds-2017/3d-viz/demos/icons-billboard-draped-comparison/)
 
-Demonstrates the visual difference between draped and billboarded icons when located in areas with little or no elevation.
+#####  [Smart Mapping: Building scene layer](https://ekenes.github.io/conferences/ds-2018/3d-viz/demos/thematic-edges/)
 
-#####  [2D vs. 3D buildings](https://ekenes.github.io/conferences/ds-2017/3d-viz/demos/buildings-comparison/)
+San Francisco buildings visualized with a color visual variable showing walk times. The renderer is generated using smart mapping. The color slider allows users to explore the visual aspect of the data.
 
-Demonstrates the difference between representing buildings with 2D polygons vs. 3D extrusions.
+##### [Point Styles for cities](https://developers.arcgis.com/javascript/latest/sample-code/visualization-point-styles/index.html)
 
-##### [Obect symbol primitives](https://ekenes.github.io/conferences/ds-2017/3d-viz/demos/object-symbols/)
-
-Allows the user to select various primitives when working with 3D symbols representing points.
-
-##### [2D size (icons) vs. 3D extrusions](https://ekenes.github.io/conferences/ds-2017/3d-viz/demos/size-comparison/)
-
-Demonstrates the difference between a 2D thematic visualization and a 3D thematic extrusion.
-
-##### [3D smart mapping demo](https://ekenes.github.io/conferences/ds-2017/3d-viz/demos/3d-smartmapping/)
-
-Demonstrates the Smart mapping API in a 3D scene view using data representing world population.
+App that demonstrates how to visualize points of interest in a city scene.
