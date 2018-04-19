@@ -13,7 +13,7 @@
     var path = location.href.substring(0, location.href.lastIndexOf('/') + 1);
     var dojoConfig = {
       paths: {
-        app: `${path}`
+        app: path
       }
     };
    </script>
@@ -57,8 +57,9 @@
           type: "polygon-3d",
           symbolLayers: [{
             type: "extrude",
+            size: 1000,
             material: {
-              color: [255,255,255,0]
+              color: [ 255,255,255,0 ]
             },
             edges: {
               type: "solid",
@@ -69,10 +70,6 @@
         },
         visualVariables: [ mtrHeight ]
       };
-
-      // document.getElementById("submitBtn").addEventListener("click", function(){
-      //   updateRenderer(currentGeometry);
-      // });
 
       function createClassification(params){
         const projectGeometry = params.projectGeometry;
@@ -462,13 +459,12 @@
             y: 4274266,
             z: 1989
           },
-          "heading": 290.5,
-          "tilt": 88.6
+          heading: 290.5,
+          tilt: 88.6
         }));
       });
 
-      const downloadBtn = document.getElementById("downloadBtn");
-      downloadBtn.addEventListener("click", function(){
+      document.getElementById("downloadBtn").addEventListener("click", function(){
         window.open("az_fake_windmills.csv");
       });
 
@@ -481,7 +477,6 @@
     <button class="action-button esri-icon-zoom-in-fixed" id="zoomBtn" title="Zoom in"></button>
     <div id="topbar">
       Height (ft): <input id="heightInput" class="esri-widget" type="number">
-      <!-- <button class="action-button esri-icon-check-mark" id="submitBtn" title="Submit"></button> -->
       <button class="action-button esri-icon-down-arrow-circled" id="downloadBtn" title="Download CSV"></button>
       <button class="action-button esri-icon-trash" id="resetBtn" title="Clear graphics"></button>
     </div>
