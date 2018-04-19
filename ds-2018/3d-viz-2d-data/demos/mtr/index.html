@@ -13,7 +13,7 @@
     var path = location.href.substring(0, location.href.lastIndexOf('/') + 1);
     var dojoConfig = {
       paths: {
-        app: `${path}`
+        app: path
       }
     };
    </script>
@@ -26,28 +26,24 @@
       "esri/views/SceneView",
       "esri/layers/FeatureLayer",
       "esri/layers/GroupLayer",
-      "esri/widgets/Sketch/SketchViewModel",
       "esri/Graphic",
-      "esri/layers/GraphicsLayer",
       "esri/geometry/geometryEngine",
       "esri/geometry/Multipoint",
       "esri/widgets/Legend",
       "esri/widgets/LayerList",
       "esri/widgets/BasemapToggle",
       "esri/widgets/Expand",
-      "esri/widgets/DirectLineMeasurement3D",
       "esri/Camera",
       "esri/layers/CSVLayer",
       "app/DropTarget",
       "dojo/domReady!"
     ], function(Map, SceneView, FeatureLayer, GroupLayer,
-      SketchViewModel, Graphic, GraphicsLayer, ge, Multipoint, Legend, LayerList, BasemapToggle,
-      Expand, DirectLineMeasurement3D, Camera, CSVLayer, DropTarget
+      Graphic, ge, Multipoint, Legend, LayerList, BasemapToggle,
+      Expand, Camera, CSVLayer, DropTarget
     ) {
 
       let windmillLayer = null;
-
-      var DropTargetWidget = DropTarget.default;
+      const DropTargetWidget = DropTarget.default;
 
       const mtrHeight = {
         type: "size",
@@ -61,8 +57,9 @@
           type: "polygon-3d",
           symbolLayers: [{
             type: "extrude",
+            size: 1000,
             material: {
-              color: [255,255,255,0]
+              color: [ 255,255,255,0 ]
             },
             edges: {
               type: "solid",
@@ -73,13 +70,6 @@
         },
         visualVariables: [ mtrHeight ]
       };
-
-      const tempGraphicsLayer = new GraphicsLayer();
-      const submitBtn = document.getElementById("submitBtn");
-
-      submitBtn.addEventListener("click", function(){
-        updateRenderer(currentGeometry);
-      });
 
       function createClassification(params){
         const projectGeometry = params.projectGeometry;
@@ -161,14 +151,15 @@
 
       let currentGeometry;
 
+      // Try the following symbol provided out of the box in the API rather than
+      // the web style symbol published to ArcGIS Online from a model downloaded at
+      // https://www.turbosquid.com/3d-models/free-wind-turbine-3d-model/642388
 
         // symbol: {
         //   type: "web-style",
         //   name: "Tower_Crane",
         //   styleName: "EsriRealisticTransportationStyle"
         // },
-
-      // https://www.turbosquid.com/3d-models/free-wind-turbine-3d-model/642388
 
       const turbineRenderer = {
         type: "simple",
@@ -237,7 +228,6 @@
         },
         renderer: initialRenderer,
 
-
         elevationInfo: {
           mode: "relative-to-ground",
           featureExpressionInfo: {
@@ -246,21 +236,12 @@
           unit: "feet"
         }
 
-
       });
-
-      // layer.elevationInfo = {
-      //   mode: "relative-to-ground",
-      //   featureExpressionInfo: {
-      //     expression: "$feature.elvnumflr"
-      //   },
-      //   unit: "feet"
-      // }
 
       const map = new Map({
         basemap: "topo",
         ground: "world-elevation",
-        layers: [ mtr, tempGraphicsLayer ]
+        layers: [ mtr ]
       });
 
       const view = new SceneView({
@@ -281,7 +262,7 @@
         }
       });
 
-      const dropTarget = new DropTargetWidget({ view });
+      const dropTarget = new DropTargetWidget({ view: view });
 
       dropTarget.on("drop",  event => {
 
@@ -291,7 +272,6 @@
         map.remove(windmillLayer);
         windmillLayer = null;
         mtr.renderer = initialRenderer;
-        tempGraphicsLayer.removeAll();
 
         const files = event.dataTransfer.files;
         const file = files[0];
@@ -310,7 +290,8 @@
         });
 
         const turbineLayer = new CSVLayer({ 
-          url: url, 
+          url: url,
+          title: "Wind Turbines",
           delimiter: ",",
           spatialReference: {
             wkid: 3857
@@ -357,7 +338,6 @@
         }];
 
         let maxHeight = 0;
-
         projectPointsIcons.queryFeatures(statsQuery)
           .then(results => {
             const stats = results.features[0].attributes;
@@ -366,14 +346,14 @@
             return projectPointsIcons.queryFeatures();
           })
           .then(results => {
-            var graphics = results.features;
+            const graphics = results.features;
 
             let multipointGeom = new Multipoint({
               spatialReference: { wkid: 3857 }
             });
 
             graphics.forEach(f => {
-              var point = f.geometry;
+              const point = f.geometry;
               multipointGeom.addPoint(point);
             });
 
@@ -391,7 +371,7 @@
       view.ui.add(toggle, "bottom-left");
 
       view.when(function() {
-        initializeSketch();
+        initializeButtons();
         view.ui.add(new Legend({ 
           view: view,
           layerInfos: [{
@@ -400,21 +380,16 @@
         }), "bottom-right");
       });
 
-      function displayInPopup(graphics){
-        view.popup.open({
-          features: graphics,
-          featureMenuOpen: true,
-          updateLocationEnabled: true
-        });
-      }
-
       let heightInputElem = document.getElementById("heightInput");
+      
+      heightInputElem.addEventListener("change", function(){
+        updateRenderer(currentGeometry);
+      });
 
       function updateRenderer(geometry, height){
-        var sketchGraphic = tempGraphicsLayer.graphics.getItemAt(0);
-        var inputHeight = heightInputElem.value;
-        var projectGeometry = geometry ? geometry : sketchGraphic.geometry;
-        var projectHeight = height ? height : parseInt(inputHeight);
+        const inputHeight = heightInputElem.value;
+        const projectGeometry = geometry;
+        const projectHeight = height ? height : parseInt(inputHeight);
 
         if(!projectGeometry || !projectHeight){
           console.log("Missing parameters. Please draw a project area and enter a project height.");
@@ -428,61 +403,41 @@
 
         let classifiedRenderer = createClassification(rendererParams);
         mtr.renderer = classifiedRenderer;
+
+        updateTurbineHeight(projectHeight);
       }
 
-      //
-      // SKETCHING IS NOT OFFICIALLY SUPPORTED IN SCENEVIEW in 4.x
-      // THIS WAS JUST A QUICK WAY TO PROVIDE AN INPUT GEOMETRY 
-      // TO THE RENDERER FOR EVALUATION
-      //
-      function initializeSketch(){
-        // create a new sketch view model
-        var sketchViewModel = new SketchViewModel({
-          view: view,
-          layer: tempGraphicsLayer,
-          polygonSymbol: {
-            type: "simple-fill",
-            color: [173, 66, 244,0.1],
-            style: "solid",
-            outline: {
-              color: [173, 66, 244,1],
-              width: 2
-            }
-          }
+      function updateTurbineHeight(newHeight){
+        const layer = windmillLayer.layers.find(function(layer){
+          return layer.title === "Wind Turbines";
         });
+        const renderer = layer.renderer.clone();
+        renderer.visualVariables = [{
+          type: "size",
+          valueExpression: newHeight.toString(),
+          axis: "height",
+          valueUnit: "feet"
+        }];
+        layer.renderer = renderer;
+      }
 
-        sketchViewModel.on("draw-complete", function(evt) {
-          // add the graphic to the graphics layer
-          tempGraphicsLayer.add(evt.graphic);
-          setActiveButton();
-        });
-
-        const drawPolygonButton = document.getElementById("polygonButton");
-        drawPolygonButton.onclick = function() {
-          reset();
-          sketchViewModel.create("polygon");
-          setActiveButton(this);
-        };
+      function initializeButtons(){
 
         // reset button
         document.getElementById("resetBtn").onclick = reset;
 
         function reset(){
-          currentGeometry = null;
           map.remove(windmillLayer);
           windmillLayer = null;
           mtr.renderer = initialRenderer;
           heightInputElem.value = null;
-          tempGraphicsLayer.removeAll();
-          sketchViewModel.reset();
           setActiveButton();
         }
 
         function setActiveButton(selectedButton) {
-          // focus the view to activate keyboard shortcuts for sketching
           view.focus();
           let elements = document.getElementsByClassName("active");
-          for (var i = 0; i < elements.length; i++) {
+          for (let i = 0; i < elements.length; i++) {
             elements[i].classList.remove("active");
           }
           if (selectedButton) {
@@ -504,13 +459,12 @@
             y: 4274266,
             z: 1989
           },
-          "heading": 290.5,
-          "tilt": 88.6
+          heading: 290.5,
+          tilt: 88.6
         }));
       });
 
-      const downloadBtn = document.getElementById("downloadBtn");
-      downloadBtn.addEventListener("click", function(){
+      document.getElementById("downloadBtn").addEventListener("click", function(){
         window.open("az_fake_windmills.csv");
       });
 
@@ -523,8 +477,6 @@
     <button class="action-button esri-icon-zoom-in-fixed" id="zoomBtn" title="Zoom in"></button>
     <div id="topbar">
       Height (ft): <input id="heightInput" class="esri-widget" type="number">
-      <button class="action-button esri-icon-polygon" id="polygonButton" title="Draw polygon"></button>
-      <button class="action-button esri-icon-check-mark" id="submitBtn" title="Submit"></button>
       <button class="action-button esri-icon-down-arrow-circled" id="downloadBtn" title="Download CSV"></button>
       <button class="action-button esri-icon-trash" id="resetBtn" title="Clear graphics"></button>
     </div>
