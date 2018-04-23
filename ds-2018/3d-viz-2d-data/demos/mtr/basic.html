@@ -5,7 +5,7 @@
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>MTR Encroachment</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/themes/light/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/css/main.css">
   <link rel="stylesheet" href="droptarget.css">
   <link rel="stylesheet" href="app.css">
 
@@ -33,14 +33,13 @@
       "esri/widgets/LayerList",
       "esri/widgets/BasemapToggle",
       "esri/widgets/Expand",
-      "esri/widgets/Home",
       "esri/Camera",
       "esri/layers/CSVLayer",
       "app/DropTarget",
       "dojo/domReady!"
     ], function(Map, SceneView, FeatureLayer, GroupLayer,
       Graphic, ge, Multipoint, Legend, LayerList, BasemapToggle,
-      Expand, Home, Camera, CSVLayer, DropTarget
+      Expand, Camera, CSVLayer, DropTarget
     ) {
 
       let windmillLayer = null;
@@ -114,18 +113,18 @@
           },
           uniqueValueInfos: [{
             value: "high",
-            symbol: createSymbol([244, 66, 66, 0.2], [244, 66, 66]),
+            symbol: createSymbol([244, 66, 66, 0.1], [244, 66, 66]),
             label: "High"
           }, {
             value: "medium",
-            symbol: createSymbol([244, 146, 65, 0.2], [244, 146, 65]),
+            symbol: createSymbol([244, 146, 65, 0.1], [244, 146, 65]),
             label: "Medium"
           }, {
             value: "low",
-            symbol: createSymbol([244, 238, 65, 0.2], [244, 238, 65]),
+            symbol: createSymbol([244, 238, 65, 0.1], [244, 238, 65]),
             label: "Low"
           }],
-          defaultSymbol: createSymbol([112, 244, 65, 0.2], [112, 244, 65]),
+          defaultSymbol: createSymbol([112, 244, 65, 0.1], [112, 244, 65]),
           defaultLabel: "None",
           visualVariables: [ mtrHeight ]
         };
@@ -372,28 +371,14 @@
       view.ui.add(toggle, "bottom-left");
 
       view.when(function() {
-        view.ui.add(new Expand({
+        initializeButtons();
+        view.ui.add(new Legend({ 
           view: view,
-          group: "top-left",
-          content: new Legend({ 
-            view: view,
-            layerInfos: [{
-              layer: mtr
-            }]
-          }),
-          expanded: true
-        }), "top-left");
+          layerInfos: [{
+            layer: mtr
+          }]
+        }), "bottom-right");
       });
-      const layerListExpand = new Expand({
-        view: view,
-        group: "top-left",
-        content: new LayerList({
-          view: view
-        })
-      });
-      view.ui.add(layerListExpand, "top-left");
-
-      initializeButtons();
 
       let heightInputElem = document.getElementById("heightInput");
       
@@ -462,8 +447,7 @@
       }
 
       const zoomBtn = document.getElementById("zoomBtn");
-      view.ui.add(zoomBtn, { position: "top-left", index: 3 });
-      view.ui.add(new Home({ view: view }), { position: "top-left", index: 3 });
+      view.ui.add(zoomBtn, "top-left");
       zoomBtn.addEventListener("click", function(){
         view.goTo(new Camera({
           position: {
