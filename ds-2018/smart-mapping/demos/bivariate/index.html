@@ -7,8 +7,8 @@
 
   <title>Generate above and below color visualization in 3D - 4.4</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/css/main.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.7/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.8/esri/css/main.css">
+  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.8/dijit/themes/claro/claro.css">
 
   <script>
     var dojoConfig = {
@@ -18,7 +18,7 @@
     }
   </script>
 
-  <script src="https://js.arcgis.com/4.7/"></script>
+  <script src="https://jsdev.arcgis.com/4.8/"></script>
 
   <style>
     html,
@@ -278,7 +278,7 @@
           .then(function(response){
             sizeResponse = response;
             var oldRenderer = sizeParams.layer.renderer.clone();
-            var newRenderer = response.renderer;
+            var newRenderer = response.renderer.clone();
             var unchangedVV;
 
             if (oldRenderer.visualVariables){
@@ -290,6 +290,13 @@
             }
 
             sizeVVs = lang.clone(response.visualVariables);
+            var sizeVV = sizeVVs.filter(function(vv){
+              return vv.type === "size";
+            })[0];
+            sizeVV.legendOptions = {
+              title: sizeFieldSelect.selectedOptions[0].text
+            };
+            sizeVVs = [ sizeVV ];
             newRenderer.visualVariables = sizeVVs.concat(unchangedVV);
             sizeParams.layer.renderer = newRenderer;
 
@@ -384,8 +391,12 @@
             colorResponse = response;
 
             colorVV = lang.clone(response.visualVariable);
+            colorVV.legendOptions = {
+              title: colorFieldSelect.selectedOptions[0].text
+            };
             var oldRenderer = colorParams.layer.renderer.clone();
-            var newRenderer = response.renderer;
+            var newRenderer = response.renderer.clone();
+            newRenderer.visualVariables = [ colorVV ];
             var renderer;
 
             if(oldRenderer.visualVariables){
@@ -395,7 +406,6 @@
               oldRenderer.visualVariables = unchangedVVs.concat([colorVV]);
               renderer = unchangedVVs.length > 0 ? oldRenderer : newRenderer;
             } else {
-//              oldRenderer.visualVariables = [colorVV];
               renderer = newRenderer;
             }
 
@@ -491,7 +501,7 @@
   <div id="viewDiv"></div>
   <div id="color-container" class="widget-background">
     <h3>Color</h3>
-    Field: <select id="color-field-select">
+    Field: <select id="color-field-select" class="esri-widget">
       <option value="" selected></option>
       <option value="PCT_OBM">% voted Obama</option>
       <option value="PCT_ROM">% voted Romney</option>
@@ -506,7 +516,7 @@
       <option value="PER_DEMOCRATS">% adults registered democrats</option>
       <option value="PER_OTHER">% adults third party</option>
     </select>
-    Theme: <select id="theme-options">
+    Theme: <select id="theme-options" class="esri-widget">
       <option value="high-to-low" selected>High to low</option>
       <option value="centered-on">Centered on</option>
       <option value="extremes">Extremes</option>
@@ -515,7 +525,7 @@
   </div>
   <div id="size-container" class="widget-background">
     <h3>Size</h3>
-    Field: <select id="size-field-select">
+    Field: <select id="size-field-select" class="esri-widget">
       <option value="" selected></option>
       <option value="" selected></option>
       <option value="PCT_OBM">% voted Obama</option>
