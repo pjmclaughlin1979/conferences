@@ -14,6 +14,7 @@ The ArcGIS API for JavaScript lets you build powerful interactive mapping applic
 
 ### Demos
 
+Fast feature layer symbol updates
 Basic app with visual variables
 smart mapping sample
 Clustering
