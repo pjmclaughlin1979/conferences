@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Point Cloud Renderers</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    #infoDiv {
+      background-color: white;
+      padding: 5px;
+      font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.4/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+
+      "esri/layers/PointCloudLayer",
+      "esri/renderers/PointCloudUniqueValueRenderer",
+
+      "dojo/on",
+      "dojo/dom",
+      "dojo/domReady!"
+    ], function (
+      Map, SceneView, PointCloudLayer,
+      PointCloudUniqueValueRenderer,
+      on, dom
+    ) {
+        /*
+          colorModulation: {
+            field: "INTENSITY",
+            minValue: 35,
+            maxValue: 211
+          },
+        */
+        var uniqueValueRenderer = new PointCloudUniqueValueRenderer({
+          field: "CLASS_CODE",
+          colorUniqueValueInfos: [
+            {
+              values: ["1"],
+              label: "Unassigned",
+              color: [178, 178, 178]
+            },
+            {
+              values: ["2"],
+              label: "Ground",
+              color: [168, 112, 0]
+            },
+            {
+              values: ["5"],
+              label: "High vegetation",
+              color: [205, 245, 121]
+            },
+            {
+              values: ["6"],
+              label: "Building",
+              color: [229, 75, 65]
+            },
+            {
+              values: ["7"],
+              label: "Low Point",
+              color: [229, 0, 0]
+            }]
+        });
+
+
+        santaRosaPointCloud = new PointCloudLayer({
+          url: "https://tiles.arcgis.com/tiles/Imiq6naek6ZWdour/arcgis/rest/services/PointCloud_urban/SceneServer",
+          //  renderer: uniqueValueRenderer
+        });
+
+
+
+        var map = new Map({
+          basemap: "dark-gray-vector",
+          layers: [santaRosaPointCloud]
+        });
+
+        view = new SceneView({
+          container: "viewDiv",
+          map: map,
+
+
+          camera: {
+            heading: 321,
+            tilt: 65,
+            position: {
+              x: -13660884.75182009,
+              y: 4641370.954907834,
+              z: 174.2508678585291,
+              spatialReference: {
+                wkid: 3857
+              }
+            }
+          }
+        });
+
+
+      });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
