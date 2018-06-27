@@ -7,18 +7,9 @@
 
   <title>Generate above and below color visualization in 3D - 4.4</title>
 
-  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.8/esri/css/main.css">
-  <link rel="stylesheet" href="https://jsdev.arcgis.com/4.8/dijit/themes/claro/claro.css">
-
-  <script>
-    var dojoConfig = {
-      has: {
-        "esri-featurelayer-webgl": 1
-      }
-    }
-  </script>
-
-  <script src="https://jsdev.arcgis.com/4.8/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.4/dijit/themes/claro/claro.css">
+  <script src="https://js.arcgis.com/4.4/"></script>
 
   <style>
     html,
@@ -162,7 +153,7 @@
 
       map.add(layer);
 
-      view.when().then(function(){
+      view.then(function(){
 
         var legend = new Legend({
           view: view
@@ -278,7 +269,7 @@
           .then(function(response){
             sizeResponse = response;
             var oldRenderer = sizeParams.layer.renderer.clone();
-            var newRenderer = response.renderer.clone();
+            var newRenderer = response.renderer;
             var unchangedVV;
 
             if (oldRenderer.visualVariables){
@@ -290,36 +281,7 @@
             }
 
             sizeVVs = lang.clone(response.visualVariables);
-            var sizeVV = sizeVVs.filter(function(vv){
-              return vv.type === "size";
-            })[0];
-            sizeVV.legendOptions = {
-              title: sizeFieldSelect.selectedOptions[0].text
-            };
-            sizeVVs = [ sizeVV ];
             newRenderer.visualVariables = sizeVVs.concat(unchangedVV);
-
-
-            var classBreakInfo = lang.clone( newRenderer.classBreakInfos[0] );
-            var symbol = classBreakInfo.symbol.clone();
-            var outline = symbol.outline.clone();
-            var outlineColor = outline.color.clone();
-            outlineColor.a = 0.2;
-            outline.color = outlineColor;
-            symbol.outline = outline;
-            classBreakInfo.symbol = symbol;
-            newRenderer.classBreakInfos = [ classBreakInfo ];
-
-            if(newRenderer.backgroundFillSymbol){
-              var backgroundFillSymbol = newRenderer.backgroundFillSymbol.clone();
-              var backOutline = backgroundFillSymbol.outline.clone();
-              var boutlineColor = backOutline.color.clone();
-              boutlineColor.a = 0.2;
-              backOutline.color = boutlineColor;
-              backgroundFillSymbol.outline = backOutline;
-              newRenderer.backgroundFillSymbol = backgroundFillSymbol;
-            }
-
             sizeParams.layer.renderer = newRenderer;
 
             return histogram({
@@ -354,7 +316,7 @@
               // when the user slides the handle(s), update the renderer
               // with the updated size visual variable objects
 
-              sizeSlideEvent = sizeSlider.on("data-change", function() {
+              sizeSlideEvent = sizeSlider.on("handle-value-change", function() {
 
                 var renderer = layer.renderer.clone();
                 var visualVariables = lang.clone(renderer.visualVariables);
@@ -413,12 +375,8 @@
             colorResponse = response;
 
             colorVV = lang.clone(response.visualVariable);
-            colorVV.legendOptions = {
-              title: colorFieldSelect.selectedOptions[0].text
-            };
             var oldRenderer = colorParams.layer.renderer.clone();
-            var newRenderer = response.renderer.clone();
-            newRenderer.visualVariables = [ colorVV ];
+            var newRenderer = response.renderer;
             var renderer;
 
             if(oldRenderer.visualVariables){
@@ -428,19 +386,9 @@
               oldRenderer.visualVariables = unchangedVVs.concat([colorVV]);
               renderer = unchangedVVs.length > 0 ? oldRenderer : newRenderer;
             } else {
+//              oldRenderer.visualVariables = [colorVV];
               renderer = newRenderer;
             }
-
-
-            var classBreakInfo = lang.clone( renderer.classBreakInfos[0] );
-            var symbol = classBreakInfo.symbol.clone();
-            var outline = symbol.outline.clone();
-            var outlineColor = outline.color.clone();
-            outlineColor.a = 0.2;
-            outline.color = outlineColor;
-            symbol.outline = outline;
-            classBreakInfo.symbol = symbol;
-            renderer.classBreakInfos = [ classBreakInfo ];
 
             layer.renderer = renderer;
 
@@ -475,7 +423,7 @@
               // when the user slides the handle(s), update the renderer
               // with the updated color visual variable object
 
-              colorSlideEvent = colorSlider.on("data-change", function() {
+              colorSlideEvent = colorSlider.on("handle-value-change", function() {
                 var renderer = layer.renderer.clone();
 
                 var visualVariables = lang.clone(renderer.visualVariables);
@@ -516,15 +464,6 @@
           if (params.sizeVVs){
             renderer.visualVariables = params.sizeVVs;
           }
-
-          var symbol = renderer.symbol.clone();
-          var outline = symbol.outline.clone();
-          var outlineColor = outline.color.clone();
-          outlineColor.a = 0.2;
-          outline.color = outlineColor;
-          symbol.outline = outline;
-          renderer.symbol = symbol;
-
           locationParams.layer.renderer = renderer;
         }).otherwise(function(err) {
           console.log("there was an error: ", err);
@@ -543,7 +482,7 @@
   <div id="viewDiv"></div>
   <div id="color-container" class="widget-background">
     <h3>Color</h3>
-    Field: <select id="color-field-select" class="esri-widget">
+    Field: <select id="color-field-select">
       <option value="" selected></option>
       <option value="PCT_OBM">% voted Obama</option>
       <option value="PCT_ROM">% voted Romney</option>
@@ -558,7 +497,7 @@
       <option value="PER_DEMOCRATS">% adults registered democrats</option>
       <option value="PER_OTHER">% adults third party</option>
     </select>
-    Theme: <select id="theme-options" class="esri-widget">
+    Theme: <select id="theme-options">
       <option value="high-to-low" selected>High to low</option>
       <option value="centered-on">Centered on</option>
       <option value="extremes">Extremes</option>
@@ -567,7 +506,7 @@
   </div>
   <div id="size-container" class="widget-background">
     <h3>Size</h3>
-    Field: <select id="size-field-select" class="esri-widget">
+    Field: <select id="size-field-select">
       <option value="" selected></option>
       <option value="" selected></option>
       <option value="PCT_OBM">% voted Obama</option>
