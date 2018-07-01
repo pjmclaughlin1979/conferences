@@ -7,9 +7,18 @@
 
   <title>Generate above and below color visualization in 3D - 4.4</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.4/dijit/themes/claro/claro.css">
-  <script src="https://js.arcgis.com/4.4/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/dijit/themes/claro/claro.css">
+
+  <script>
+    var dojoConfig = {
+      has: {
+        "esri-featurelayer-webgl": 1
+      }
+    }
+  </script>
+
+  <script src="https://js.arcgis.com/4.8/"></script>
 
   <style>
     html,
@@ -153,7 +162,7 @@
 
       map.add(layer);
 
-      view.then(function(){
+      view.when().then(function(){
 
         var legend = new Legend({
           view: view
@@ -316,7 +325,7 @@
               // when the user slides the handle(s), update the renderer
               // with the updated size visual variable objects
 
-              sizeSlideEvent = sizeSlider.on("handle-value-change", function() {
+              sizeSlideEvent = sizeSlider.on("data-change", function() {
 
                 var renderer = layer.renderer.clone();
                 var visualVariables = lang.clone(renderer.visualVariables);
@@ -423,7 +432,7 @@
               // when the user slides the handle(s), update the renderer
               // with the updated color visual variable object
 
-              colorSlideEvent = colorSlider.on("handle-value-change", function() {
+              colorSlideEvent = colorSlider.on("data-change", function() {
                 var renderer = layer.renderer.clone();
 
                 var visualVariables = lang.clone(renderer.visualVariables);
@@ -482,7 +491,7 @@
   <div id="viewDiv"></div>
   <div id="color-container" class="widget-background">
     <h3>Color</h3>
-    Field: <select id="color-field-select">
+    Field: <select id="color-field-select" class="esri-widget">
       <option value="" selected></option>
       <option value="PCT_OBM">% voted Obama</option>
       <option value="PCT_ROM">% voted Romney</option>
@@ -497,7 +506,7 @@
       <option value="PER_DEMOCRATS">% adults registered democrats</option>
       <option value="PER_OTHER">% adults third party</option>
     </select>
-    Theme: <select id="theme-options">
+    Theme: <select id="theme-options" class="esri-widget">
       <option value="high-to-low" selected>High to low</option>
       <option value="centered-on">Centered on</option>
       <option value="extremes">Extremes</option>
@@ -506,7 +515,7 @@
   </div>
   <div id="size-container" class="widget-background">
     <h3>Size</h3>
-    Field: <select id="size-field-select">
+    Field: <select id="size-field-select" class="esri-widget">
       <option value="" selected></option>
       <option value="" selected></option>
       <option value="PCT_OBM">% voted Obama</option>
