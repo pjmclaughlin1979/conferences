@@ -1,0 +1,90 @@
+import esri = __esri;
+
+import EsriMap = require("esri/Map");
+import MapView = require("esri/views/MapView");
+import FeatureLayer = require("esri/layers/FeatureLayer");
+import Legend = require("esri/widgets/Legend");
+import SimpleRenderer = require("esri/renderers/SimpleRenderer");
+
+const url = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/boise_housing_low_income/FeatureServer/0";
+
+const template = {
+  title: "{HINC0_CY} households earn less than $15k per year",
+  fieldInfos: [{
+    fieldName: "HINC0_CY",
+    format: {
+      places: 0,
+      digitSeperator: true
+    }
+  }]
+};
+
+const layer = new FeatureLayer({
+  url: url,
+  title: "Block groups (Boise)",
+  popupTemplate: template
+});
+
+const householdsMinWage = {
+  type: "color",
+  field: "HINC0_CY",
+  // normalizationField: "TOTHH_CY",
+  // legendOptions: {
+  //   title: "% population that never attended any school"
+  // },
+  stops: [
+    { value: 19, color: "#fffcd4" },
+    { value: 59, color: "#b1cdc2" },
+    { value: 100, color: "#629eb0" },
+    { value: 141, color: "#38627a" },
+    { value: 183, color: "#0d2644" }
+  ]
+};
+
+// normalized stops
+
+//  [
+//      { value: 0.04, color: "#fffcd4" },
+//      { value: 0.083, color: "#b1cdc2" },
+//      { value: 0.127, color: "#629eb0" },
+//      { value: 0.173, color: "#38627a" },
+//      { value: 0.218, color: "#0d2644" }
+//    ]
+
+//  non-normalized stops
+  //  [
+  //    { value: 19, color: "#fffcd4" },
+  //    { value: 59, color: "#b1cdc2" },
+  //    { value: 100, color: "#629eb0" },
+  //    { value: 141, color: "#38627a" },
+  //    { value: 183, color: "#0d2644" }
+  //  ]
+
+// set the renderer on the layer
+layer.renderer = new SimpleRenderer({
+  symbol: {
+    type: "simple-fill",
+    outline: {
+      color: [ 255, 255, 255, 0.2 ],
+      width: 0.7
+    }
+  },
+  visualVariables: [ householdsMinWage ]
+});
+
+const map = new EsriMap({
+  basemap: "streets",
+  layers: [ layer ]
+});
+
+const view = new MapView({
+  map: map,
+  container: "viewDiv",
+  center: [ -116.40161, 43.61349 ],
+  zoom: 11,
+  popup: {
+    collapsed: true
+  }
+});
+
+view.ui.add(new Legend({ view: view }), "bottom-left");

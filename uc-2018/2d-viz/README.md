@@ -25,7 +25,7 @@ Arcade
 Arcade-based renderers
 relationship renderer
 predominance
-volcano appp
+volcano app
 
 
 
