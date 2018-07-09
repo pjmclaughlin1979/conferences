@@ -153,24 +153,24 @@ const renderer = new UniqueValueRenderer({
       symbol: createSymbol("#ebdc78", false)
     }
   ],
-  visualVariables: [{
-    type: "opacity",
-    valueExpression: arcadeExpressionInfos[1].expression,
-    valueExpressionTitle: arcadeExpressionInfos[1].title,
-    stops: [
-      { value: 10, opacity: 0.05 },
-      { value: 56, opacity: 0.95}
-    ]
-  }
-  // , {
-  //   type: "size",
-  //   field: "AVGVAL_CY",
-  //   minDataValue: 100000,
-  //   maxDataValue: 650000,
-  //   minSize: 3,
-  //   maxSize: 60
-  // }
-]
+//   visualVariables: [{
+//     type: "opacity",
+//     valueExpression: arcadeExpressionInfos[1].expression,
+//     valueExpressionTitle: arcadeExpressionInfos[1].title,
+//     stops: [
+//       { value: 10, opacity: 0.05 },
+//       { value: 56, opacity: 0.95}
+//     ]
+//   }
+//   , {
+//     type: "size",
+//     field: "AVGVAL_CY",
+//     minDataValue: 100000,
+//     maxDataValue: 650000,
+//     minSize: 3,
+//     maxSize: 60
+//   }
+// ]
 });
 
 //AVGVAL_CY
