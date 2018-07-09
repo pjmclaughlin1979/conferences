@@ -5,7 +5,7 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import Legend = require("esri/widgets/Legend");
 import { UniqueValueRenderer } from "esri/renderers";
-import { SimpleFillSymbol } from "esri/symbols";
+import { SimpleFillSymbol, SimpleMarkerSymbol } from "esri/symbols";
 
 const predominanceArcade = `
 
@@ -66,14 +66,17 @@ const strengthArcade = `
   return (winner/total)*100;
 `;
 
-function createSymbol (color: any){
-  return new SimpleFillSymbol({
+function createSymbol(color: any, isMarker: boolean ){
+  var options = {
     color: color,
     outline: {
-      width: 0.5,
-      color: [ 255, 255, 255, 0.25 ]
-    }
-  });
+      color: [ 255, 255, 255, 0.3 ],
+      width: 0.5
+    },
+    size: 6
+  };
+
+  return isMarker ? new SimpleMarkerSymbol(options) : new SimpleFillSymbol(options);
 }
 
 // The expressionInfos reference Arcade expressions and
@@ -93,7 +96,7 @@ var arcadeExpressionInfos = [
   // by the predominant category
   {
     name: "strength-arcade",
-    title: "% of population belonging to predominant category",
+    title: "% of housing belonging to predominant category",
     expression: strengthArcade
   }
 ];
@@ -115,39 +118,39 @@ const template = {
 const renderer = new UniqueValueRenderer({
   valueExpression: arcadeExpressionInfos[0].expression,
   valueExpressionTitle: arcadeExpressionInfos[0].title,
-  defaultSymbol: createSymbol("gray"),
+  defaultSymbol: createSymbol("gray", false),
   defaultLabel: "Tie",
   uniqueValueInfos: [
     {
       value: "After 2014",
-      symbol: createSymbol("#b30000")
+      symbol: createSymbol("#b30000", false)
     }, {
       value: "2010 - 2014",
-      symbol: createSymbol("#7c1158")
+      symbol: createSymbol("#7c1158", false)
     }, {
       value: "2000 - 2009",
-      symbol: createSymbol("#4421af")
+      symbol: createSymbol("#4421af", false)
     }, {
       value: "1990 - 1999",
-      symbol: createSymbol("#1a53ff")
+      symbol: createSymbol("#1a53ff", false)
     }, {
       value: "1980 - 1989",
-      symbol: createSymbol("#0d88e6")
+      symbol: createSymbol("#0d88e6", false)
     }, {
       value: "1970 - 1979",
-      symbol: createSymbol("#00b7c7")
+      symbol: createSymbol("#00b7c7", false)
     }, {
       value: "1960 - 1969",
-      symbol: createSymbol("#5ad45a")
+      symbol: createSymbol("#5ad45a", false)
     }, {
       value: "1950 - 1959",
-      symbol: createSymbol("#8be04e")
+      symbol: createSymbol("#8be04e", false)
     }, {
       value: "1940 - 1949",
-      symbol: createSymbol("#c5d96d")
+      symbol: createSymbol("#c5d96d", false)
     }, {
       value: "Before 1940",
-      symbol: createSymbol("#ebdc78")
+      symbol: createSymbol("#ebdc78", false)
     }
   ],
   visualVariables: [{
@@ -158,8 +161,19 @@ const renderer = new UniqueValueRenderer({
       { value: 10, opacity: 0.05 },
       { value: 56, opacity: 0.95}
     ]
-  }]
+  }
+  // , {
+  //   type: "size",
+  //   field: "AVGVAL_CY",
+  //   minDataValue: 100000,
+  //   maxDataValue: 650000,
+  //   minSize: 3,
+  //   maxSize: 60
+  // }
+]
 });
+
+//AVGVAL_CY
 
 const layer = new FeatureLayer({
   url,
@@ -182,4 +196,5 @@ const view = new MapView({
   },
   map: map
 });
+
 view.ui.add(new Legend({ view: view }), "bottom-left");

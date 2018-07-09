@@ -17,19 +17,21 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         title: "Block groups (Boise)",
         popupTemplate: template
     });
+    var arcadeExpression = "Round( ( $feature.HINC0_CY / $feature.TOTHH_CY ) * 100 )";
     var householdsMinWage = {
         type: "color",
-        field: "HINC0_CY",
+        // field: "HINC0_CY",
         // normalizationField: "TOTHH_CY",
-        // legendOptions: {
-        //   title: "% population that never attended any school"
-        // },
+        valueExpression: arcadeExpression,
+        legendOptions: {
+            title: "% households earning less than minimum wage"
+        },
         stops: [
-            { value: 19, color: "#fffcd4" },
-            { value: 59, color: "#b1cdc2" },
-            { value: 100, color: "#629eb0" },
-            { value: 141, color: "#38627a" },
-            { value: 183, color: "#0d2644" }
+            { value: 4, color: "#fffcd4" },
+            { value: 8.3, color: "#b1cdc2" },
+            { value: 12.7, color: "#629eb0" },
+            { value: 17.3, color: "#38627a" },
+            { value: 21.8, color: "#0d2644" }
         ]
     };
     // normalized stops
@@ -40,6 +42,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     //      { value: 0.173, color: "#38627a" },
     //      { value: 0.218, color: "#0d2644" }
     //    ]
+    // rounded stops
+    // [
+    //   { value: 4, color: "#fffcd4" },
+    //   { value: 8.3, color: "#b1cdc2" },
+    //   { value: 12.7, color: "#629eb0" },
+    //   { value: 17.3, color: "#38627a" },
+    //   { value: 21.8, color: "#0d2644" }
+    // ]
     //  non-normalized stops
     //  [
     //    { value: 19, color: "#fffcd4" },

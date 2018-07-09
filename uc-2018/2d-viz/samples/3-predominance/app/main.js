@@ -3,14 +3,16 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     Object.defineProperty(exports, "__esModule", { value: true });
     var predominanceArcade = "\n\n  // The fields from which to calculate predominance\n  // The expression will return the alias of the predominant field\n\n  var fields = [\n    { value: $feature.ACSBLT1939, alias: \"Before 1940\" },\n    { value: $feature.ACSBLT1940, alias: \"1940 - 1949\" },\n    { value: $feature.ACSBLT1950, alias: \"1950 - 1959\" },\n    { value: $feature.ACSBLT1960, alias: \"1960 - 1969\" },\n    { value: $feature.ACSBLT1970, alias: \"1970 - 1979\" },\n    { value: $feature.ACSBLT1980, alias: \"1980 - 1989\" },\n    { value: $feature.ACSBLT1990, alias: \"1990 - 1999\" },\n    { value: $feature.ACSBLT2000, alias: \"2000 - 2009\" },\n    { value: $feature.ACSBLT2010, alias: \"2010 - 2014\" },\n    { value: $feature.ACSBLT2014, alias: \"After 2014\" }\n  ];\n\n  // Returns the predominant category as the alias\n  // defined in the fields array. If there is a tie,\n  // then both names are concatenated and used to\n  // indicate the tie\n\n  function getPredominantCategory(fieldsArray){\n    var maxValue = -Infinity;\n    var maxCategory = \"\";\n    for(var k in fieldsArray){\n      if(fieldsArray[k].value > maxValue){\n        maxValue = fieldsArray[k].value;\n        maxCategory = fieldsArray[k].alias;\n      } else if (fieldsArray[k].value == maxValue){\n        maxCategory = maxCategory + \"/\" + fieldsArray[k].alias;\n      }\n    }\n    return maxCategory;\n  }\n\n  getPredominantCategory(fields);\n";
     var strengthArcade = "\n  // Returns the share of the dominant demographic as a percentage\n  var fields = [ \n    $feature.ACSBLT1939,\n    $feature.ACSBLT1940,\n    $feature.ACSBLT1950,\n    $feature.ACSBLT1960,\n    $feature.ACSBLT1970,\n    $feature.ACSBLT1980,\n    $feature.ACSBLT1990,\n    $feature.ACSBLT2000,\n    $feature.ACSBLT2010,\n    $feature.ACSBLT2014\n  ];\n  var winner = Max(fields);\n  var total = Sum(fields);\n  return (winner/total)*100;\n";
-    function createSymbol(color) {
-        return new symbols_1.SimpleFillSymbol({
+    function createSymbol(color, isMarker) {
+        var options = {
             color: color,
             outline: {
-                width: 0.5,
-                color: [255, 255, 255, 0.25]
-            }
-        });
+                color: [255, 255, 255, 0.3],
+                width: 0.5
+            },
+            size: 6
+        };
+        return isMarker ? new symbols_1.SimpleMarkerSymbol(options) : new symbols_1.SimpleFillSymbol(options);
     }
     // The expressionInfos reference Arcade expressions and
     // assign each of them a title and name. The name is used
@@ -28,7 +30,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         // by the predominant category
         {
             name: "strength-arcade",
-            title: "% of population belonging to predominant category",
+            title: "% of housing belonging to predominant category",
             expression: strengthArcade
         }
     ];
@@ -47,39 +49,39 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     var renderer = new renderers_1.UniqueValueRenderer({
         valueExpression: arcadeExpressionInfos[0].expression,
         valueExpressionTitle: arcadeExpressionInfos[0].title,
-        defaultSymbol: createSymbol("gray"),
+        defaultSymbol: createSymbol("gray", false),
         defaultLabel: "Tie",
         uniqueValueInfos: [
             {
                 value: "After 2014",
-                symbol: createSymbol("#b30000")
+                symbol: createSymbol("#b30000", false)
             }, {
                 value: "2010 - 2014",
-                symbol: createSymbol("#7c1158")
+                symbol: createSymbol("#7c1158", false)
             }, {
                 value: "2000 - 2009",
-                symbol: createSymbol("#4421af")
+                symbol: createSymbol("#4421af", false)
             }, {
                 value: "1990 - 1999",
-                symbol: createSymbol("#1a53ff")
+                symbol: createSymbol("#1a53ff", false)
             }, {
                 value: "1980 - 1989",
-                symbol: createSymbol("#0d88e6")
+                symbol: createSymbol("#0d88e6", false)
             }, {
                 value: "1970 - 1979",
-                symbol: createSymbol("#00b7c7")
+                symbol: createSymbol("#00b7c7", false)
             }, {
                 value: "1960 - 1969",
-                symbol: createSymbol("#5ad45a")
+                symbol: createSymbol("#5ad45a", false)
             }, {
                 value: "1950 - 1959",
-                symbol: createSymbol("#8be04e")
+                symbol: createSymbol("#8be04e", false)
             }, {
                 value: "1940 - 1949",
-                symbol: createSymbol("#c5d96d")
+                symbol: createSymbol("#c5d96d", false)
             }, {
                 value: "Before 1940",
-                symbol: createSymbol("#ebdc78")
+                symbol: createSymbol("#ebdc78", false)
             }
         ],
         visualVariables: [{
@@ -90,8 +92,18 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     { value: 10, opacity: 0.05 },
                     { value: 56, opacity: 0.95 }
                 ]
-            }]
+            }
+            // , {
+            //   type: "size",
+            //   field: "AVGVAL_CY",
+            //   minDataValue: 100000,
+            //   maxDataValue: 650000,
+            //   minSize: 3,
+            //   maxSize: 60
+            // }
+        ]
     });
+    //AVGVAL_CY
     var layer = new FeatureLayer({
         url: url,
         title: "Most common decade of housing construction (Boise)",
