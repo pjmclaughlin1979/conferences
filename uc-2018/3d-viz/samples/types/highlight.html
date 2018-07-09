@@ -164,7 +164,7 @@ require([
       });
   }
 
-  view.then(function(){
+  view.when().then(function(){
 
     generateUniqueValues(appConfig)
       .then(function(values){
