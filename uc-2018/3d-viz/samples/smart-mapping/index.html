@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Generate continuous color visualization for 3D buildings - 4.4</title>
+  <title>Generate continuous color visualization for 3D buildings</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
   <link rel="stylesheet" href="https://js.arcgis.com/4.8/dijit/themes/claro/claro.css">
@@ -27,7 +27,7 @@
 
     #title {
       font-size: 14pt;
-      font
+      padding: 15px;
     }
   </style>
 
@@ -39,34 +39,29 @@
       "esri/renderers/smartMapping/creators/color",
       "esri/renderers/smartMapping/statistics/histogram",
       "esri/widgets/ColorSlider",
+      "esri/widgets/Expand",
+      "esri/widgets/BasemapGallery",
       "esri/core/lang",
       "dojo/domReady!"
     ], function(
       Map, SceneView, SceneLayer, colorRendererCreator,
-      histogram, ColorSlider, lang
+      histogram, ColorSlider, Expand, BasemapGallery, lang
     ) {
 
       // New York buildings enriched with values for
       // % population that own a home and
       // average home value
 
-      var layer = new SceneLayer({
+      const layer = new SceneLayer({
         portalItem: {
-          id: "d76ae6b9ae2f4de39e4f876bbf76bb84"
+          id: "047494c929634e0ab31272732e3dbe01"
         },
         popupTemplate: {
           content: [{
             type: "fields",
-            fieldInfos: [
-            {
-              fieldName: "OWNER_P",
-              label: "% home owners"
-            }, {
-              fieldName: "AVGVAL_CY",
-              label: "Average home value"
-            }, {
-              fieldName: "CNSTRCT_YR",
-              label: "Construction year"
+            fieldInfos: [{
+              fieldName: "StarScore",
+              label: "Energy Score"
             }]
           }]
         }
@@ -74,12 +69,12 @@
 
       // Create a map and add it to a SceneView
 
-      var map = new Map({
+      const map = new Map({
         basemap: "gray",
         layers: [ layer ]
       });
 
-      var view = new SceneView({
+      const view = new SceneView({
         container: "viewDiv",
         map: map,
         camera: {
@@ -104,19 +99,28 @@
       });
       view.ui.add("containerDiv", "bottom-left");
 
-      var fieldSelect;
-      var themeSelect;
-      var colorSlider;
+      var bg = new BasemapGallery({
+        view: view
+      });
+
+      bg.watch("activeBasemap", function(newBasemap){
+        createRenderer({
+          basemap: newBasemap
+        });
+      });
+
+      var bgExpand = new Expand({
+        view: view,
+        content: bg
+      });
+
+      view.ui.add(bgExpand, "top-right");
+
+      let themeSelect;
+      let colorSlider;
 
       view.when().then(function(){
-        fieldSelect = document.getElementById("color-field-select");
         themeSelect = document.getElementById("theme-options");
-
-        fieldSelect.addEventListener("change", function(event){
-          createRenderer({
-            field: event.target.value
-          });
-        });
 
         themeSelect.addEventListener("change", function(event){
           createRenderer({
@@ -145,7 +149,7 @@
         var colorParams = {
           layer: params && params.layer ? params.layer : layer,
           basemap: params && params.basemap ? params.basemap : map.basemap,
-          field: params && params.field ? params.field : fieldSelect.value,
+          field: "StarScore",
           theme: params && params.theme ? params.theme : themeSelect.value
         };
 
@@ -199,25 +203,43 @@
           });
       }
 
+      document.getElementById("reverse-colors").addEventListener("click", function(){
+        var flippedRenderer = flipColors(layer.renderer);
+        layer.renderer = flippedRenderer;
+        colorSlider.set({
+          visualVariable: flippedRenderer.visualVariables[0]
+        });
+      });
+
+      function flipColors(renderer){
+        var newRenderer = renderer.clone();
+        var reversedVisualVariable = lang.clone(newRenderer.visualVariables[0]);
+        var reversedColors = reversedVisualVariable.stops.map(function(stop){
+          return stop.color;
+        }).reverse();
+        reversedVisualVariable.stops.forEach(function(stop, i){
+          stop.color = reversedColors[i];
+        });
+        newRenderer.visualVariables = [ reversedVisualVariable ];
+        return newRenderer;
+      }
+
     });
   </script>
 </head>
 
 <body class="claro">
   <div id="viewDiv"></div>
-  <div id="containerDiv" class="widget-background">
-    Field: <select id="color-field-select">
-      <option value="OWNER_P" selected>% home owners</option>
-      <option value="AVGVAL_CY">Average home value</option>
-      <option value="CNSTRCT_YR">Construction year</option>
-    </select><br>
-    Theme: <select id="theme-options">
+  <div id="containerDiv" class="esri-widget">
+    <div id="title">Energy Score</div>
+    Theme: <select id="theme-options" class="esri-widget">
       <option value="high-to-low" selected>High to low</option>
       <option value="centered-on">Centered on</option>
       <option value="extremes">Extremes</option>
       <option value="above-and-below">Above and below</option>
     </select><br>
     <div id="slider"></div>
+    <button id="reverse-colors" class="esri-widget">Reverse colors</button>
   </div>
 </body>
 
