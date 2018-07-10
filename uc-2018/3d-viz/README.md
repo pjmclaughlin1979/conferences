@@ -14,78 +14,61 @@ The ArcGIS API 4.x for JavaScript provides a set of APIs allowing you to build p
 
 ### Demos
 
-basic demo with 2D data, extrusion, color, etc. 
-
-smart mapping - ds demo (walk times)
-OR plenary demo from Jen
-https://codepen.io/kekenes/pen/YvrjZo?&editors=100
-
-2D data sample?
-
-EMU data? (expression with z values)
-
-edges/color visual variable on buildings/colormixmode
-open sdk samples - raluca sample
-http://raluca-nicola.net/edge-rendering/?scene=touristic
-
-change background color
-
-underground visualization
-
-https://www.esri.com/arcgis-blog/products/js-api-arcgis/3d-gis/mapping-art-in-3d/
-https://www.esri.com/arcgis-blog/products/js-api-arcgis/3d-gis/manhattan-skyscraper-explorer-when-open-data-and-arcgis-api-for-javascript-meet/
-
-https://esri.github.io/Manhattan-skyscraper-explorer/
-
-https://ralucanicola.github.io/JSAPI_demos/art-galleries-nyc/
+EMU data? (expression with z values) - screenshot
 
 
-point clouds???
 
-POI????
-
-
-##### [Extrusion](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/extrusions/)
+##### [Extrusion](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/extrusions/)
 
 This sample demonstrates how to create a data-driven visualization with extrusions. It also demonstrates how to drive the height of cone object symbols based on numeric data and how adding color to visualize the same variable can help users interpret data more clearly in 3D.
 
-[![extrusion](images/extrusion.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/extrusions/)
+[![extrusion](images/extrusion.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/extrusions/)
 
-##### [Points of interest](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/points-of-interest/)
+##### [Points of interest](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/points-of-interest/)
 
 This sample demonstrates how to add points of interest as icon symbols to a web scene. It takes advantage of symbol callouts and alters the size of icons based on their distance from the view's camera.
 
-[![poi](images/poi.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/points-of-interest/)
+[![poi](images/poi.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/points-of-interest/)
 
-##### [Data exploration with Smart Mapping](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/)
+##### [Data exploration with Smart Mapping](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/smart-mapping/)
 
-This sample shows how to create a data exploration app using the Smart Mapping APIs. It allows you to visualize buildings in New York geoenriched with housing data. You can also colorize features using themes in the color generators provided by Smart Mapping.
+This sample shows how to create a data exploration app using the Smart Mapping APIs. It allows you to visualize buildings in New York geoenriched with entery data. You can also colorize features using themes in the color generators provided by Smart Mapping.
 
-[![smart-mapping](images/smart-mapping.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/)
+[![smart-mapping](images/smart-mapping.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/smart-mapping/)
 
-##### [Bivariate Smart Mapping](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/bivariate.html)
+##### [Bivariate Smart Mapping](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/smart-mapping/bivariate.html)
 
 This sample demonstrates how to create a bivariate data exporation app, allowing users to alter the size and color of features to explore potential correlation between two variables.
 
-[![bivariate](images/bivariate.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/smart-mapping/bivariate.html)
+[![bivariate](images/bivariate.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/smart-mapping/bivariate.html)
 
-##### [Colorized buildings](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/)
+##### [Edge rendering](http://raluca-nicola.net/edge-rendering/?scene=touristic)
+
+[![bivariate](images/bivariate.png)](http://raluca-nicola.net/edge-rendering/?scene=touristic)
+
+##### [Colorized buildings](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
 
 This sample demonstrates how to colorize buildings by adding color to building textures or replacing textures altogether with color on plain mesh symbols.
 
-[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/)
+[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
 
-##### [Highlight by type](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/highlight.html)
+##### [Underground visualization](https://developers.arcgis.com/javascript/latest/sample-code/sceneview-underground/index.html)
 
-This sample demonstrates how to generate unique types based on a field using the type generators in the Smart Mapping APIs and highlight buildings when the user hovers over the generated type in a simple HTML list element.
 
-[![highlight](images/highlight.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/types/highlight.html)
+[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
 
-##### [Thematic callouts](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/thematic-callout/)
 
-This sample demonstrates how to create a continous size visualization with points and callouts on a global scale.
+##### [Airspace encroachment analysis](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/airspace-encroachment/)
 
-[![thematic-callout](images/thematic-callout.png)](https://ekenes.github.io/conferences/uc-2017/3d-viz/samples/thematic-callout/)
+
+[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
+
+
+##### [Background Color](https://developers.arcgis.com/javascript/latest/sample-code/sceneview-background/index.html)
+
+[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
+
+##### [Transparent ground](https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayer-points/index.html)
 
 
 ## Resources
