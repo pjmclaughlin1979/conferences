@@ -44,8 +44,6 @@
       on, dom
     ) {
 
-
-
         var stretchRenderer = new PointCloudStretchRenderer({
           field: "ELEVATION",
 
@@ -98,14 +96,11 @@
         });
 
 
-
         barnegatPointClouds = new PointCloudLayer({
           url: "https://tiles.arcgis.com/tiles/V6ZHFr6zdgNZuVG0/arcgis/rest/services/BARNEGAT_BAY_LiDAR_UTM/SceneServer",
           renderer: rgbRenderer
           // renderer: stretchRenderer
         });
-
-
 
         // create map and view
         var map = new Map({

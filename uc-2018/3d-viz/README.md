@@ -14,10 +14,6 @@ The ArcGIS API 4.x for JavaScript provides a set of APIs allowing you to build p
 
 ### Demos
 
-EMU data? (expression with z values) - screenshot
-
-
-
 ##### [Extrusion](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/extrusions/)
 
 This sample demonstrates how to create a data-driven visualization with extrusions. It also demonstrates how to drive the height of cone object symbols based on numeric data and how adding color to visualize the same variable can help users interpret data more clearly in 3D.
@@ -58,7 +54,7 @@ This sample demonstrates how to colorize buildings by adding color to building t
 [![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
 
 
-##### [Airspace encroachment analysis](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/airspace-encroachment/)
+##### [Airspace encroachment analysis](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/airspace-encroachment /)
 
 
 [![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
