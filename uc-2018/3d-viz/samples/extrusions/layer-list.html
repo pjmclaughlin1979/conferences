@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Visualize SceneLayer by type</title>
+<style>
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#infoDiv {
+  background-color: white;
+  padding: 5px;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+<script src="https://js.arcgis.com/4.8/"></script>
+
+<script>
+require([
+  "esri/Map",
+  "esri/layers/FeatureLayer",
+  "esri/views/SceneView",
+  "esri/renderers/SimpleRenderer",
+  "esri/symbols/PolygonSymbol3D",
+  "esri/symbols/ExtrudeSymbol3DLayer",
+  "esri/symbols/FillSymbol3DLayer",
+  "esri/symbols/ObjectSymbol3DLayer",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "dojo/domReady!"
+], function(
+  Map,
+  FeatureLayer,
+  SceneView,
+  SimpleRenderer,
+  PolygonSymbol3D,
+  ExtrudeSymbol3DLayer,
+  FillSymbol3DLayer,
+  ObjectSymbol3DLayer,
+  Legend,
+  LayerList
+) {
+
+  var educationLayer = new FeatureLayer({
+    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/NY%20Educational%20Attainment/FeatureServer/0",
+    outFields: [ "EDUCBASECY" ],
+    minScale: 0,
+    maxScale: 0,
+    title: "NYC census tracts",
+    renderer: new SimpleRenderer({
+      symbol: new PolygonSymbol3D({
+        symbolLayers: [
+          new FillSymbol3DLayer({
+            material: { color: "#ce6065" },
+            outline: {
+              color: "darkred",
+              width: 1
+            }
+          })
+        ]
+      })
+    })
+  });
+
+  var map = new Map({
+    basemap: "gray",
+    layers: [ educationLayer ]
+  });
+
+  var view = new SceneView({
+    container: "viewDiv",
+    map: map,
+    camera: {
+      position: {
+        x: -8272629,
+        y: 4731977,
+        z: 117979,
+        spatialReference: {
+          latestWkid: 3857,
+          wkid: 102100
+        }
+      },
+      heading: 16.5,
+      tilt: 60
+    }
+  });
+
+  var layerList = new LayerList({
+    view: view,
+    listItemCreatedFunction: createActions
+  });
+  view.ui.add(layerList, "top-right");
+
+  function createActions(event){
+    var item = event.item;
+
+    item.actionsSections = [[{
+      title: "Extrusion",
+      className: "esri-icon-maps",
+      id: "extrusion"
+    }, {
+      title: "Extrusion with color",
+      className: "esri-icon-maps",
+      id: "extrusion-color"
+    }, {
+      title: "Cones",
+      className: "esri-icon-maps",
+      id: "cones"
+    }, {
+      title: "Cones with color",
+      className: "esri-icon-maps",
+      id: "cones-color"
+    }]];
+  }
+
+  layerList.on("trigger-action", function(event){
+    var actionId = event.action.id;
+    var layer = event.item.layer;
+
+    if(actionId === "extrusion"){
+      createExtrusionRenderer(layer, false, false);
+    } else if(actionId === "extrusion-color"){
+      createExtrusionRenderer(layer, false, true);
+    } else if (actionId === "cones"){
+      createExtrusionRenderer(layer, true, false);
+    } else if (actionId === "cones-color"){
+      createExtrusionRenderer(layer, true, true);
+    }
+  });
+
+  var legend = new Legend({
+    view: view
+  });
+  view.ui.add(legend, "bottom-left");
+
+  function createExtrusionRenderer(layer, withCentroids, withColor){
+
+    var heightVV = {
+      type: "size",
+      field: "EDUCBASECY",
+      legendOptions: {
+        title: "Population 25+"
+      },
+      minSize: 1000,
+      maxSize: 50000,
+      minDataValue: 2810,
+      maxDataValue: 20859,
+      axis: "height"
+    };
+
+    var widthVV = {
+      type: "size",
+      axis: "width-and-depth",
+      useSymbolValue: true
+    };
+
+    var colorVV = {
+      type: "color",
+      field: "EDUCBASECY",
+      legendOptions: {
+        title: "Population 25+"
+      },
+      stops: [
+        { value: 1308, color: "#fffcd4", label: "< 1308" },
+        { value: 2060, color: "#e7ae9d", label: "" },
+        { value: 2810, color: "#ce6065", label: "2810" },
+        { value: 5000, color: "#88314f", label: "" },
+        { value: 8000, color: "#420239", label: "> 8000" }
+      ]
+    };
+
+    var visualVariables = [ heightVV ];
+
+    var symbol = new PolygonSymbol3D({
+      symbolLayers: []
+    });
+
+    if(withCentroids){
+      symbol.symbolLayers.add(new ObjectSymbol3DLayer({
+        resource: { primitive: "cone" },
+        width: 700,
+        depth: 700,
+        material: { color: "#ce6065" }
+      }));
+      visualVariables.push(widthVV);
+    } else {
+      symbol.symbolLayers.add(new ExtrudeSymbol3DLayer({
+        material: { color: "#ce6065" }
+      }));
+    }
+
+
+    if(withColor){
+      visualVariables.push( colorVV );
+    }
+
+
+    var renderer = new SimpleRenderer({
+      symbol: symbol,
+      visualVariables: visualVariables
+    });
+
+    layer.renderer = renderer;
+  }
+
+});
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

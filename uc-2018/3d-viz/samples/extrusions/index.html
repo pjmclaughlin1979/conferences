@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Visualize SceneLayer by type</title>
+<style>
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#infoDiv {
+  background-color: white;
+  padding: 5px;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+<script src="https://js.arcgis.com/4.8/"></script>
+
+<script>
+require([
+  "esri/Map",
+  "esri/layers/FeatureLayer",
+  "esri/views/SceneView",
+  "esri/renderers/SimpleRenderer",
+  "esri/symbols/PolygonSymbol3D",
+  "esri/symbols/ExtrudeSymbol3DLayer",
+  "esri/symbols/FillSymbol3DLayer",
+  "dojo/domReady!"
+], function(
+  Map,
+  FeatureLayer,
+  SceneView,
+  SimpleRenderer,
+  PolygonSymbol3D,
+  ExtrudeSymbol3DLayer,
+  FillSymbol3DLayer
+) {
+
+  var heightVV = {
+    type: "size",
+    field: "EDUCBASECY",
+    legendOptions: {
+      title: "Population 25+"
+    },
+    minSize: 1000,
+    maxSize: 50000,
+    minDataValue: 2810,
+    maxDataValue: 20859,
+    axis: "height"
+  };
+
+  var colorVV = {
+    type: "color",
+    field: "EDUCBASECY",
+    legendOptions: {
+      title: "Population 25+"
+    },
+    stops: [
+      { value: 1308, color: "#fffcd4", label: "< 1308" },
+      { value: 3000, color: "#e7ae9d", label: "" },
+      { value: 5000, color: "#ce6065", label: "2810" },
+      { value: 6000, color: "#88314f", label: "" },
+      { value: 8000, color: "#420239", label: "> 8000" }
+    ]
+  };
+
+  var educationLayer = new FeatureLayer({
+    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/NY%20Educational%20Attainment/FeatureServer/0",
+    outFields: [ "EDUCBASECY" ],
+    minScale: 0,
+    maxScale: 0,
+    title: "NYC census tracts",
+    renderer: new SimpleRenderer({
+      symbol: new PolygonSymbol3D({
+        symbolLayers: [
+          new ExtrudeSymbol3DLayer({
+            material: { color: "#ce6065" },
+            outline: {
+              color: "darkred",
+              width: 1
+            }
+          })
+        ]
+      }),
+      visualVariables: [ heightVV, colorVV ]
+    })
+  });
+
+  var map = new Map({
+    basemap: "gray",
+    layers: [ educationLayer ]
+  });
+
+  var view = new SceneView({
+    container: "viewDiv",
+    map: map,
+    camera: {
+      position: {
+        x: -8272629,
+        y: 4731977,
+        z: 117979,
+        spatialReference: {
+          latestWkid: 3857,
+          wkid: 102100
+        }
+      },
+      heading: 16.5,
+      tilt: 60
+    }
+  });
+
+  var legend = new Legend({
+    view: view
+  });
+  view.ui.add(legend, "bottom-left");
+
+});
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+</html>

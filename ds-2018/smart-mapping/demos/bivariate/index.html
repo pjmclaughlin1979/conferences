@@ -298,6 +298,28 @@
             };
             sizeVVs = [ sizeVV ];
             newRenderer.visualVariables = sizeVVs.concat(unchangedVV);
+
+
+            var classBreakInfo = lang.clone( newRenderer.classBreakInfos[0] );
+            var symbol = classBreakInfo.symbol.clone();
+            var outline = symbol.outline.clone();
+            var outlineColor = outline.color.clone();
+            outlineColor.a = 0.2;
+            outline.color = outlineColor;
+            symbol.outline = outline;
+            classBreakInfo.symbol = symbol;
+            newRenderer.classBreakInfos = [ classBreakInfo ];
+
+            if(newRenderer.backgroundFillSymbol){
+              var backgroundFillSymbol = newRenderer.backgroundFillSymbol.clone();
+              var backOutline = backgroundFillSymbol.outline.clone();
+              var boutlineColor = backOutline.color.clone();
+              boutlineColor.a = 0.2;
+              backOutline.color = boutlineColor;
+              backgroundFillSymbol.outline = backOutline;
+              newRenderer.backgroundFillSymbol = backgroundFillSymbol;
+            }
+
             sizeParams.layer.renderer = newRenderer;
 
             return histogram({
@@ -409,6 +431,17 @@
               renderer = newRenderer;
             }
 
+
+            var classBreakInfo = lang.clone( renderer.classBreakInfos[0] );
+            var symbol = classBreakInfo.symbol.clone();
+            var outline = symbol.outline.clone();
+            var outlineColor = outline.color.clone();
+            outlineColor.a = 0.2;
+            outline.color = outlineColor;
+            symbol.outline = outline;
+            classBreakInfo.symbol = symbol;
+            renderer.classBreakInfos = [ classBreakInfo ];
+
             layer.renderer = renderer;
 
             return histogram({
@@ -483,6 +516,15 @@
           if (params.sizeVVs){
             renderer.visualVariables = params.sizeVVs;
           }
+
+          var symbol = renderer.symbol.clone();
+          var outline = symbol.outline.clone();
+          var outlineColor = outline.color.clone();
+          outlineColor.a = 0.2;
+          outline.color = outlineColor;
+          symbol.outline = outline;
+          renderer.symbol = symbol;
+
           locationParams.layer.renderer = renderer;
         }).otherwise(function(err) {
           console.log("there was an error: ", err);

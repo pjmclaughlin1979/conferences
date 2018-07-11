@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Earthquakes with callout</title>
+<style>
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#infoDiv {
+  background-color: rgba(255,255,255,0.7);
+  padding: 5px;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+<script src="https://js.arcgis.com/4.8/"></script>
+
+<script>
+require([
+  "esri/Map",
+  "esri/layers/SceneLayer",
+  "esri/views/SceneView",
+  "esri/renderers/SimpleRenderer",
+  "esri/symbols/PointSymbol3D",
+  "esri/symbols/IconSymbol3DLayer",
+  "esri/symbols/LabelSymbol3D",
+  "esri/symbols/TextSymbol3DLayer",
+  "esri/symbols/callouts/LineCallout3D",
+  "esri/renderers/smartMapping/statistics/uniqueValues",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "esri/widgets/Search",
+  "esri/widgets/Expand",
+  "esri/config",
+  "dojo/domReady!"
+], function(
+  Map,
+  SceneLayer,
+  SceneView,
+  SimpleRenderer,
+  PointSymbol3D,
+  IconSymbol3DLayer,
+  LabelSymbol3D,
+  TextSymbol3DLayer,
+  LineCallout3D,
+  uniqueValues,
+  Legend,
+  LayerList,
+  Search,
+  Expand,
+  esriConfig
+) {
+
+  var buildingsLayer = new SceneLayer({
+    url: "https://services2.arcgis.com/cFEFS0EWrhfDeVw9/ArcGIS/rest/services/STM____F_Helsinki__Textured_buildings_with_attributes/SceneServer/layers/0",
+    title: "Helsinki buildings"
+  });
+
+  var appConfig = {
+    layer: buildingsLayer,
+    field: "usage"
+  };
+
+  var selectElement = document.getElementById("building-type");
+
+  function generateUniqueValues(params){
+    return uniqueValues(params)
+      .then(function(response){
+        var values = [];
+        response.uniqueValueInfos.forEach(function(info){
+          if (info.value){
+            values.push(info.value);
+          } else {
+            values.push("Other");
+          }
+        });
+        return values;
+      });
+  }
+
+  function createRadioElements(items){
+    items.forEach(function(item){
+      var option = document.createElement("li");
+      option.innerHTML = item;
+      option.setAttribute("value", item);
+      option.addEventListener("mouseover", function(event){
+        highlightFeatures(item);
+      });
+
+      selectElement.appendChild(option);
+    });
+  }
+
+  var map = new Map({
+    basemap: "hybrid",
+    ground: "world-elevation",
+    layers: [ appConfig.layer ]
+  });
+
+  var view = new SceneView({
+    container: "viewDiv",
+    map: map,
+    camera: {
+      position: {
+        x: 2776229,
+        y: 8433951,
+        z: 193,
+        spatialReference: {
+          latestWkid: 3857,
+          wkid: 102100
+        }
+      },
+      heading: 12,
+      tilt: 77
+    }
+  });
+  view.ui.add("infoDiv", "bottom-left");
+
+  view.on("pointer-move", function(){
+    if(activeHighlight){
+      activeHighlight.remove();
+    }
+  });
+
+  var typesAndIds = {};
+
+  function queryForIds(types){
+    var layer = appConfig.layer;
+    var query = layer.createQuery();
+    types.forEach(function(type){
+      if(type === "Other"){
+        query.where = appConfig.field + " IS NULL";
+      } else {
+        query.where = appConfig.field + " = '" + type + "'";
+      }
+      layer.queryObjectIds(query)
+        .then(function(ids){
+          typesAndIds[type] = ids;
+        });
+    })
+  }
+
+  var activeHighlight = null;
+
+  function highlightFeatures(type){
+    if(activeHighlight){
+      activeHighlight.remove();
+    }
+
+    var ids = typesAndIds[type];
+
+    view.whenLayerView(appConfig.layer)
+      .then(function(layerView){
+        activeHighlight = layerView.highlight(ids);
+      });
+  }
+
+  view.when().then(function(){
+
+    generateUniqueValues(appConfig)
+      .then(function(values){
+        createRadioElements(values);
+        return queryForIds(values);
+      });
+
+  });
+
+});
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="infoDiv">
+    Hover over one of the following building types </br>
+    to highlight them in the view.
+    <ul id="building-type"></ul>
+  </div>
+</body>
+</html>

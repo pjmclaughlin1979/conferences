@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Visualize SceneLayer by type</title>
+<style>
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#infoDiv {
+  background-color: white;
+  padding: 5px;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+</style>
+
+<link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+<script src="https://js.arcgis.com/4.8/"></script>
+
+<script>
+require([
+  "esri/Map",
+  "esri/layers/SceneLayer",
+  "esri/views/SceneView",
+  "esri/renderers/SimpleRenderer",
+  "esri/renderers/UniqueValueRenderer",
+  "esri/symbols/MeshSymbol3D",
+  "esri/symbols/FillSymbol3DLayer",
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+  "esri/widgets/Expand",
+  "esri/core/lang",
+  "dojo/domReady!"
+], function(
+  Map,
+  SceneLayer,
+  SceneView,
+  SimpleRenderer,
+  UniqueValueRenderer,
+  MeshSymbol3D,
+  FillSymbol3DLayer,
+  Legend,
+  LayerList,
+  Expand,
+  lang
+) {
+
+  var buildingsLayer = new SceneLayer({
+    url: "https://services2.arcgis.com/cFEFS0EWrhfDeVw9/ArcGIS/rest/services/STM____F_Helsinki__Textured_buildings_with_attributes/SceneServer/layers/0",
+    title: "Helsinki buildings"
+  });
+
+  var types = [{
+    value: "brick",
+    label: "Brick",
+    symbol: createSymbol("#ed5151")
+  }, {
+    value: "wood",
+    label: "Wood",
+    symbol: createSymbol("#a7c636")
+  }, {
+    value: "concrete or lightweight concrete",
+    label: "Concrete",
+    symbol: createSymbol("#149ece")
+  }, {
+    value: "steel",
+    label: "Steel",
+    symbol: createSymbol("#9e559c")
+  }];
+
+  // helper function for creating Mesh symbols
+
+  function createSymbol(color, mode){
+    var colorMixMode = mode ? mode : "tint";
+    return new MeshSymbol3D({
+      symbolLayers: [
+        new FillSymbol3DLayer({
+          material: {
+            color: color,
+            colorMixMode: colorMixMode
+          }
+        })
+      ]
+    });
+  }
+
+  // Renderer visualizing buildings by type
+
+  var uniqueValueRenderer = new UniqueValueRenderer({
+    field: "buildingMaterial",
+    legendOptions: {
+      title: "Building material"
+    },
+    uniqueValueInfos: types,
+    defaultLabel: "Other",
+    defaultSymbol: createSymbol("#ffde3e")
+  });
+
+  // Renderer visualizing buildings by floor area
+
+  var continuousColorRenderer = new SimpleRenderer({
+    symbol: createSymbol("gray", "replace"),
+    visualVariables: [{
+      type: "color",
+      field: "floorArea",
+      legendOptions: {
+        title: "Floor area (square ft)"
+      },
+      stops: [
+        { value: 0, color: "#fdf8d1", label: "0" },
+        { value: 1657, color: "#d37071", label: null },
+        { value: 3315, color: "#c35961", label: "3,315" },
+        { value: 4973, color: "#8e3551", label: null },
+        { value: 6630, color: "#530d3e", label: "6,630" }
+      ]
+    }]
+  });
+
+  // Creates a renderer that visualizes only buildings of a
+  // specified type
+
+  function createHighlightRenderer(highlightTypeName){
+
+    var resultType = types.filter(function(type){
+      return highlightTypeName === type.label;
+    })[0];
+
+    var highlightType = lang.clone(resultType);
+    highlightType.symbol = createSymbol("#e8b268", "multiply");
+
+    return new UniqueValueRenderer({
+      field: "buildingMaterial",
+      legendOptions: {
+        title: highlightTypeName + " material"
+      },
+      uniqueValueInfos: [ highlightType ],
+      defaultLabel: "Other",
+      defaultSymbol: createSymbol("white", "tint")
+    });
+  }
+
+  var map = new Map({
+    basemap: "hybrid",
+    ground: "world-elevation",
+    layers: [ buildingsLayer ]
+  });
+
+  var view = new SceneView({
+    container: "viewDiv",
+    map: map,
+    camera: {
+      position: {
+        x: 2776229,
+        y: 8433951,
+        z: 193,
+        spatialReference:{
+          latestWkid: 3857,
+          wkid: 102100
+        }
+      },
+      heading: 12,
+      tilt: 77
+    }
+  });
+
+  // LayerList is used to select different visualization
+  // types for demonstration purposes
+
+  var layerList = new LayerList({
+    view: view,
+    listItemCreatedFunction: createActions
+  });
+  view.ui.add(layerList, "top-right");
+
+  function createActions(event){
+    var item = event.item;
+
+    item.actionsSections = [[{
+      title: "Textures",
+      className: "esri-icon-maps",
+      id: "textures"
+    }, {
+      title: "All building materials",
+      className: "esri-icon-maps",
+      id: "types"
+    }, {
+      title: "Brick",
+      className: "esri-icon-maps",
+      id: "brick"
+    }, {
+      title: "Wood",
+      className: "esri-icon-maps",
+      id: "wood"
+    }, {
+      title: "Concrete",
+      className: "esri-icon-maps",
+      id: "concrete"
+    }, {
+      title: "Steel",
+      className: "esri-icon-maps",
+      id: "steel"
+    }, {
+      title: "Floor area",
+      className: "esri-icon-maps",
+      id: "floor-area"
+    }]];
+  }
+
+  layerList.on("trigger-action", function(event){
+    console.log("event: ", event);
+    var actionId = event.action.id;
+    var layer = event.item.layer;
+
+    if(actionId === "textures"){
+      layer.renderer = null;
+    } else if(actionId === "types"){
+      layer.renderer = uniqueValueRenderer;
+    } else if (actionId === "floor-area"){
+      layer.renderer = continuousColorRenderer;
+    } else {
+      layer.renderer = createHighlightRenderer(event.action.title);
+    }
+  });
+
+  var legend = new Legend({
+    view: view
+  });
+  view.ui.add(legend, "bottom-left");
+
+});
+</script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+  <div id="infoDiv">
+    <ul id="building-type"></ul>
+  </div>
+</body>
+</html>
