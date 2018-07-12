@@ -53,9 +53,9 @@ OBJECTID,unique_id,site_name,on_year,year_range,on_year_s,Company,type_code,deco
 52,1996,Oil Rig Group 16,2010,no,2009,Chevron USA Inc,Semisubmersible,no,354,219,No,3,200,-82.193355,25.004795
 53,1997,Oil Rig Group 17,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,200,-82.050588,24.981
 54,1998,Oil Rig Group 18,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,200,-82.098177,24.85013
-55,1999,Oil Rig Group 19,2010,no,2009,Apache Deepwater LLC,Semisubmersible,no,354,219,No,3,550,-82.193355,24.790643
-56,2000,Oil Rig Group 20,2010,no,2009,Chevron USA Inc,Semisubmersible,no,354,219,No,3,200,-88.927232,29.918382
-57,2001,Oil Rig Group 21,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,550,-88.998616,29.704231
-58,2002,Oil Rig Group 22,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,200,-89.053884,29.725494
-59,2003,Oil Rig Group 23,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,550,-89.052071,29.773071
-60,2004,Oil Rig Group 24,2010,no,2009,Apache Deepwater LLC,Semisubmersible,no,354,219,No,3,200,-89.042611,29.841966
+55,1999,Oil Rig Group 19,2010,no,2009,Apache Deepwater LLC,Semisubmersible,no,354,219,No,3,550,-88.379318,29.454043
+56,2000,Oil Rig Group 20,2010,no,2009,Chevron USA Inc,Semisubmersible,no,354,219,No,3,200,-88.37241,29.470861
+57,2001,Oil Rig Group 21,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,550,-88.414361,29.467478
+58,2002,Oil Rig Group 22,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,200,-88.395947,29.469599
+59,2003,Oil Rig Group 23,2010,no,2009,Black Elk Energy,Semisubmersible,no,354,219,No,3,550,-88.409589,29.442982
+60,2004,Oil Rig Group 24,2010,no,2009,Apache Deepwater LLC,Semisubmersible,no,354,219,No,3,200,-88.437841,29.454587

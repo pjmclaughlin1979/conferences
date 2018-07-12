@@ -166,8 +166,8 @@
         type: "simple",
         symbol: {
           type: "web-style",
-          styleUrl: "https://www.arcgis.com/sharing/rest/content/items/635f270120664b6fa510ff5dd2ba099a/data",
-          name: "Turbines"
+          styleUrl: "https://www.arcgis.com/sharing/rest/content/items/48c5d69ad6b646d5aa77c733376f06dc/data",
+          name: "oil_rig"
         },
         visualVariables: [{
           type: "size",
@@ -200,7 +200,9 @@
 
       let reservedAirspace = new FeatureLayer({
         portalItem: {
-          id: "ec151a56a2ed43abb88d64250a6e78dc"
+          // 75c499b5586c4cdd80af23ab4410af3e (densified)
+          // ec151a56a2ed43abb88d64250a6e78dc (simplified)
+          id: "75c499b5586c4cdd80af23ab4410af3e"
         },
         title: "Military Special Use Airspace",
         popupTemplate: {
@@ -245,10 +247,20 @@
         layers: [ reservedAirspace ]
       });
 
-      const view = new SceneView({
+      view = new SceneView({
         container: "viewDiv",
         map: map,
         viewingMode: "local",
+        clippingArea: {
+          "spatialReference": {
+            "latestWkid": 3857,
+            "wkid": 102100
+          },
+          "xmin": -10299155.93133328,
+          "ymin": 2535352.125081559,
+          "xmax": -8610249.336308086,
+          "ymax": 3645618.3449375206
+        },
         camera: {
           position: {
             spatialReference: {
@@ -475,12 +487,12 @@
               "latestWkid": 3857,
               "wkid": 102100
             },
-            "x": -9776626.31096573,
-            "y": 3356204.7614075,
-            "z": 85.1651223479906
+            "x": -9836929.43067608,
+            "y": 3435978.927394556,
+            "z": 168.06500625135726
           },
-          "heading": 81.63434309901739,
-          "tilt": 92.29009146189654
+          "heading": 246.43522398135232,
+          "tilt": 81.15182418286321
         }));
       });
 
