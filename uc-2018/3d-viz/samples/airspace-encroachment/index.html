@@ -43,7 +43,7 @@
       Expand, Home, Camera, CSVLayer, DropTarget
     ) {
 
-      let windmillLayer = null;
+      let proposalLayer = null;
       const DropTargetWidget = DropTarget.default;
 
       const reservedAirspaceHeight = {
@@ -152,17 +152,13 @@
 
       let currentGeometry;
 
-      // Try the following symbol provided out of the box in the API rather than
-      // the web style symbol published to ArcGIS Online from a model downloaded at
-      // https://www.turbosquid.com/3d-models/free-wind-turbine-3d-model/642388
-
         // symbol: {
         //   type: "web-style",
         //   name: "Tower_Crane",
         //   styleName: "EsriRealisticTransportationStyle"
         // },
 
-      const turbineRenderer = {
+      const webStyleRenderer = {
         type: "simple",
         symbol: {
           type: "web-style",
@@ -177,7 +173,7 @@
         }]
       };
 
-      const windmillRenderer = {
+      const iconRenderer = {
         type: "simple",
         symbol: {
           type: "point-3d",
@@ -283,8 +279,8 @@
         // Clear previous results if new CSV is dropped
 
         currentGeometry = null;
-        map.remove(windmillLayer);
-        windmillLayer = null;
+        map.remove(proposalLayer);
+        proposalLayer = null;
         reservedAirspace.renderer = initialRenderer;
 
         const files = event.dataTransfer.files;
@@ -297,20 +293,20 @@
           spatialReference: {
             wkid: 3857
           },
-          renderer: windmillRenderer,
+          renderer: iconRenderer,
           elevationInfo: {
             mode: "on-the-ground"
           }
         });
 
-        const turbineLayer = new CSVLayer({ 
+        const webStyleLayer = new CSVLayer({ 
           url: url,
-          title: "Wind Turbines",
+          title: "Oil Derricks",
           delimiter: ",",
           spatialReference: {
             wkid: 3857
           },
-          renderer: turbineRenderer,
+          renderer: webStyleRenderer,
           elevationInfo: {
             mode: "on-the-ground"
           },
@@ -338,14 +334,14 @@
           }
         });
 
-        windmillLayer = new GroupLayer({
+        proposalLayer = new GroupLayer({
           title: "Proposed Wind Locations",
-          layers: [ projectPointsIcons, turbineLayer ],
+          layers: [ projectPointsIcons, webStyleLayer ],
           listMode: "hide-children",
           visibilityMode: "inherited"
         });
 
-        map.add(windmillLayer);
+        map.add(proposalLayer);
 
         let statsQuery = projectPointsIcons.createQuery();
         statsQuery.outStatistics = [{
@@ -435,12 +431,12 @@
         let classifiedRenderer = createClassification(rendererParams);
         reservedAirspace.renderer = classifiedRenderer;
 
-        updateTurbineHeight(projectHeight);
+        updateObjectHeight(projectHeight);
       }
 
-      function updateTurbineHeight(newHeight){
-        const layer = windmillLayer.layers.find(function(layer){
-          return layer.title === "Wind Turbines";
+      function updateObjectHeight(newHeight){
+        const layer = proposalLayer.layers.find(function(layer){
+          return layer.title === "Oil Derricks";
         });
         const renderer = layer.renderer.clone();
         renderer.visualVariables = [{
@@ -458,8 +454,8 @@
         document.getElementById("resetBtn").onclick = reset;
 
         function reset(){
-          map.remove(windmillLayer);
-          windmillLayer = null;
+          map.remove(proposalLayer);
+          proposalLayer = null;
           reservedAirspace.renderer = initialRenderer;
           heightInputElem.value = null;
           setActiveButton();
@@ -506,7 +502,7 @@
 
 <body>
   <div id="viewDiv">
-    <button class="action-button esri-icon-zoom-in-fixed" id="zoomBtn" title="Zoom to turbines"></button>
+    <button class="action-button esri-icon-zoom-in-fixed" id="zoomBtn" title="Zoom to proposed locations"></button>
     <div id="topbar">
       Height (ft): <input id="heightInput" class="esri-widget" type="number">
       <button class="action-button esri-icon-down-arrow-circled" id="downloadBtn" title="Download CSV"></button>
