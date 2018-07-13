@@ -45,30 +45,6 @@ require([
   Legend
 ) {
 
-  // If CSV files are not on the same domain as your website, a CORS enabled server
-  // or a proxy is required.
-  var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.csv";
-  esriConfig.request.corsEnabledServers.push(url);
-
-  // Paste the url into a browser's address bar to download and view the attributes
-  // in the CSV file. These attributes include:
-  // * mag - magnitude
-  // * type - earthquake or other event such as nuclear test
-  // * place - location of the event
-  // * time - the time of the event
-
-  var template = {
-    title: "Earthquake Info",
-    content: "Magnitude {mag} {type} hit {place} on {time}."
-  };
-
-  var earthquakesLayer = new CSVLayer({
-    url: url,
-    copyright: "USGS Earthquakes",
-    title: "Earthquakes from last 7 days (magnitude 2.5+)",
-    popupTemplate: template
-  });
-
   var magnitudeWithColor = {
     type: "color",
     field: "mag",
@@ -98,6 +74,30 @@ require([
       { value: 6, size: "60px" }
     ]
   };
+
+  // If CSV files are not on the same domain as your website, a CORS enabled server
+  // or a proxy is required.
+  var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.csv";
+  esriConfig.request.corsEnabledServers.push(url);
+
+  // Paste the url into a browser's address bar to download and view the attributes
+  // in the CSV file. These attributes include:
+  // * mag - magnitude
+  // * type - earthquake or other event such as nuclear test
+  // * place - location of the event
+  // * time - the time of the event
+
+  var template = {
+    title: "Earthquake Info",
+    content: "Magnitude {mag} {type} hit {place} on {time}."
+  };
+
+  var earthquakesLayer = new CSVLayer({
+    url: url,
+    copyright: "USGS Earthquakes",
+    title: "Earthquakes from last 7 days (magnitude 2.5+)",
+    popupTemplate: template
+  });
 
   // set the renderer on the layer
   earthquakesLayer.renderer = {

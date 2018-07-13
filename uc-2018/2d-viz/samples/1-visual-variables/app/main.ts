@@ -44,35 +44,6 @@ const householdsMinWage = {
   ]
 };
 
-// normalized stops
-
-//  [
-//      { value: 0.04, color: "#fffcd4" },
-//      { value: 0.083, color: "#b1cdc2" },
-//      { value: 0.127, color: "#629eb0" },
-//      { value: 0.173, color: "#38627a" },
-//      { value: 0.218, color: "#0d2644" }
-//    ]
-
-// rounded stops
-
-// [
-//   { value: 4, color: "#fffcd4" },
-//   { value: 8.3, color: "#b1cdc2" },
-//   { value: 12.7, color: "#629eb0" },
-//   { value: 17.3, color: "#38627a" },
-//   { value: 21.8, color: "#0d2644" }
-// ]
-
-//  non-normalized stops
-  //  [
-  //    { value: 19, color: "#fffcd4" },
-  //    { value: 59, color: "#b1cdc2" },
-  //    { value: 100, color: "#629eb0" },
-  //    { value: 141, color: "#38627a" },
-  //    { value: 183, color: "#0d2644" }
-  //  ]
-
 // set the renderer on the layer
 layer.renderer = new SimpleRenderer({
   symbol: {

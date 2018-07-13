@@ -46,10 +46,12 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         },
         uniqueValueInfos: [{
                 value: "Dem",
-                symbol: createSymbol("#149ece", true)
+                symbol: createSymbol("#149ece", true),
+                label: "Clinton"
             }, {
                 value: "GOP",
-                symbol: createSymbol("#ed5151", true)
+                symbol: createSymbol("#ed5151", true),
+                label: "Trump"
             }],
         visualVariables: [percentWinner, totalVotes]
     });

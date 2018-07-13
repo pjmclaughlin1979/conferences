@@ -117,6 +117,6 @@ import sizeRendererCreator = require("esri/renderers/smartMapping/creators/size"
   inactiveVisualVariable.minDataValue = sizeVisualVariablesResult.statistics.avg;
   inactiveRenderer.visualVariables = [ inactiveVisualVariable ];
 
-  // layer.renderer = inactiveRenderer;
+  layer.renderer = inactiveRenderer;
 
 })();

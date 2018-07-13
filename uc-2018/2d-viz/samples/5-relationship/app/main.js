@@ -138,6 +138,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     inactiveVisualVariable = sizeVisualVariablesResult.visualVariables[0];
                     inactiveVisualVariable.minDataValue = sizeVisualVariablesResult.statistics.avg;
                     inactiveRenderer.visualVariables = [inactiveVisualVariable];
+                    layer.renderer = inactiveRenderer;
                     return [2 /*return*/];
             }
         });
