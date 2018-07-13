@@ -40,7 +40,7 @@ This sample demonstrates how to create a bivariate data exporation app, allowing
 
 ##### [Edge rendering](http://raluca-nicola.net/edge-rendering/?scene=touristic)
 
-[![bivariate](images/bivariate.png)](http://raluca-nicola.net/edge-rendering/?scene=touristic)
+[![edges](images/edges.png)](http://raluca-nicola.net/edge-rendering/?scene=touristic)
 
 ##### [Colorized buildings](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
 
@@ -51,21 +51,22 @@ This sample demonstrates how to colorize buildings by adding color to building t
 ##### [Underground visualization](https://developers.arcgis.com/javascript/latest/sample-code/sceneview-underground/index.html)
 
 
-[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
+[![underground](images/underground.png)](https://developers.arcgis.com/javascript/latest/sample-code/sceneview-underground/index.html)
 
 
-##### [Airspace encroachment analysis](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/airspace-encroachment /)
+##### [Airspace encroachment analysis](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/airspace-encroachment)
 
 
-[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
+[![analysis](images/analysis.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/airspace-encroachment)
 
 
 ##### [Background Color](https://developers.arcgis.com/javascript/latest/sample-code/sceneview-background/index.html)
 
-[![types](images/types.png)](https://ekenes.github.io/conferences/uc-2018/3d-viz/samples/types/)
+[![background](images/background.png)](https://developers.arcgis.com/javascript/latest/sample-code/sceneview-background/index.html)
 
 ##### [Transparent ground](https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayer-points/index.html)
 
+[![transparent](images/transparent.png)](https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayer-points/index.html)
 
 ## Resources
 
