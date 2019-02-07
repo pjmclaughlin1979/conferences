@@ -2,15 +2,18 @@
 
 length: 60 min
 
-presenters: Kristian Ekenes, Dave Bayer
+presenters: Kristian Ekenes, MohanRaj Balumuri
 
-Mar. 8, 2018 1:00 p.m. - 2:00 p.m.
+Mar. 7, 2019 2:30 p.m. - 3:30 p.m.
 
-Palm Springs Convention Center, Primrose A
+Palm Springs Convention Center, Pasadena/Sierra/Ventura
 
 ### Summary
 
-Arcade is a scripting language that may be used to create custom visualizations, popup content, and labeling expressions for apps built on the ArcGIS platform. Sometimes simple calculations can provide more insight instead of field values when creating data-driven visualizations. Arcade allows you to drive visualizations, popup content, and labels by a value returned from an expression rather than a field value. This session will provide an overview of how to navigate the Arcade documenation while highlighting some of the key functions available in Arcade and the ArcGIS API for JavaScript. View examples of how powerful Arcade can be when creating visualizations and labels for a FeatureLayer. Also, observe how the live Arcade editor in ArcGIS Online can be a powerful tool in helping you write, edit, debug, and execute custom expressions.
+Sometimes simple calculations can provide more insight than field values when creating data-driven visualizations. Arcade is a scripting language that allows you to drive visualizations, popup content, and labels by a value returned from an expression rather than a field value. This session will provide an overview of how to navigate the Arcade documentation while highlighting some of the key functions available in Arcade and the ArcGIS API for JavaScript. View examples of how powerful Arcade can be when creating visualizations and labels for a FeatureLayer. Also, observe how the live Arcade editor in ArcGIS Online can be a powerful tool in helping you write, edit, debug, and execute custom expressions.
+
+### Outline
+
 
 
 ### Demos

@@ -2,15 +2,19 @@
 
 length: 60 min
 
-presenters: Jeremy Bartley, Kristian Ekenes
+presenters: Kristian Ekenes, Jeremy Bartley
 
-Mar. 7, 2018 10:30 am - 11:30 am
+Mar. 6, 2019 4:00 p.m. - 5:00 p.m.
 
-Palm Springs Convention Center, Primrose C - D
+Palm Springs Convention Center, Catalina/Madera
 
 ### Summary
 
 The ArcGIS API for JavaScript lets you build powerful interactive mapping applications. Learn how you can turn your raw data into information that tells a story with simple 2D data-driven visualizations. This session will provide an overview to the various visualization techniques available in the API specific to 2D vector data.
+
+### Outline
+
+
 
 ### Demos
 
@@ -50,8 +54,8 @@ This sample demonstrates how to create a data exploration app using the Smart Ma
 
 * [Community](https://developers.arcgis.com/en/javascript/jshelp/community.html)
 * [ArcGIS for JavaScript API Resource Center](http://help.arcgis.com/en/webapi/javascript/arcgis/index.html)
-* [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
-* [twitter@esri](http://twitter.com/esri)
+* [ArcGIS Blog](https://www.esri.com/arcgis-blog/author/kekenes/)
+* [twitter@kekenes](http://twitter.com/kekenes)
 
 ## Issues
 
@@ -62,7 +66,7 @@ Find a bug or want to request a new feature?  Please let us know by submitting a
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing
-Copyright 2018 Esri
+Copyright 2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -77,6 +81,3 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 A copy of the license is available in the repository's [license.txt](license.txt) file.
-
-[](Esri Tags: Esri 3D Visualization Esri JavaScript 4.0)
-[](Esri Language: JavaScript)
