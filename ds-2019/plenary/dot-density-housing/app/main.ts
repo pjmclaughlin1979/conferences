@@ -10,9 +10,9 @@ import Legend = require("esri/widgets/Legend");
 
   const renderer = new DotDensityRenderer({
     referenceDotValue: 1,
-    outline: {
-      width: 0,
-      color: "gray"
+    outline: null,
+    legendOptions: {
+      unit: "house"
     },
     attributes: [
       {
@@ -72,7 +72,7 @@ import Legend = require("esri/widgets/Legend");
 
 
   const map = new EsriMap({
-    basemap: "dark-gray-vector",
+    basemap: "gray-vector",
     layers: [ layer ]
   });
 

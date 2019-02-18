@@ -99,9 +99,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 case 0:
                     renderer = new DotDensityRenderer({
                         referenceDotValue: 1,
-                        outline: {
-                            width: 0,
-                            color: "gray"
+                        outline: null,
+                        legendOptions: {
+                            unit: "house"
                         },
                         attributes: [
                             {
@@ -155,7 +155,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         minScale: 0
                     });
                     map = new EsriMap({
-                        basemap: "dark-gray-vector",
+                        basemap: "gray-vector",
                         layers: [layer]
                     });
                     view = new MapView({
