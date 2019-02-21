@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/Graphic", "esri/symbols", "esri/renderers", "./heatmapChart"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, Graphic, symbols_1, renderers_1, heatmapChart_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -70,12 +70,23 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             // DayOfMonth
                             query.groupByFieldsForStatistics = ["Season + '-' + timeOfDay"];
                             query.geometry = geometry;
-                            query.distance = distance;
-                            query.units = units;
+                            // query.distance = distance;
+                            // query.units = units;
                             query.returnQueryGeometry = true;
                             return [4 /*yield*/, layerView.queryFeatures(query)];
                         case 1:
                             queryResponse = _a.sent();
+                            view.graphics.removeAll();
+                            view.graphics.add(new Graphic({
+                                geometry: queryResponse.queryGeometry,
+                                symbol: new symbols_1.SimpleFillSymbol({
+                                    color: [125, 125, 125, 0.02],
+                                    outline: {
+                                        width: 1,
+                                        color: "#06350E"
+                                    }
+                                })
+                            }));
                             responseChartData = queryResponse.features.map(function (feature) {
                                 var timeSpan = feature.attributes["Season + '-' + timeOfDay"].split("-");
                                 var season = timeSpan[0];
@@ -109,7 +120,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             return formattedChartData;
         }
-        var url, layer, countiesLayer, map, view, layerView, previousId;
+        var url, layer, countiesLayer, map, view, layerView, seasonsElement, previousId;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -158,15 +169,27 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
-                    // layerView.effect = {
-                    //   filter: {
-                    //     geometry: view.center,
-                    //     distance: 25,
-                    //     units: "miles"
-                    //   },
-                    //   insideEffect: "hue-rotate(90deg)",
-                    //   outsideEffect: "opacity(30%)"
-                    // };
+                    seasonsElement = document.querySelector(".seasons");
+                    seasonsElement.addEventListener("click", function (event) {
+                        var selectedSeason = event.target.getAttribute("data-season");
+                        var seasonsNodes = document.querySelectorAll(".season-item");
+                        seasonsNodes.forEach(function (node) {
+                            var season = node.innerText;
+                            if (season !== selectedSeason) {
+                                if (node.classList.contains("visible-season")) {
+                                    node.classList.remove("visible-season");
+                                }
+                            }
+                            else {
+                                if (!node.classList.contains("visible-season")) {
+                                    node.classList.add("visible-season");
+                                }
+                            }
+                        });
+                        layerView.filter = new FeatureFilter({
+                            where: "Season = '" + selectedSeason + "'"
+                        });
+                    });
                     console.log(view);
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
                         var hitTestResponse, hitTestResult, countyGraphic, objectIdField, queryOptions, filterOptions, stats;
@@ -184,7 +207,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                         // layerView.filter = new FeatureFilter({
                                         //   where: "1=1"
                                         // });
-                                        // view.graphics.removeAll();
+                                        view.graphics.removeAll();
                                         return [2 /*return*/];
                                     }
                                     else {
@@ -198,7 +221,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                         previousId = countyGraphic.attributes[objectIdField];
                                     }
                                     queryOptions = {
-                                        geometry: hitTestResult.mapPoint,
+                                        geometry: countyGraphic.geometry,
                                         distance: 25,
                                         units: "miles",
                                         spatialRelationship: "intersects"

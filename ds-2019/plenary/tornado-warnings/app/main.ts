@@ -61,15 +61,27 @@ import { createChart, updateChart } from "./heatmapChart";
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
 
-  // layerView.effect = {
-  //   filter: {
-  //     geometry: view.center,
-  //     distance: 25,
-  //     units: "miles"
-  //   },
-  //   insideEffect: "hue-rotate(90deg)",
-  //   outsideEffect: "opacity(30%)"
-  // };
+  const seasonsElement = document.querySelector(".seasons");
+  seasonsElement.addEventListener("click", function(event: any) {
+    const selectedSeason = event.target.getAttribute("data-season");
+    const seasonsNodes = document.querySelectorAll(`.season-item`);
+    seasonsNodes.forEach( (node:HTMLDivElement) => {
+      const season = node.innerText;
+      if(season !== selectedSeason){
+        if(node.classList.contains("visible-season")) {
+          node.classList.remove("visible-season");
+        }
+      } else {
+        if(!node.classList.contains("visible-season")) {
+          node.classList.add("visible-season");
+        }
+      }
+    });
+
+    layerView.filter = new FeatureFilter({
+      where: `Season = '${selectedSeason}'`
+    });
+  });
 
   console.log(view);
 
@@ -88,7 +100,7 @@ import { createChart, updateChart } from "./heatmapChart";
       // layerView.filter = new FeatureFilter({
       //   where: "1=1"
       // });
-      // view.graphics.removeAll();
+      view.graphics.removeAll();
       return;
     } else {
       countyGraphic = hitTestResult.graphic;
@@ -102,7 +114,7 @@ import { createChart, updateChart } from "./heatmapChart";
     }
 
     let queryOptions = {
-      geometry: hitTestResult.mapPoint,//countyGraphic.geometry,
+      geometry: countyGraphic.geometry, //hitTestResult.mapPoint,//countyGraphic.geometry,
       distance: 25,
       units: "miles",
       spatialRelationship: "intersects"
@@ -157,22 +169,22 @@ import { createChart, updateChart } from "./heatmapChart";
 // DayOfMonth
     query.groupByFieldsForStatistics = [ "Season + '-' + timeOfDay" ];
     query.geometry = geometry;
-    query.distance = distance;
-    query.units = units;
+    // query.distance = distance;
+    // query.units = units;
     query.returnQueryGeometry = true;
 
     const queryResponse = await layerView.queryFeatures(query);
-    // view.graphics.removeAll();
-    // view.graphics.add(new Graphic({
-    //   geometry: queryResponse.queryGeometry,
-    //   symbol: new SimpleFillSymbol({
-    //     color: [125,125,125,0.02],
-    //     outline: {
-    //       width: 1,
-    //       color: "#06350E"
-    //     }
-    //   })
-    // }))
+    view.graphics.removeAll();
+    view.graphics.add(new Graphic({
+      geometry: queryResponse.queryGeometry,
+      symbol: new SimpleFillSymbol({
+        color: [125,125,125,0.02],
+        outline: {
+          width: 1,
+          color: "#06350E"
+        }
+      })
+    }))
     const responseChartData = queryResponse.features.map( feature => {
       const timeSpan = feature.attributes["Season + '-' + timeOfDay"].split("-");
       const season = timeSpan[0];

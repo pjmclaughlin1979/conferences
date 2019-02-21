@@ -12,3 +12,32 @@ body,
   height: 400px;
   background-color: white;
 }
+
+
+
+.seasons {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.season-item {
+  flex-grow: 4;
+  background-color: rgba(103, 41, 41, 0.5);
+  color: #fff;
+  margin: 1px;
+  width: 50%;
+  padding: 20px;
+  overflow: auto;
+  text-align: center;
+  cursor: pointer;
+  font-size: 0.7em;
+}
+
+.visible-season {
+  color: #fff;
+  background-color: rgb(103, 41, 41);
+}
