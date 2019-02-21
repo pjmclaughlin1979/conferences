@@ -33,29 +33,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/Graphic", "esri/symbols", "esri/renderers"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, Graphic, symbols_1, renderers_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(_this, void 0, void 0, function () {
         function queryTimeStatistics(layerView, params) {
             return __awaiter(this, void 0, void 0, function () {
-                var geometry, distance, units, query, queryResponse;
+                var geometry, distance, units, query, queryResponse, responseChartData;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             geometry = params.geometry, distance = params.distance, units = params.units;
                             query = layerView.layer.createQuery();
                             query.outStatistics = [new StatisticDefinition({
-                                    onStatisticField: "1",
-                                    outStatisticFieldName: "total_count",
+                                    onStatisticField: "MonthOfTheYear",
+                                    outStatisticFieldName: "month_count",
                                     statisticType: "count"
-                                }), new StatisticDefinition({
+                                }),
+                                new StatisticDefinition({
+                                    onStatisticField: "1",
+                                    outStatisticFieldName: "value",
+                                    statisticType: "count"
+                                }),
+                                new StatisticDefinition({
+                                    onStatisticField: "Season",
+                                    outStatisticFieldName: "season_count",
+                                    statisticType: "count"
+                                }),
+                                new StatisticDefinition({
                                     onStatisticField: "(ExpiredDate - IssueDateTime) / (1000*60)",
                                     outStatisticFieldName: "avg_duration",
                                     statisticType: "avg"
                                 })];
-                            query.groupByFieldsForStatistics = ["MonthOfTheYear"];
+                            // Season 
+                            // DayOfMonth
+                            query.groupByFieldsForStatistics = ["Season + '-' + timeOfDay"];
                             query.geometry = geometry;
                             query.distance = distance;
                             query.units = units;
@@ -63,21 +76,38 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             return [4 /*yield*/, layerView.queryFeatures(query)];
                         case 1:
                             queryResponse = _a.sent();
-                            view.graphics.removeAll();
-                            view.graphics.add(new Graphic({
-                                geometry: queryResponse.queryGeometry,
-                                symbol: new symbols_1.SimpleFillSymbol()
-                            }));
-                            return [2 /*return*/, queryResponse.features.map(function (feature) {
-                                    return {
-                                        month: feature.attributes.MonthOfTheYear,
-                                        avg_duration_minutes: Math.round(feature.attributes.avg_duration),
-                                        count: feature.attributes.total_count
-                                    };
-                                })];
+                            responseChartData = queryResponse.features.map(function (feature) {
+                                var timeSpan = feature.attributes["Season + '-' + timeOfDay"].split("-");
+                                var season = timeSpan[0];
+                                var timeOfDay = timeSpan[1];
+                                return {
+                                    timeOfDay: timeOfDay,
+                                    season: season,
+                                    value: feature.attributes.value
+                                };
+                            });
+                            return [2 /*return*/, createDataObjects(responseChartData)];
                     }
                 });
             });
+        }
+        function createDataObjects(data) {
+            var timesOfDay = ["Morning", "Afternoon", "Evening", "Night"];
+            var seasons = ["Winter", "Spring", "Summer", "Fall"];
+            var formattedChartData = [];
+            timesOfDay.forEach(function (timeOfDay) {
+                seasons.forEach(function (season) {
+                    var matches = data.filter(function (datum) {
+                        return datum.season === season && datum.timeOfDay === timeOfDay;
+                    });
+                    formattedChartData.push({
+                        timeOfDay: timeOfDay,
+                        season: season,
+                        value: matches.length > 0 ? matches[0].value : 0
+                    });
+                });
+            });
+            return formattedChartData;
         }
         var url, layer, countiesLayer, map, view, layerView, previousId;
         var _this = this;
@@ -104,7 +134,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         })
                     });
                     map = new EsriMap({
-                        basemap: "streets",
+                        basemap: "gray-vector",
                         layers: [layer, countiesLayer]
                     });
                     view = new MapView({
@@ -123,9 +153,20 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, view.when()];
                 case 1:
                     _a.sent();
+                    view.ui.add("chartDiv", "bottom-left");
+                    heatmapChart_1.createChart();
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
+                    // layerView.effect = {
+                    //   filter: {
+                    //     geometry: view.center,
+                    //     distance: 25,
+                    //     units: "miles"
+                    //   },
+                    //   insideEffect: "hue-rotate(90deg)",
+                    //   outsideEffect: "opacity(30%)"
+                    // };
                     console.log(view);
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
                         var hitTestResponse, hitTestResult, countyGraphic, objectIdField, queryOptions, filterOptions, stats;
@@ -140,10 +181,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                         return result.graphic.layer && result.graphic.layer.title === "counties";
                                     })[0];
                                     if (!hitTestResult) {
-                                        layerView.filter = new FeatureFilter({
-                                            where: "1=1"
-                                        });
-                                        view.graphics.removeAll();
+                                        // layerView.filter = new FeatureFilter({
+                                        //   where: "1=1"
+                                        // });
+                                        // view.graphics.removeAll();
                                         return [2 /*return*/];
                                     }
                                     else {
@@ -157,13 +198,22 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                         previousId = countyGraphic.attributes[objectIdField];
                                     }
                                     queryOptions = {
-                                        geometry: countyGraphic.geometry
+                                        geometry: hitTestResult.mapPoint,
+                                        distance: 25,
+                                        units: "miles",
+                                        spatialRelationship: "intersects"
                                     };
                                     filterOptions = new FeatureFilter(queryOptions);
-                                    layerView.filter = filterOptions;
+                                    // layerView.filter = filterOptions;
+                                    layerView.effect = {
+                                        filter: filterOptions,
+                                        // insideEffect: "saturate(25%)",
+                                        outsideEffect: "grayscale(75%) opacity(60%)"
+                                    };
                                     return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
                                 case 2:
                                     stats = _a.sent();
+                                    heatmapChart_1.updateChart(stats);
                                     console.log(stats);
                                     return [2 /*return*/];
                             }

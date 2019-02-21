@@ -5,6 +5,12 @@
     <title>ArcGIS JSAPI 4.9 TypeScript Demo</title>
     <link rel="stylesheet" href="https://jsdev.arcgis.com/4.11/esri/themes/light/main.css">
     <link rel="stylesheet" href="app/main.css">
+
+    <script src="//www.amcharts.com/lib/4/core.js"></script>
+    <script src="//www.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/dataviz.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
     <script>
       var locationPath = location.pathname.replace(/\/[^\/]+$/, "");
       window.dojoConfig = {
@@ -20,6 +26,7 @@
   </head>
   <body>
     <div id="viewDiv"></div>
+    <div id="chartDiv"></div>
     <script>require(["app/main"]);</script>
   </body>
 </html>

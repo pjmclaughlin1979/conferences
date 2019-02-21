@@ -9,6 +9,7 @@ import { Geometry } from "esri/geometry";
 import Graphic = require("esri/Graphic");
 import { SimpleFillSymbol } from "esri/symbols";
 import { SimpleRenderer } from "esri/renderers";
+import { createChart, updateChart } from "./heatmapChart";
 
 ( async () => {
 
@@ -35,7 +36,7 @@ import { SimpleRenderer } from "esri/renderers";
   });
 
   const map = new EsriMap({
-    basemap: "streets",
+    basemap: "gray-vector",
     layers: [ layer, countiesLayer ]
   });
 
@@ -54,8 +55,21 @@ import { SimpleRenderer } from "esri/renderers";
   });
 
   await view.when();
+  view.ui.add("chartDiv", "bottom-left");
+
+  createChart();
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
+
+  // layerView.effect = {
+  //   filter: {
+  //     geometry: view.center,
+  //     distance: 25,
+  //     units: "miles"
+  //   },
+  //   insideEffect: "hue-rotate(90deg)",
+  //   outsideEffect: "opacity(30%)"
+  // };
 
   console.log(view);
 
@@ -71,10 +85,10 @@ import { SimpleRenderer } from "esri/renderers";
 
     let countyGraphic: esri.Graphic;
     if (!hitTestResult){
-      layerView.filter = new FeatureFilter({
-        where: "1=1"
-      });
-      view.graphics.removeAll();
+      // layerView.filter = new FeatureFilter({
+      //   where: "1=1"
+      // });
+      // view.graphics.removeAll();
       return;
     } else {
       countyGraphic = hitTestResult.graphic;
@@ -88,13 +102,23 @@ import { SimpleRenderer } from "esri/renderers";
     }
 
     let queryOptions = {
-      geometry: countyGraphic.geometry
+      geometry: hitTestResult.mapPoint,//countyGraphic.geometry,
+      distance: 25,
+      units: "miles",
+      spatialRelationship: "intersects"
     };
 
     const filterOptions = new FeatureFilter(queryOptions);
-    layerView.filter = filterOptions;
+
+    // layerView.filter = filterOptions;
+    layerView.effect = {
+      filter: filterOptions,
+      // insideEffect: "saturate(25%)",
+      outsideEffect: "grayscale(75%) opacity(60%)"
+    };
 
     const stats = await queryTimeStatistics(layerView, queryOptions);
+    updateChart(stats);
     console.log(stats);
   });
 
@@ -104,39 +128,94 @@ import { SimpleRenderer } from "esri/renderers";
     units?: string
   }
 
-  async function queryTimeStatistics ( layerView: esri.FeatureLayerView, params: QueryTimeStatsParams): Promise<Object[]>{
+  async function queryTimeStatistics ( layerView: esri.FeatureLayerView, params: QueryTimeStatsParams): Promise<ChartData[]>{
     const { geometry, distance, units } = params;
 
     const query = layerView.layer.createQuery();
 
     query.outStatistics = [ new StatisticDefinition({
-      onStatisticField: "1",
-      outStatisticFieldName: "total_count",
+      onStatisticField: "MonthOfTheYear",
+      outStatisticFieldName: "month_count",
       statisticType: "count"
-    }), new StatisticDefinition({
+    }),
+     new StatisticDefinition({
+      onStatisticField: "1",
+      outStatisticFieldName: "value",
+      statisticType: "count"
+    }),
+    new StatisticDefinition({
+     onStatisticField: "Season",
+     outStatisticFieldName: "season_count",
+     statisticType: "count"
+   }),
+    new StatisticDefinition({
       onStatisticField: "(ExpiredDate - IssueDateTime) / (1000*60)",
       outStatisticFieldName: "avg_duration",
       statisticType: "avg"
-    }) ];
-    query.groupByFieldsForStatistics = [ "MonthOfTheYear" ];
+    })];
+// Season 
+// DayOfMonth
+    query.groupByFieldsForStatistics = [ "Season + '-' + timeOfDay" ];
     query.geometry = geometry;
     query.distance = distance;
     query.units = units;
     query.returnQueryGeometry = true;
 
     const queryResponse = await layerView.queryFeatures(query);
-    view.graphics.removeAll();
-    view.graphics.add(new Graphic({
-      geometry: queryResponse.queryGeometry,
-      symbol: new SimpleFillSymbol()
-    }))
-    return queryResponse.features.map( feature => {
+    // view.graphics.removeAll();
+    // view.graphics.add(new Graphic({
+    //   geometry: queryResponse.queryGeometry,
+    //   symbol: new SimpleFillSymbol({
+    //     color: [125,125,125,0.02],
+    //     outline: {
+    //       width: 1,
+    //       color: "#06350E"
+    //     }
+    //   })
+    // }))
+    const responseChartData = queryResponse.features.map( feature => {
+      const timeSpan = feature.attributes["Season + '-' + timeOfDay"].split("-");
+      const season = timeSpan[0];
+      const timeOfDay = timeSpan[1];
       return {
-        month: feature.attributes.MonthOfTheYear,
-        avg_duration_minutes: Math.round(feature.attributes.avg_duration),
-        count: feature.attributes.total_count
+        timeOfDay,
+        season, 
+        value: feature.attributes.value
       };
     });
+
+    return createDataObjects(responseChartData);
+  }
+
+  interface ChartData {
+    timeOfDay: "Morning" | "Afternoon" | "Evening" | "Night" | string,
+    season: "Winter" | "Spring" | "Summer" | "Fall" | string,
+    value: number
+  }
+
+  function createDataObjects(data: ChartData[]): ChartData[] {
+    const timesOfDay = [ "Morning" , "Afternoon" , "Evening" , "Night" ];
+    const seasons = [ "Winter" , "Spring" , "Summer" , "Fall" ];
+
+    let formattedChartData: ChartData[] = [];
+
+    timesOfDay.forEach( timeOfDay => {
+      seasons.forEach( season => {
+
+        const matches = data.filter( datum => {
+          return datum.season === season && datum.timeOfDay === timeOfDay;
+        });
+
+        formattedChartData.push({
+          timeOfDay,
+          season,
+          value: matches.length > 0 ? matches[0].value : 0
+        });
+
+      });
+    });
+
+    return formattedChartData;
   }
 
 })();
