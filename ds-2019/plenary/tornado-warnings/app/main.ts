@@ -121,26 +121,29 @@ import { timesOfDay, seasons } from "./constants";
     event.stopPropagation();
 
     const hitResponse = await view.hitTest(event);
-    const graphic = hitResponse.results.filter( hit => hit.graphic.layer === countiesLayer )[0].graphic;
-    const geometry = graphic && graphic.geometry;
-    let queryOptions = {
-      geometry,//: view.toMap(event),
-      // distance: 50,
-      // units: "miles",
-      spatialRelationship: "intersects"
-    };
+    const hitResults = hitResponse.results.filter( hit => hit.graphic.layer === countiesLayer );
+    if(hitResults.length > 0){
+      const graphic = hitResults[0].graphic;
+      const geometry = graphic && graphic.geometry;
+      let queryOptions = {
+        geometry,//: view.toMap(event),
+        // distance: 50,
+        // units: "miles",
+        spatialRelationship: "intersects"
+      };
 
-    const filterOptions = new FeatureFilter(queryOptions);
+      const filterOptions = new FeatureFilter(queryOptions);
 
-    // layerView.filter = filterOptions;
-    layerView.effect = new FeatureEffect({
-      filter: filterOptions,
-      // insideEffect: "saturate(25%)",
-      outsideEffect: "grayscale(75%) opacity(60%)"
-    });
+      // layerView.filter = filterOptions;
+      layerView.effect = new FeatureEffect({
+        filter: filterOptions,
+        // insideEffect: "saturate(25%)",
+        outsideEffect: "grayscale(75%) opacity(60%)"
+      });
 
-    const stats = await queryTimeStatistics(layerView, queryOptions);
-    updateGrid(stats);
+      const stats = await queryTimeStatistics(layerView, queryOptions);
+      updateGrid(stats);
+    }
   });
 
   interface QueryTimeStatsParams {

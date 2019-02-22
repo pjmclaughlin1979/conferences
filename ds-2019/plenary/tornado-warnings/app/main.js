@@ -224,7 +224,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     });
                     console.log(view);
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
-                        var hitResponse, graphic, geometry, queryOptions, filterOptions, stats;
+                        var hitResponse, hitResults, graphic, geometry, queryOptions, filterOptions, stats;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -232,7 +232,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                     return [4 /*yield*/, view.hitTest(event)];
                                 case 1:
                                     hitResponse = _a.sent();
-                                    graphic = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; })[0].graphic;
+                                    hitResults = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; });
+                                    if (!(hitResults.length > 0)) return [3 /*break*/, 3];
+                                    graphic = hitResults[0].graphic;
                                     geometry = graphic && graphic.geometry;
                                     queryOptions = {
                                         geometry: geometry,
@@ -251,7 +253,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                 case 2:
                                     stats = _a.sent();
                                     heatmapChart_1.updateGrid(stats);
-                                    return [2 /*return*/];
+                                    _a.label = 3;
+                                case 3: return [2 /*return*/];
                             }
                         });
                     }); });
