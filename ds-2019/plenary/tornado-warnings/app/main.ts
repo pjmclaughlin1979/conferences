@@ -9,9 +9,10 @@ import { Geometry } from "esri/geometry";
 import Graphic = require("esri/Graphic");
 import { SimpleFillSymbol } from "esri/symbols";
 import { SimpleRenderer } from "esri/renderers";
-import { createChart, updateChart } from "./heatmapChart";
+import { updateGrid } from "./heatmapChart";
 
 import Expand = require("esri/widgets/Expand");
+import { timesOfDay, seasons } from "./constants";
 
 ( async () => {
 
@@ -57,7 +58,7 @@ import Expand = require("esri/widgets/Expand");
   await view.when();
   view.ui.add(new Expand({
     view,
-    content: document.getElementById("chartContainer"),
+    content: document.getElementById("chartDiv"),
     expandIconClass: "esri-icon-chart",
     group: "top-left"
   }), "top-left");
@@ -72,7 +73,8 @@ import Expand = require("esri/widgets/Expand");
 
   const layerStats = await queryLayerStatistics(layer);
   console.log(JSON.stringify(layerStats));
-  let chart = createChart(layerView, layerStats);
+
+  updateGrid(layerStats, layerView);
 
   let mousemoveEnabled = true;
   const seasonsElement = document.getElementById("seasons-filter");
@@ -143,7 +145,7 @@ import Expand = require("esri/widgets/Expand");
     };
 
     const stats = await queryTimeStatistics(layerView, queryOptions);
-    updateChart(chart, stats);
+    updateGrid(stats);
   });
 
   interface QueryTimeStatsParams {
@@ -152,7 +154,7 @@ import Expand = require("esri/widgets/Expand");
     units?: string
   }
 
-  async function queryTimeStatistics ( layerView: esri.FeatureLayerView, params: QueryTimeStatsParams): Promise<ChartData[]>{
+  async function queryTimeStatistics ( layerView: esri.FeatureLayerView, params: QueryTimeStatsParams): Promise<StatisticsResponse[]>{
     const { geometry, distance, units } = params;
 
     const query = layerView.layer.createQuery();
@@ -182,7 +184,6 @@ import Expand = require("esri/widgets/Expand");
         value: feature.attributes.value
       };
     });
-
     return createDataObjects(responseChartData);
   }
 
@@ -212,22 +213,20 @@ import Expand = require("esri/widgets/Expand");
     return createDataObjects(responseChartData);
   }
 
-  function createDataObjects(data: ChartData[]): ChartData[] {
-    const timesOfDay = [ "Morning" , "Afternoon" , "Evening" , "Night" ];
-    const seasons = [ "Winter" , "Spring" , "Summer" , "Fall" ];
+  function createDataObjects(data: StatisticsResponse[]): ChartData[] {
 
     let formattedChartData: ChartData[] = [];
 
-    timesOfDay.forEach( timeOfDay => {
-      seasons.forEach( season => {
+    timesOfDay.forEach( (timeOfDay, t) => {
+      seasons.forEach( (season, s) => {
 
         const matches = data.filter( datum => {
           return datum.season === season && datum.timeOfDay === timeOfDay;
         });
 
         formattedChartData.push({
-          timeOfDay,
-          season,
+          col: t,
+          row: s,
           value: matches.length > 0 ? matches[0].value : 0
         });
 

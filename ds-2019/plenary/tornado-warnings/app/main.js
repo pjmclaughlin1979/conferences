@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1, Expand) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand", "./constants"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1, Expand, constants_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -130,24 +130,22 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
         }
         function createDataObjects(data) {
-            var timesOfDay = ["Morning", "Afternoon", "Evening", "Night"];
-            var seasons = ["Winter", "Spring", "Summer", "Fall"];
             var formattedChartData = [];
-            timesOfDay.forEach(function (timeOfDay) {
-                seasons.forEach(function (season) {
+            constants_1.timesOfDay.forEach(function (timeOfDay, t) {
+                constants_1.seasons.forEach(function (season, s) {
                     var matches = data.filter(function (datum) {
                         return datum.season === season && datum.timeOfDay === timeOfDay;
                     });
                     formattedChartData.push({
-                        timeOfDay: timeOfDay,
-                        season: season,
+                        col: t,
+                        row: s,
                         value: matches.length > 0 ? matches[0].value : 0
                     });
                 });
             });
             return formattedChartData;
         }
-        var url, layer, countiesLayer, map, view, layerView, layerStats, chart, mousemoveEnabled, seasonsElement;
+        var url, layer, countiesLayer, map, view, layerView, layerStats, mousemoveEnabled, seasonsElement;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -191,7 +189,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     _a.sent();
                     view.ui.add(new Expand({
                         view: view,
-                        content: document.getElementById("chartContainer"),
+                        content: document.getElementById("chartDiv"),
                         expandIconClass: "esri-icon-chart",
                         group: "top-left"
                     }), "top-left");
@@ -208,7 +206,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 case 3:
                     layerStats = _a.sent();
                     console.log(JSON.stringify(layerStats));
-                    chart = heatmapChart_1.createChart(layerView, layerStats);
+                    heatmapChart_1.updateGrid(layerStats, layerView);
                     mousemoveEnabled = true;
                     seasonsElement = document.getElementById("seasons-filter");
                     seasonsElement.addEventListener("mousemove", filterBySeason);
@@ -256,7 +254,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                     return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
                                 case 1:
                                     stats = _a.sent();
-                                    heatmapChart_1.updateChart(chart, stats);
+                                    heatmapChart_1.updateGrid(stats);
                                     return [2 /*return*/];
                             }
                         });
