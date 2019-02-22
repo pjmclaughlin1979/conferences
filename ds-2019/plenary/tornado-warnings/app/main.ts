@@ -4,6 +4,7 @@ import EsriMap = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
+import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
 import StatisticDefinition = require("esri/tasks/support/StatisticDefinition");
 import { Geometry } from "esri/geometry";
 import Graphic = require("esri/Graphic");
@@ -136,11 +137,11 @@ import Expand = require("esri/widgets/Expand");
     const filterOptions = new FeatureFilter(queryOptions);
 
     // layerView.filter = filterOptions;
-    layerView.effect = {
+    layerView.effect = new FeatureEffect({
       filter: filterOptions,
       // insideEffect: "saturate(25%)",
       outsideEffect: "grayscale(75%) opacity(60%)"
-    };
+    });
 
     const stats = await queryTimeStatistics(layerView, queryOptions);
     updateChart(chart, stats);
