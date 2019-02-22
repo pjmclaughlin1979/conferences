@@ -4,6 +4,7 @@ import EsriMap = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
+import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
 import StatisticDefinition = require("esri/tasks/support/StatisticDefinition");
 import { Geometry } from "esri/geometry";
 import Graphic = require("esri/Graphic");
@@ -62,12 +63,13 @@ import { timesOfDay, seasons } from "./constants";
     expandIconClass: "esri-icon-chart",
     group: "top-left"
   }), "top-left");
-  view.ui.add(new Expand({
+  const seasonsExpand = new Expand({
     view,
     content: document.getElementById("seasons-filter"),
     expandIconClass: "esri-icon-filter",
     group: "top-left"
-  }), "top-left");
+  });
+  view.ui.add(seasonsExpand, "top-left");
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
 
@@ -78,7 +80,7 @@ import { timesOfDay, seasons } from "./constants";
 
   let mousemoveEnabled = true;
   const seasonsElement = document.getElementById("seasons-filter");
-  seasonsElement.addEventListener("mousemove", filterBySeason);
+  seasonsElement.addEventListener("click", filterBySeason);
 
   function filterBySeason (event: any) {
     const selectedSeason = event.target.getAttribute("data-season");
@@ -101,9 +103,9 @@ import { timesOfDay, seasons } from "./constants";
     });
   }
 
-  seasonsElement.addEventListener("mouseleave", () => {
+  seasonsExpand.watch("expanded", () => {
     const seasonsNodes = document.querySelectorAll(`.season-item`);
-    if (mousemoveEnabled){
+    if (!seasonsExpand.expanded){
       seasonsNodes.forEach( (node:HTMLDivElement) => {
         node.classList.add("visible-season");
       });
@@ -113,36 +115,29 @@ import { timesOfDay, seasons } from "./constants";
     }
   });
 
-  seasonsElement.addEventListener("click", (event:any) => {
-    mousemoveEnabled = !mousemoveEnabled;
-    if(mousemoveEnabled){
-      filterBySeason(event);
-      seasonsElement.addEventListener("mousemove", filterBySeason);
-    } else {
-      seasonsElement.removeEventListener("mousemove", filterBySeason);
-    }
-  });
-
   console.log(view);
 
   view.on("drag", ["Control"], async (event) => {
     event.stopPropagation();
 
+    const hitResponse = await view.hitTest(event);
+    const graphic = hitResponse.results.filter( hit => hit.graphic.layer === countiesLayer )[0].graphic;
+    const geometry = graphic && graphic.geometry;
     let queryOptions = {
-      geometry: view.toMap(event),
-      distance: 50,
-      units: "miles",
+      geometry,//: view.toMap(event),
+      // distance: 50,
+      // units: "miles",
       spatialRelationship: "intersects"
     };
 
     const filterOptions = new FeatureFilter(queryOptions);
 
     // layerView.filter = filterOptions;
-    layerView.effect = {
+    layerView.effect = new FeatureEffect({
       filter: filterOptions,
       // insideEffect: "saturate(25%)",
       outsideEffect: "grayscale(75%) opacity(60%)"
-    };
+    });
 
     const stats = await queryTimeStatistics(layerView, queryOptions);
     updateGrid(stats);
@@ -154,7 +149,7 @@ import { timesOfDay, seasons } from "./constants";
     units?: string
   }
 
-  async function queryTimeStatistics ( layerView: esri.FeatureLayerView, params: QueryTimeStatsParams): Promise<StatisticsResponse[]>{
+  async function queryTimeStatistics ( layerView: esri.FeatureLayerView, params: QueryTimeStatsParams): Promise<ChartData[]>{
     const { geometry, distance, units } = params;
 
     const query = layerView.layer.createQuery();

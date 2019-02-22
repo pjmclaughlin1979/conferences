@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand", "./constants"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1, Expand, constants_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/views/layers/support/FeatureEffect", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand", "./constants"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, FeatureEffect, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1, Expand, constants_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -145,7 +145,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             return formattedChartData;
         }
-        var url, layer, countiesLayer, map, view, layerView, layerStats, mousemoveEnabled, seasonsElement;
+        var url, layer, countiesLayer, map, view, seasonsExpand, layerView, layerStats, mousemoveEnabled, seasonsElement;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -193,12 +193,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         expandIconClass: "esri-icon-chart",
                         group: "top-left"
                     }), "top-left");
-                    view.ui.add(new Expand({
+                    seasonsExpand = new Expand({
                         view: view,
                         content: document.getElementById("seasons-filter"),
                         expandIconClass: "esri-icon-filter",
                         group: "top-left"
-                    }), "top-left");
+                    });
+                    view.ui.add(seasonsExpand, "top-left");
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
@@ -209,10 +210,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     heatmapChart_1.updateGrid(layerStats, layerView);
                     mousemoveEnabled = true;
                     seasonsElement = document.getElementById("seasons-filter");
-                    seasonsElement.addEventListener("mousemove", filterBySeason);
-                    seasonsElement.addEventListener("mouseleave", function () {
+                    seasonsElement.addEventListener("click", filterBySeason);
+                    seasonsExpand.watch("expanded", function () {
                         var seasonsNodes = document.querySelectorAll(".season-item");
-                        if (mousemoveEnabled) {
+                        if (!seasonsExpand.expanded) {
                             seasonsNodes.forEach(function (node) {
                                 node.classList.add("visible-season");
                             });
@@ -221,38 +222,33 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             });
                         }
                     });
-                    seasonsElement.addEventListener("click", function (event) {
-                        mousemoveEnabled = !mousemoveEnabled;
-                        if (mousemoveEnabled) {
-                            filterBySeason(event);
-                            seasonsElement.addEventListener("mousemove", filterBySeason);
-                        }
-                        else {
-                            seasonsElement.removeEventListener("mousemove", filterBySeason);
-                        }
-                    });
                     console.log(view);
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
-                        var queryOptions, filterOptions, stats;
+                        var hitResponse, graphic, geometry, queryOptions, filterOptions, stats;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     event.stopPropagation();
+                                    return [4 /*yield*/, view.hitTest(event)];
+                                case 1:
+                                    hitResponse = _a.sent();
+                                    graphic = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; })[0].graphic;
+                                    geometry = graphic && graphic.geometry;
                                     queryOptions = {
-                                        geometry: view.toMap(event),
-                                        distance: 50,
-                                        units: "miles",
+                                        geometry: geometry,
+                                        // distance: 50,
+                                        // units: "miles",
                                         spatialRelationship: "intersects"
                                     };
                                     filterOptions = new FeatureFilter(queryOptions);
                                     // layerView.filter = filterOptions;
-                                    layerView.effect = {
+                                    layerView.effect = new FeatureEffect({
                                         filter: filterOptions,
                                         // insideEffect: "saturate(25%)",
                                         outsideEffect: "grayscale(75%) opacity(60%)"
-                                    };
+                                    });
                                     return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
-                                case 1:
+                                case 2:
                                     stats = _a.sent();
                                     heatmapChart_1.updateGrid(stats);
                                     return [2 /*return*/];

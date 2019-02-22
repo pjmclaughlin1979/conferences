@@ -10,8 +10,8 @@ let layerView: esri.FeatureLayerView = null;
 
 let data: ChartData[] = [];
 
-const start = new Color("white");
-const end = new Color("dodgerblue");
+const start = new Color("#efe6e6");
+const end = new Color("#672929");
 const numCols = 4;
 const numRows = 4;
 
@@ -70,6 +70,9 @@ export function updateGrid(newData?: ChartData[], lv?: esri.FeatureLayerView) {
     ctx.strokeStyle = "black";
     ctx.lineWidth = w;
     ctx.strokeRect(highlighted.col * cellWidth + w / 2, highlighted.row * cellHeight + w / 2, cellWidth - w, cellHeight - w);
+  } else {
+    ctx.strokeStyle = null;
+    ctx.lineWidth = 0;
   }
 }
 
@@ -99,24 +102,24 @@ function addCanvasListeners() {
       layerView.filter = new FeatureFilter({
         where: `1=1`
       });
+      highlighted = null;
+      updateGrid();
     }
   });
 }
 
 function onCellSelect(cell:CellHighlight) {
   
-  highlighted = { col: cell.col, row: cell.row };
-  updateGrid();
-
   const season = seasons[cell.row];
   const timeOfDay = timesOfDay[cell.col];
 
   if(mousemoveEnabled){
+    highlighted = { col: cell.col, row: cell.row };
     layerView.filter = new FeatureFilter({
       where: `Season = '${season}' AND timeOfDay = '${timeOfDay}'`
     });
   }
+  updateGrid();
 }
 
 addCanvasListeners();
-updateGrid();

@@ -10,7 +10,6 @@ body, #viewDiv {
 #chartDiv {
   width: 400px;
   height: 400px;
-  background-color: white;
 }
 
 #seasons-filter {
@@ -33,7 +32,7 @@ body, #viewDiv {
 
 .visible-season {
   color: #fff;
-  background-color: rgb(103, 41, 41);
+  background-color: #672929;
 }
 
 .chart-widget {

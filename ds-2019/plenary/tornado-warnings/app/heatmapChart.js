@@ -5,8 +5,8 @@ define(["require", "exports", "esri/views/layers/support/FeatureFilter", "esri/C
     var highlighted = null;
     var layerView = null;
     var data = [];
-    var start = new Color("white");
-    var end = new Color("dodgerblue");
+    var start = new Color("#efe6e6");
+    var end = new Color("#672929");
     var numCols = 4;
     var numRows = 4;
     function normalize(value, minValue, maxValue) {
@@ -56,6 +56,10 @@ define(["require", "exports", "esri/views/layers/support/FeatureFilter", "esri/C
             ctx.lineWidth = w;
             ctx.strokeRect(highlighted.col * cellWidth + w / 2, highlighted.row * cellHeight + w / 2, cellWidth - w, cellHeight - w);
         }
+        else {
+            ctx.strokeStyle = null;
+            ctx.lineWidth = 0;
+        }
     }
     exports.updateGrid = updateGrid;
     function addCanvasListeners() {
@@ -81,21 +85,22 @@ define(["require", "exports", "esri/views/layers/support/FeatureFilter", "esri/C
                 layerView.filter = new FeatureFilter({
                     where: "1=1"
                 });
+                highlighted = null;
+                updateGrid();
             }
         });
     }
     function onCellSelect(cell) {
-        highlighted = { col: cell.col, row: cell.row };
-        updateGrid();
         var season = constants_1.seasons[cell.row];
         var timeOfDay = constants_1.timesOfDay[cell.col];
         if (mousemoveEnabled) {
+            highlighted = { col: cell.col, row: cell.row };
             layerView.filter = new FeatureFilter({
                 where: "Season = '" + season + "' AND timeOfDay = '" + timeOfDay + "'"
             });
         }
+        updateGrid();
     }
     addCanvasListeners();
-    updateGrid();
 });
 //# sourceMappingURL=heatmapChart.js.map
