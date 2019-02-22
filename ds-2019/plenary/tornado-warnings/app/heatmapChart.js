@@ -1,11 +1,12 @@
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "esri/views/layers/support/FeatureFilter"], function (require, exports, FeatureFilter) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     am4core.useTheme(am4themes_dataviz);
     am4core.useTheme(am4themes_animated);
-    var chart;
-    function createChart() {
-        chart = am4core.create("chartDiv", am4charts.XYChart);
+    var overHandler;
+    var mousemoveEnabled = true;
+    function createChart(layerView, data) {
+        var chart = am4core.create("chartDiv", am4charts.XYChart);
         chart.maskBullets = false;
         var xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
         var yAxis = chart.yAxes.push(new am4charts.CategoryAxis());
@@ -42,14 +43,26 @@ define(["require", "exports"], function (require, exports) {
         heatLegend.series = series;
         heatLegend.valueAxis.renderer.labels.template.fontSize = 9;
         heatLegend.valueAxis.renderer.minGridDistance = 30;
-        // heat legend behavior
-        series.columns.template.events.on("over", function (event) {
-            console.log("over", event);
+        function filterChart(event) {
+            // console.log("over", event);
             handleHover(event.target);
-        });
+            var dataItem = event.target.dataItem;
+            var season = dataItem.categoryY;
+            var timeOfDay = dataItem.categoryX;
+            if (mousemoveEnabled) {
+                layerView.filter = new FeatureFilter({
+                    where: "Season = '" + season + "' AND timeOfDay = '" + timeOfDay + "'"
+                });
+            }
+        }
+        // heat legend behavior
+        overHandler = series.columns.template.events.on("over", filterChart);
         series.columns.template.events.on("hit", function (event) {
+            mousemoveEnabled = !mousemoveEnabled;
+            filterChart(event);
             console.log("hit", event);
             handleHover(event.target);
+            console.log("event handler: ", overHandler);
         });
         function handleHover(column) {
             if (!isNaN(column.dataItem.value)) {
@@ -59,20 +72,22 @@ define(["require", "exports"], function (require, exports) {
                 heatLegend.valueAxis.hideTooltip();
             }
         }
+        document.getElementById("chartDiv").addEventListener("mouseleave", function () {
+            if (mousemoveEnabled) {
+                layerView.filter = new FeatureFilter({
+                    where: "1=1"
+                });
+            }
+        });
         series.columns.template.events.on("out", function (event) {
-            console.log("out", event);
+            // console.log("out", event);
             heatLegend.valueAxis.hideTooltip();
         });
-        chart.data = [
-        // {
-        //   "timeOfDay": "Morning",
-        //   "season": "Fall",
-        //   "value": 1
-        // }
-        ];
+        chart.data = data;
+        return chart;
     }
     exports.createChart = createChart;
-    function updateChart(data) {
+    function updateChart(chart, data) {
         chart.data = data;
     }
     exports.updateChart = updateChart;

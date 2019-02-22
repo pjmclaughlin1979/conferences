@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/Graphic", "esri/symbols", "esri/renderers", "./heatmapChart"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, Graphic, symbols_1, renderers_1, heatmapChart_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -46,49 +46,56 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         case 0:
                             geometry = params.geometry, distance = params.distance, units = params.units;
                             query = layerView.layer.createQuery();
-                            query.outStatistics = [new StatisticDefinition({
-                                    onStatisticField: "MonthOfTheYear",
-                                    outStatisticFieldName: "month_count",
-                                    statisticType: "count"
-                                }),
+                            query.outStatistics = [
                                 new StatisticDefinition({
                                     onStatisticField: "1",
                                     outStatisticFieldName: "value",
                                     statisticType: "count"
-                                }),
-                                new StatisticDefinition({
-                                    onStatisticField: "Season",
-                                    outStatisticFieldName: "season_count",
-                                    statisticType: "count"
-                                }),
-                                new StatisticDefinition({
-                                    onStatisticField: "(ExpiredDate - IssueDateTime) / (1000*60)",
-                                    outStatisticFieldName: "avg_duration",
-                                    statisticType: "avg"
-                                })];
-                            // Season 
-                            // DayOfMonth
+                                })
+                            ];
                             query.groupByFieldsForStatistics = ["Season + '-' + timeOfDay"];
                             query.geometry = geometry;
-                            // query.distance = distance;
-                            // query.units = units;
+                            query.distance = distance;
+                            query.units = units;
                             query.returnQueryGeometry = true;
                             return [4 /*yield*/, layerView.queryFeatures(query)];
                         case 1:
                             queryResponse = _a.sent();
-                            view.graphics.removeAll();
-                            view.graphics.add(new Graphic({
-                                geometry: queryResponse.queryGeometry,
-                                symbol: new symbols_1.SimpleFillSymbol({
-                                    color: [125, 125, 125, 0.02],
-                                    outline: {
-                                        width: 1,
-                                        color: "#06350E"
-                                    }
-                                })
-                            }));
                             responseChartData = queryResponse.features.map(function (feature) {
-                                var timeSpan = feature.attributes["Season + '-' + timeOfDay"].split("-");
+                                var timeSpan = feature.attributes["EXPR_1"].split("-");
+                                var season = timeSpan[0];
+                                var timeOfDay = timeSpan[1];
+                                return {
+                                    timeOfDay: timeOfDay,
+                                    season: season,
+                                    value: feature.attributes.value
+                                };
+                            });
+                            return [2 /*return*/, createDataObjects(responseChartData)];
+                    }
+                });
+            });
+        }
+        function queryLayerStatistics(layer) {
+            return __awaiter(this, void 0, void 0, function () {
+                var query, queryResponse, responseChartData;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            query = layer.createQuery();
+                            query.outStatistics = [
+                                new StatisticDefinition({
+                                    onStatisticField: "1",
+                                    outStatisticFieldName: "value",
+                                    statisticType: "count"
+                                })
+                            ];
+                            query.groupByFieldsForStatistics = ["Season + '-' + timeOfDay"];
+                            return [4 /*yield*/, layer.queryFeatures(query)];
+                        case 1:
+                            queryResponse = _a.sent();
+                            responseChartData = queryResponse.features.map(function (feature) {
+                                var timeSpan = feature.attributes["EXPR_1"].split("-");
                                 var season = timeSpan[0];
                                 var timeOfDay = timeSpan[1];
                                 return {
@@ -120,7 +127,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             return formattedChartData;
         }
-        var url, layer, countiesLayer, map, view, layerView, seasonsElement, previousId;
+        var url, layer, countiesLayer, map, view, layerView, layerStats, chart, seasonsElement;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -133,8 +140,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     countiesLayer = new FeatureLayer({
                         title: "counties",
                         portalItem: {
-                            // 7566e0221e5646f99ea249a197116605
-                            // 99fd67933e754a1181cc755146be21ca
                             id: "7566e0221e5646f99ea249a197116605"
                         },
                         renderer: new renderers_1.SimpleRenderer({
@@ -165,10 +170,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 case 1:
                     _a.sent();
                     view.ui.add("chartDiv", "bottom-left");
-                    heatmapChart_1.createChart();
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
+                    return [4 /*yield*/, queryLayerStatistics(layer)];
+                case 3:
+                    layerStats = _a.sent();
+                    console.log(JSON.stringify(layerStats));
+                    chart = heatmapChart_1.createChart(layerView, layerStats);
                     seasonsElement = document.querySelector(".seasons");
                     seasonsElement.addEventListener("click", function (event) {
                         var selectedSeason = event.target.getAttribute("data-season");
@@ -192,37 +201,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     });
                     console.log(view);
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
-                        var hitTestResponse, hitTestResult, countyGraphic, objectIdField, queryOptions, filterOptions, stats;
+                        var queryOptions, filterOptions, stats;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
                                     event.stopPropagation();
-                                    return [4 /*yield*/, view.hitTest(event)];
-                                case 1:
-                                    hitTestResponse = _a.sent();
-                                    hitTestResult = hitTestResponse.results.filter(function (result) {
-                                        return result.graphic.layer && result.graphic.layer.title === "counties";
-                                    })[0];
-                                    if (!hitTestResult) {
-                                        // layerView.filter = new FeatureFilter({
-                                        //   where: "1=1"
-                                        // });
-                                        view.graphics.removeAll();
-                                        return [2 /*return*/];
-                                    }
-                                    else {
-                                        countyGraphic = hitTestResult.graphic;
-                                    }
-                                    objectIdField = countiesLayer.objectIdField;
-                                    if (previousId === countyGraphic.attributes[objectIdField]) {
-                                        return [2 /*return*/];
-                                    }
-                                    else {
-                                        previousId = countyGraphic.attributes[objectIdField];
-                                    }
                                     queryOptions = {
-                                        geometry: countyGraphic.geometry,
-                                        distance: 25,
+                                        geometry: view.toMap(event),
+                                        distance: 50,
                                         units: "miles",
                                         spatialRelationship: "intersects"
                                     };
@@ -234,10 +220,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                         outsideEffect: "grayscale(75%) opacity(60%)"
                                     };
                                     return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
-                                case 2:
+                                case 1:
                                     stats = _a.sent();
-                                    heatmapChart_1.updateChart(stats);
-                                    console.log(stats);
+                                    heatmapChart_1.updateChart(chart, stats);
                                     return [2 /*return*/];
                             }
                         });

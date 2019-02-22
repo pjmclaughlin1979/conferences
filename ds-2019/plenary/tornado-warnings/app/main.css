@@ -1,19 +1,33 @@
+
 html,
-body,
-#viewDiv {
+body {
+  font-family: sans-serif;
   padding: 0;
   margin: 0;
   height: 100%;
   width: 100%;
 }
 
+#viewDiv {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: 60px;
+  bottom: 0;
+}
+
 #chartDiv {
-  width: 100%;
+  width: 400px;
   height: 400px;
   background-color: white;
 }
 
-
+.header {
+  position: absolute;
+  top: 0;
+  height: 60px;
+  width: 100%;
+}
 
 .seasons {
   margin: 0 auto;

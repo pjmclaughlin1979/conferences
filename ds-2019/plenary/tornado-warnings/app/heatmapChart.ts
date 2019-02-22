@@ -1,3 +1,7 @@
+import esri = __esri;
+import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
+import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
+
 declare var am4core: any;
 declare var am4charts: any;
 
@@ -7,12 +11,11 @@ declare var am4themes_animated: any;
 am4core.useTheme(am4themes_dataviz);
 am4core.useTheme(am4themes_animated);
 
+let overHandler: any;
+let mousemoveEnabled = true;
 
-
-let chart:any;
-
-export function createChart(){
-  chart = am4core.create("chartDiv", am4charts.XYChart);
+export function createChart(layerView: esri.FeatureLayerView, data: ChartData[]): any {
+  let chart = am4core.create("chartDiv", am4charts.XYChart);
   chart.maskBullets = false;
 
   let xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -59,15 +62,30 @@ export function createChart(){
   heatLegend.valueAxis.renderer.labels.template.fontSize = 9;
   heatLegend.valueAxis.renderer.minGridDistance = 30;
 
-  // heat legend behavior
-  series.columns.template.events.on("over", (event: any) => {
-    console.log("over", event);
+  function filterChart (event: any) {
+    // console.log("over", event);
     handleHover(event.target);
-  })
+
+    const dataItem = event.target.dataItem;
+    const season = dataItem.categoryY;
+    const timeOfDay = dataItem.categoryX;
+    if(mousemoveEnabled){
+      layerView.filter = new FeatureFilter({
+        where: `Season = '${season}' AND timeOfDay = '${timeOfDay}'`
+      });
+    }
+    
+  }
+
+  // heat legend behavior
+  overHandler = series.columns.template.events.on("over", filterChart);
 
   series.columns.template.events.on("hit", (event: any) => {
+    mousemoveEnabled = !mousemoveEnabled;
+    filterChart(event);
     console.log("hit", event);
     handleHover(event.target);
+    console.log("event handler: ", overHandler);
   })
 
   function handleHover(column: any) {
@@ -79,20 +97,23 @@ export function createChart(){
     }
   }
 
+  document.getElementById("chartDiv").addEventListener("mouseleave", () => {
+    if(mousemoveEnabled){
+      layerView.filter = new FeatureFilter({
+        where: `1=1`
+      });
+    }
+  });
+
   series.columns.template.events.on("out", (event: any) => {
-    console.log("out", event);
+    // console.log("out", event);
     heatLegend.valueAxis.hideTooltip();
   })
 
-  chart.data = [
-    // {
-    //   "timeOfDay": "Morning",
-    //   "season": "Fall",
-    //   "value": 1
-    // }
-  ];
+  chart.data = data;
+  return chart;
 }
 
-export function updateChart(data: Object[]){
+export function updateChart(chart:any, data: Object[]){
   chart.data = data;
 }

@@ -23,8 +23,6 @@ import { createChart, updateChart } from "./heatmapChart";
   const countiesLayer = new FeatureLayer({
     title: "counties",
     portalItem: {
-      // 7566e0221e5646f99ea249a197116605
-      // 99fd67933e754a1181cc755146be21ca
       id: "7566e0221e5646f99ea249a197116605"
     },
     renderer: new SimpleRenderer({
@@ -57,9 +55,11 @@ import { createChart, updateChart } from "./heatmapChart";
   await view.when();
   view.ui.add("chartDiv", "bottom-left");
 
-  createChart();
-
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
+
+  const layerStats = await queryLayerStatistics(layer);
+  console.log(JSON.stringify(layerStats));
+  let chart = createChart(layerView, layerStats);
 
   const seasonsElement = document.querySelector(".seasons");
   seasonsElement.addEventListener("click", function(event: any) {
@@ -85,37 +85,12 @@ import { createChart, updateChart } from "./heatmapChart";
 
   console.log(view);
 
-  let previousId: number;
   view.on("drag", ["Control"], async (event) => {
     event.stopPropagation();
-    
-
-    const hitTestResponse = await view.hitTest(event);
-    const hitTestResult = hitTestResponse.results.filter( (result) => {
-      return result.graphic.layer && result.graphic.layer.title === "counties";
-    })[0];
-
-    let countyGraphic: esri.Graphic;
-    if (!hitTestResult){
-      // layerView.filter = new FeatureFilter({
-      //   where: "1=1"
-      // });
-      view.graphics.removeAll();
-      return;
-    } else {
-      countyGraphic = hitTestResult.graphic;
-    }
-
-    const objectIdField = countiesLayer.objectIdField;
-    if(previousId === countyGraphic.attributes[objectIdField]){
-      return;
-    } else {
-      previousId = countyGraphic.attributes[objectIdField];
-    }
 
     let queryOptions = {
-      geometry: countyGraphic.geometry, //hitTestResult.mapPoint,//countyGraphic.geometry,
-      distance: 25,
+      geometry: view.toMap(event),
+      distance: 50,
       units: "miles",
       spatialRelationship: "intersects"
     };
@@ -130,12 +105,11 @@ import { createChart, updateChart } from "./heatmapChart";
     };
 
     const stats = await queryTimeStatistics(layerView, queryOptions);
-    updateChart(stats);
-    console.log(stats);
+    updateChart(chart, stats);
   });
 
   interface QueryTimeStatsParams {
-    geometry: esri.Geometry,
+    geometry?: esri.Geometry,
     distance?: number,
     units?: string
   }
@@ -145,48 +119,23 @@ import { createChart, updateChart } from "./heatmapChart";
 
     const query = layerView.layer.createQuery();
 
-    query.outStatistics = [ new StatisticDefinition({
-      onStatisticField: "MonthOfTheYear",
-      outStatisticFieldName: "month_count",
-      statisticType: "count"
-    }),
-     new StatisticDefinition({
-      onStatisticField: "1",
-      outStatisticFieldName: "value",
-      statisticType: "count"
-    }),
-    new StatisticDefinition({
-     onStatisticField: "Season",
-     outStatisticFieldName: "season_count",
-     statisticType: "count"
-   }),
-    new StatisticDefinition({
-      onStatisticField: "(ExpiredDate - IssueDateTime) / (1000*60)",
-      outStatisticFieldName: "avg_duration",
-      statisticType: "avg"
-    })];
-// Season 
-// DayOfMonth
+    query.outStatistics = [
+      new StatisticDefinition({
+        onStatisticField: "1",
+        outStatisticFieldName: "value",
+        statisticType: "count"
+      })
+    ];
     query.groupByFieldsForStatistics = [ "Season + '-' + timeOfDay" ];
     query.geometry = geometry;
-    // query.distance = distance;
-    // query.units = units;
+    query.distance = distance;
+    query.units = units;
     query.returnQueryGeometry = true;
 
     const queryResponse = await layerView.queryFeatures(query);
-    view.graphics.removeAll();
-    view.graphics.add(new Graphic({
-      geometry: queryResponse.queryGeometry,
-      symbol: new SimpleFillSymbol({
-        color: [125,125,125,0.02],
-        outline: {
-          width: 1,
-          color: "#06350E"
-        }
-      })
-    }))
+
     const responseChartData = queryResponse.features.map( feature => {
-      const timeSpan = feature.attributes["Season + '-' + timeOfDay"].split("-");
+      const timeSpan = feature.attributes["EXPR_1"].split("-");
       const season = timeSpan[0];
       const timeOfDay = timeSpan[1];
       return {
@@ -199,10 +148,30 @@ import { createChart, updateChart } from "./heatmapChart";
     return createDataObjects(responseChartData);
   }
 
-  interface ChartData {
-    timeOfDay: "Morning" | "Afternoon" | "Evening" | "Night" | string,
-    season: "Winter" | "Spring" | "Summer" | "Fall" | string,
-    value: number
+  async function queryLayerStatistics(layer: esri.FeatureLayer): Promise<ChartData[]> {
+    const query = layer.createQuery();
+    query.outStatistics = [
+      new StatisticDefinition({
+        onStatisticField: "1",
+        outStatisticFieldName: "value",
+        statisticType: "count"
+      })
+    ];
+    query.groupByFieldsForStatistics = [ "Season + '-' + timeOfDay" ];
+
+    const queryResponse = await layer.queryFeatures(query);
+
+    const responseChartData = queryResponse.features.map( feature => {
+      const timeSpan = feature.attributes["EXPR_1"].split("-");
+      const season = timeSpan[0];
+      const timeOfDay = timeSpan[1];
+      return {
+        timeOfDay,
+        season, 
+        value: feature.attributes.value
+      };
+    });
+    return createDataObjects(responseChartData);
   }
 
   function createDataObjects(data: ChartData[]): ChartData[] {
