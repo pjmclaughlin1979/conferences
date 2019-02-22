@@ -33,11 +33,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1, Expand) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(_this, void 0, void 0, function () {
+        function filterBySeason(event) {
+            var selectedSeason = event.target.getAttribute("data-season");
+            var seasonsNodes = document.querySelectorAll(".season-item");
+            seasonsNodes.forEach(function (node) {
+                var season = node.innerText;
+                if (season !== selectedSeason) {
+                    if (node.classList.contains("visible-season")) {
+                        node.classList.remove("visible-season");
+                    }
+                }
+                else {
+                    if (!node.classList.contains("visible-season")) {
+                        node.classList.add("visible-season");
+                    }
+                }
+            });
+            layerView.filter = new FeatureFilter({
+                where: "Season = '" + selectedSeason + "'"
+            });
+        }
         function queryTimeStatistics(layerView, params) {
             return __awaiter(this, void 0, void 0, function () {
                 var geometry, distance, units, query, queryResponse, responseChartData;
@@ -127,7 +147,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             return formattedChartData;
         }
-        var url, layer, countiesLayer, map, view, layerView, layerStats, chart, seasonsElement;
+        var url, layer, countiesLayer, map, view, layerView, layerStats, chart, mousemoveEnabled, seasonsElement;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -169,7 +189,18 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, view.when()];
                 case 1:
                     _a.sent();
-                    view.ui.add("chartDiv", "bottom-left");
+                    view.ui.add(new Expand({
+                        view: view,
+                        content: document.getElementById("chartContainer"),
+                        expandIconClass: "esri-icon-chart",
+                        group: "top-left"
+                    }), "top-left");
+                    view.ui.add(new Expand({
+                        view: view,
+                        content: document.getElementById("seasons-filter"),
+                        expandIconClass: "esri-icon-filter",
+                        group: "top-left"
+                    }), "top-left");
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
@@ -178,26 +209,29 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     layerStats = _a.sent();
                     console.log(JSON.stringify(layerStats));
                     chart = heatmapChart_1.createChart(layerView, layerStats);
-                    seasonsElement = document.querySelector(".seasons");
-                    seasonsElement.addEventListener("click", function (event) {
-                        var selectedSeason = event.target.getAttribute("data-season");
+                    mousemoveEnabled = true;
+                    seasonsElement = document.getElementById("seasons-filter");
+                    seasonsElement.addEventListener("mousemove", filterBySeason);
+                    seasonsElement.addEventListener("mouseleave", function () {
                         var seasonsNodes = document.querySelectorAll(".season-item");
-                        seasonsNodes.forEach(function (node) {
-                            var season = node.innerText;
-                            if (season !== selectedSeason) {
-                                if (node.classList.contains("visible-season")) {
-                                    node.classList.remove("visible-season");
-                                }
-                            }
-                            else {
-                                if (!node.classList.contains("visible-season")) {
-                                    node.classList.add("visible-season");
-                                }
-                            }
-                        });
-                        layerView.filter = new FeatureFilter({
-                            where: "Season = '" + selectedSeason + "'"
-                        });
+                        if (mousemoveEnabled) {
+                            seasonsNodes.forEach(function (node) {
+                                node.classList.add("visible-season");
+                            });
+                            layerView.filter = new FeatureFilter({
+                                where: "1=1"
+                            });
+                        }
+                    });
+                    seasonsElement.addEventListener("click", function (event) {
+                        mousemoveEnabled = !mousemoveEnabled;
+                        if (mousemoveEnabled) {
+                            filterBySeason(event);
+                            seasonsElement.addEventListener("mousemove", filterBySeason);
+                        }
+                        else {
+                            seasonsElement.removeEventListener("mousemove", filterBySeason);
+                        }
                     });
                     console.log(view);
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {

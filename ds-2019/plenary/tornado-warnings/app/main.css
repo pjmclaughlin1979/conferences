@@ -1,19 +1,10 @@
 
 html,
-body {
-  font-family: sans-serif;
+body, #viewDiv {
   padding: 0;
   margin: 0;
   height: 100%;
   width: 100%;
-}
-
-#viewDiv {
-  position: absolute;
-  right: 0;
-  left: 0;
-  top: 60px;
-  bottom: 0;
 }
 
 #chartDiv {
@@ -22,33 +13,22 @@ body {
   background-color: white;
 }
 
-.header {
-  position: absolute;
-  top: 0;
-  height: 60px;
+#seasons-filter {
+  height: 160px;
   width: 100%;
-}
-
-.seasons {
-  margin: 0 auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  overflow: auto;
+  background-color: white;
 }
 
 .season-item {
-  flex-grow: 4;
   background-color: rgba(103, 41, 41, 0.5);
   color: #fff;
   margin: 1px;
-  width: 50%;
-  padding: 20px;
-  overflow: auto;
+  width: 100%;
+  padding: 12px;
   text-align: center;
+  vertical-align: baseline;
   cursor: pointer;
-  font-size: 0.7em;
+  height: 40px;
 }
 
 .visible-season {

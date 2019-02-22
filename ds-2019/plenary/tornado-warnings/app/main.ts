@@ -11,6 +11,8 @@ import { SimpleFillSymbol } from "esri/symbols";
 import { SimpleRenderer } from "esri/renderers";
 import { createChart, updateChart } from "./heatmapChart";
 
+import Expand = require("esri/widgets/Expand");
+
 ( async () => {
 
   const url = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Tornado_Warnings_2002_through_2011/FeatureServer/0";
@@ -53,7 +55,18 @@ import { createChart, updateChart } from "./heatmapChart";
   });
 
   await view.when();
-  view.ui.add("chartDiv", "bottom-left");
+  view.ui.add(new Expand({
+    view,
+    content: document.getElementById("chartContainer"),
+    expandIconClass: "esri-icon-chart",
+    group: "top-left"
+  }), "top-left");
+  view.ui.add(new Expand({
+    view,
+    content: document.getElementById("seasons-filter"),
+    expandIconClass: "esri-icon-filter",
+    group: "top-left"
+  }), "top-left");
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
 
@@ -61,8 +74,11 @@ import { createChart, updateChart } from "./heatmapChart";
   console.log(JSON.stringify(layerStats));
   let chart = createChart(layerView, layerStats);
 
-  const seasonsElement = document.querySelector(".seasons");
-  seasonsElement.addEventListener("click", function(event: any) {
+  let mousemoveEnabled = true;
+  const seasonsElement = document.getElementById("seasons-filter");
+  seasonsElement.addEventListener("mousemove", filterBySeason);
+
+  function filterBySeason (event: any) {
     const selectedSeason = event.target.getAttribute("data-season");
     const seasonsNodes = document.querySelectorAll(`.season-item`);
     seasonsNodes.forEach( (node:HTMLDivElement) => {
@@ -81,6 +97,28 @@ import { createChart, updateChart } from "./heatmapChart";
     layerView.filter = new FeatureFilter({
       where: `Season = '${selectedSeason}'`
     });
+  }
+
+  seasonsElement.addEventListener("mouseleave", () => {
+    const seasonsNodes = document.querySelectorAll(`.season-item`);
+    if (mousemoveEnabled){
+      seasonsNodes.forEach( (node:HTMLDivElement) => {
+        node.classList.add("visible-season");
+      });
+      layerView.filter = new FeatureFilter({
+        where: `1=1`
+      });
+    }
+  });
+
+  seasonsElement.addEventListener("click", (event:any) => {
+    mousemoveEnabled = !mousemoveEnabled;
+    if(mousemoveEnabled){
+      filterBySeason(event);
+      seasonsElement.addEventListener("mousemove", filterBySeason);
+    } else {
+      seasonsElement.removeEventListener("mousemove", filterBySeason);
+    }
   });
 
   console.log(view);
