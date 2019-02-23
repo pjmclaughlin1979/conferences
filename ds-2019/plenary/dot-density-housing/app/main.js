@@ -38,46 +38,64 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(_this, void 0, void 0, function () {
+        function hideAttributes(renderer) {
+            renderer.attributes.forEach(function (attribute) {
+                attribute.color.a = 0;
+            });
+        }
         function showNextField(renderer) {
             var attributes = renderer.attributes;
             for (var i = 0; i <= attributes.length; i++) {
-                var attributeColor = attributes[i].color;
+                var attributeColor = attributes[i].color.clone();
                 if (attributeColor.a < 1) {
-                    startAnimation(attributeColor);
-                    // attributeColor.a = 1;
+                    startAnimation(i);
                     break;
                 }
             }
-            // let done = false;
-            // attributes.forEach( (attribute) => {
-            //   const attributeColor = attribute.color;
-            //     if(!done && attributeColor.a !== 1){
-            //       startAnimation(attributeColor);
-            //       done = true;
-            //       // attributeColor.a = 1;
-            //     }
-            // });
         }
-        function startAnimation(color) {
+        function startAnimation(colorIndex) {
             stopAnimation();
-            animation = animate(color);
+            animation = animate();
+            console.log(animation);
         }
-        function animate(color) {
+        function animate() {
+            // const attributes = lang.clone(newRenderer.attributes);
+            // const updatedAttribute = attributes[colorIndex].clone();
+            // let color = updatedAttribute.color.clone();
             var animating = true;
             var opacity = 0;
+            var colorIndex = 0;
             function updateStep() {
+                var oldRenderer = layer.renderer;
+                var newRenderer = oldRenderer.clone();
                 if (!animating) {
                     return;
                 }
-                if (opacity >= 1) {
-                    opacity = 1;
-                    stopAnimation();
+                if (opacity >= 1 && colorIndex < newRenderer.attributes.length) {
+                    opacity = 0;
+                    colorIndex++;
+                    if (colorIndex > newRenderer.attributes.length - 1) {
+                        stopAnimation();
+                    }
                 }
-                color.a = opacity;
+                else {
+                    console.log(colorIndex);
+                    yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+                }
+                // stopAnimation();
+                //   console.log(colorIndex);
+                //   yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+                // // }
+                var attributes = newRenderer.attributes.map(function (attribute, i) {
+                    attribute.color.a = i === colorIndex ? opacity : attribute.color.a;
+                    return attribute;
+                });
+                newRenderer.attributes = attributes;
+                layer.renderer = newRenderer;
                 opacity = opacity + 0.01;
                 // setTimeout(function() {
                 requestAnimationFrame(updateStep);
-                // }, 1000);
+                // }, 10);
             }
             requestAnimationFrame(updateStep);
             return {
@@ -93,7 +111,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             animation.remove();
             animation = null;
         }
-        var renderer, layer, map, view, layerView, animation;
+        var renderer, layer, map, view, layerView, yearDiv, playBtn, animation;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -146,11 +164,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             }
                         ]
                     });
-                    renderer.attributes.forEach(function (attribute) {
-                        attribute.color.a = 0;
-                    });
+                    hideAttributes(renderer);
                     layer = new FeatureLayer({
-                        url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Boise_housing/FeatureServer/0",
+                        title: "Houston Housing",
+                        // url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Boise_housing/FeatureServer/0",
+                        portalItem: {
+                            id: "453a70e1e36b4318a5af017d7d0188de"
+                        },
                         renderer: renderer,
                         minScale: 0
                     });
@@ -165,10 +185,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             "spatialReference": {
                                 "wkid": 3857
                             },
-                            "xmin": -12964654.184796918,
-                            "ymin": 5392109.310964468,
-                            "xmax": -12925403.770772532,
-                            "ymax": 5423792.45918863
+                            "xmin": -10704888.39266741,
+                            "ymin": 3415868.1631658636,
+                            "xmax": -10542689.018646205,
+                            "ymax": 3526090.3579531303
                         }
                     });
                     return [4 /*yield*/, view.when()];
@@ -177,8 +197,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
-                    view.ui.add(new Legend({ view: view }), "bottom-left");
-                    view.on("click", function () {
+                    new Legend({ view: view, container: "legendDiv" });
+                    view.ui.add("controlDiv", "bottom-left");
+                    view.ui.add("yearDiv", "top-right");
+                    yearDiv = document.getElementById("yearDiv");
+                    playBtn = document.getElementById("playBtn");
+                    playBtn.addEventListener("click", function () {
+                        hideAttributes(layer.renderer);
                         showNextField(layer.renderer);
                     });
                     return [2 /*return*/];

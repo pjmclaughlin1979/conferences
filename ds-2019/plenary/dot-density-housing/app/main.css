@@ -6,3 +6,19 @@ body,
   height: 100%;
   width: 100%;
 }
+
+#controlDiv {
+  width: 170px;
+  padding: 5px 5px 5px 5px;
+}
+
+#playBtn{
+  text-align: center;
+  padding-top: 10px;
+  cursor: pointer;
+}
+
+#yearDiv{
+  font-size: 36pt;
+  background-color: rgba(0,0,0,0);
+}

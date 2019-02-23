@@ -5,6 +5,7 @@ import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import DotDensityRenderer = require("esri/renderers/DotDensityRenderer");
 import Legend = require("esri/widgets/Legend");
+import lang = require("esri/core/lang");
 
 ( async () => {
 
@@ -58,15 +59,22 @@ import Legend = require("esri/widgets/Legend");
     ]
   });
 
-  renderer.attributes.forEach( attribute => {
-    attribute.color.a = 0;
-  });
+  function hideAttributes(renderer: DotDensityRenderer){
+    renderer.attributes.forEach( attribute => {
+      attribute.color.a = 0;
+    });
+  }
+  
 
-
+  hideAttributes(renderer);
 
   const layer = new FeatureLayer({
-    url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Boise_housing/FeatureServer/0",
-    renderer: renderer,
+    title: "Houston Housing",
+    // url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Boise_housing/FeatureServer/0",
+    portalItem: {
+      id: "453a70e1e36b4318a5af017d7d0188de"
+    },
+    renderer,
     minScale: 0
   });
 
@@ -83,19 +91,24 @@ import Legend = require("esri/widgets/Legend");
       "spatialReference": {
         "wkid": 3857
       },
-      "xmin": -12964654.184796918,
-      "ymin": 5392109.310964468,
-      "xmax": -12925403.770772532,
-      "ymax": 5423792.45918863
+      "xmin": -10704888.39266741,
+      "ymin": 3415868.1631658636,
+      "xmax": -10542689.018646205,
+      "ymax": 3526090.3579531303
     }
   });
 
   await view.when();
   const layerView = await view.whenLayerView(layer);
+  new Legend({ view, container: "legendDiv" });
+  view.ui.add("controlDiv", "bottom-left");
+  view.ui.add("yearDiv", "top-right");
 
-  view.ui.add(new Legend({ view: view }), "bottom-left");
+  const yearDiv = document.getElementById("yearDiv") as HTMLDivElement;
 
-  view.on("click", () => {
+  const playBtn = document.getElementById("playBtn") as HTMLDivElement;
+  playBtn.addEventListener("click", () => {
+    hideAttributes(layer.renderer as DotDensityRenderer);
     showNextField(layer.renderer as DotDensityRenderer);
   });
 
@@ -103,52 +116,64 @@ import Legend = require("esri/widgets/Legend");
     let attributes = renderer.attributes;
 
     for( let i = 0; i <= attributes.length; i++){
-      let attributeColor = attributes[i].color;
+      let attributeColor = attributes[i].color.clone();
       if (attributeColor.a < 1){
-        startAnimation(attributeColor);
-        // attributeColor.a = 1;
+        startAnimation(i);
         break;
       }
     }
-    // let done = false;
-    // attributes.forEach( (attribute) => {
-    //   const attributeColor = attribute.color;
-        
-        
-    //     if(!done && attributeColor.a !== 1){
-    //       startAnimation(attributeColor);
-    //       done = true;
-    //       // attributeColor.a = 1;
-    //     }
-        
-    // });
   }
 
   let animation: any;
 
-  function startAnimation(color: esri.Color) {
+  function startAnimation(colorIndex: number) {
     stopAnimation();
-    animation = animate(color);
+    animation = animate();
+    console.log(animation);
   }
 
-  function animate(color: esri.Color) {
+  function animate() {
+    // const attributes = lang.clone(newRenderer.attributes);
+    // const updatedAttribute = attributes[colorIndex].clone();
+    // let color = updatedAttribute.color.clone();
     let animating = true;
     let opacity = 0;
+    let colorIndex = 0;
 
     function updateStep() {
+
+      const oldRenderer = layer.renderer as DotDensityRenderer;
+      const newRenderer = oldRenderer.clone();
       if (!animating) {
         return;
       }
 
-      if (opacity >= 1){
-        opacity = 1;
-        stopAnimation();
+      if (opacity >= 1 && colorIndex < newRenderer.attributes.length){
+        opacity = 0;
+        colorIndex++;
+        if(colorIndex > newRenderer.attributes.length - 1){
+          stopAnimation();
+        }
+      } else {
+        console.log(colorIndex);
+        yearDiv.innerText = newRenderer.attributes[colorIndex].label;
       }
-      color.a = opacity;
+        // stopAnimation();
+      //   console.log(colorIndex);
+      //   yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+      // // }
+
+      const attributes = newRenderer.attributes.map( (attribute, i) => {
+        attribute.color.a = i === colorIndex ? opacity : attribute.color.a;
+        return attribute;
+      });
+
+      newRenderer.attributes = attributes;
+      layer.renderer = newRenderer;
       opacity = opacity + 0.01;
       // setTimeout(function() {
         requestAnimationFrame(updateStep);
-      // }, 1000);
+      // }, 10);
 
     }
     requestAnimationFrame(updateStep);
