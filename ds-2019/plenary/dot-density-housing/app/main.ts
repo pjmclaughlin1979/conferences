@@ -129,7 +129,6 @@ import lang = require("esri/core/lang");
   function startAnimation(colorIndex: number) {
     stopAnimation();
     animation = animate();
-    console.log(animation);
   }
 
   function animate() {
@@ -155,13 +154,8 @@ import lang = require("esri/core/lang");
           stopAnimation();
         }
       } else {
-        console.log(colorIndex);
         yearDiv.innerText = newRenderer.attributes[colorIndex].label;
       }
-        // stopAnimation();
-      //   console.log(colorIndex);
-      //   yearDiv.innerText = newRenderer.attributes[colorIndex].label;
-      // // }
 
       const attributes = newRenderer.attributes.map( (attribute, i) => {
         attribute.color.a = i === colorIndex ? opacity : attribute.color.a;

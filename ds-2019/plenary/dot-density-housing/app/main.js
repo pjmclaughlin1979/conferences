@@ -56,7 +56,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         function startAnimation(colorIndex) {
             stopAnimation();
             animation = animate();
-            console.log(animation);
         }
         function animate() {
             // const attributes = lang.clone(newRenderer.attributes);
@@ -79,13 +78,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     }
                 }
                 else {
-                    console.log(colorIndex);
                     yearDiv.innerText = newRenderer.attributes[colorIndex].label;
                 }
-                // stopAnimation();
-                //   console.log(colorIndex);
-                //   yearDiv.innerText = newRenderer.attributes[colorIndex].label;
-                // // }
                 var attributes = newRenderer.attributes.map(function (attribute, i) {
                     attribute.color.a = i === colorIndex ? opacity : attribute.color.a;
                     return attribute;
