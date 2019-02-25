@@ -1,0 +1,37 @@
+
+html,
+body, #viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#chartDiv {
+  width: 400px;
+  height: 400px;
+  background-color: white;
+}
+
+#seasons-filter {
+  height: 160px;
+  width: 100%;
+  background-color: white;
+}
+
+.season-item {
+  background-color: rgba(103, 41, 41, 0.5);
+  color: #fff;
+  margin: 1px;
+  width: 100%;
+  padding: 12px;
+  text-align: center;
+  vertical-align: baseline;
+  cursor: pointer;
+  height: 40px;
+}
+
+.visible-season {
+  color: #fff;
+  background-color: rgb(103, 41, 41);
+}

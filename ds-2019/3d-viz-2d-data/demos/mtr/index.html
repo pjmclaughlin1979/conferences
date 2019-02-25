@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>MTR Encroachment</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/themes/light/main.css">
+  <link rel="stylesheet" href="droptarget.css">
+  <link rel="stylesheet" href="app.css">
+
+  <script>
+    var path = location.href.substring(0, location.href.lastIndexOf('/') + 1);
+    var dojoConfig = {
+      paths: {
+        app: path
+      }
+    };
+   </script>
+
+  <script src="https://js.arcgis.com/4.7/"></script>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/layers/FeatureLayer",
+      "esri/layers/GroupLayer",
+      "esri/Graphic",
+      "esri/geometry/geometryEngine",
+      "esri/geometry/Multipoint",
+      "esri/widgets/Legend",
+      "esri/widgets/LayerList",
+      "esri/widgets/BasemapToggle",
+      "esri/widgets/Expand",
+      "esri/widgets/Home",
+      "esri/Camera",
+      "esri/layers/CSVLayer",
+      "app/DropTarget",
+      "dojo/domReady!"
+    ], function(Map, SceneView, FeatureLayer, GroupLayer,
+      Graphic, ge, Multipoint, Legend, LayerList, BasemapToggle,
+      Expand, Home, Camera, CSVLayer, DropTarget
+    ) {
+
+      let windmillLayer = null;
+      const DropTargetWidget = DropTarget.default;
+
+      const mtrHeight = {
+        type: "size",
+        valueExpression: "$feature.elvnumcl - $feature.elvnumflr",
+        valueUnit: "feet"
+      };
+
+      const initialRenderer = {
+        type: "simple",
+        symbol: {
+          type: "polygon-3d",
+          symbolLayers: [{
+            type: "extrude",
+            size: 1000,
+            material: {
+              color: [ 255,255,255,0 ]
+            },
+            edges: {
+              type: "solid",
+              color: "#2b7bff",
+              size: 1.25
+            }
+          }]
+        },
+        visualVariables: [ mtrHeight ]
+      };
+
+      function createClassification(params){
+        const projectGeometry = params.projectGeometry;
+        const height = params.projectHeight;
+
+        const riskLevels = {
+          low: 300,
+          medium: 200,
+          high: 100
+        };
+
+        let riskLevelBuffers = {};
+        // buffering outside of renderer function boosts performance
+        for (let level in riskLevels){
+          riskLevelBuffers[level] = ge.geodesicBuffer(projectGeometry, riskLevels[level], "feet");
+        }
+
+        let classifyFeatures = function (graphic){
+          let ceilingValue = graphic.attributes.elvnumcl;
+          let floorValue = graphic.attributes.elvnumflr;
+          let geom = graphic.geometry;
+          let minRestriction = floorValue;
+
+          let risk = "none";  // none | low | medium | high
+
+          for (let level in riskLevels){
+            let bufferValue = riskLevels[level];
+            let heightRisk = height >= (floorValue - bufferValue);
+            let xyRisk = ge.intersects(geom, riskLevelBuffers[level]);
+            risk = heightRisk && xyRisk ? level : risk;
+          }
+
+          return risk;
+        }
+
+        return {
+          type: "unique-value",
+          field: classifyFeatures,
+          legendOptions: {
+            title: "Risk of Encroachment"
+          },
+          uniqueValueInfos: [{
+            value: "high",
+            symbol: createSymbol([244, 66, 66, 0.2], [244, 66, 66]),
+            label: "High"
+          }, {
+            value: "medium",
+            symbol: createSymbol([244, 146, 65, 0.2], [244, 146, 65]),
+            label: "Medium"
+          }, {
+            value: "low",
+            symbol: createSymbol([244, 238, 65, 0.2], [244, 238, 65]),
+            label: "Low"
+          }],
+          defaultSymbol: createSymbol([112, 244, 65, 0.2], [112, 244, 65]),
+          defaultLabel: "None",
+          visualVariables: [ mtrHeight ]
+        };
+      }
+
+      function createSymbol(color, useEdges){
+        const edges = {
+          type: "solid",
+          color: useEdges,
+          size: 2
+        };
+
+        return {
+          type: "polygon-3d",
+          symbolLayers: [{
+            type: "extrude",
+            material: {
+              color: color
+            },
+            edges: useEdges ? edges : null
+          }]
+        };
+      }
+
+      let currentGeometry;
+
+      // Try the following symbol provided out of the box in the API rather than
+      // the web style symbol published to ArcGIS Online from a model downloaded at
+      // https://www.turbosquid.com/3d-models/free-wind-turbine-3d-model/642388
+
+        // symbol: {
+        //   type: "web-style",
+        //   name: "Tower_Crane",
+        //   styleName: "EsriRealisticTransportationStyle"
+        // },
+
+      const turbineRenderer = {
+        type: "simple",
+        symbol: {
+          type: "web-style",
+          styleUrl: "https://www.arcgis.com/sharing/rest/content/items/635f270120664b6fa510ff5dd2ba099a/data",
+          name: "Turbines"
+        },
+        visualVariables: [{
+          type: "size",
+          field: "total_ht",
+          axis: "height",
+          valueUnit: "feet"
+        }]
+      };
+
+      const windmillRenderer = {
+        type: "simple",
+        symbol: {
+          type: "point-3d",
+          symbolLayers: [{
+            type: "icon",
+            style: "kite",
+            material: {
+              color: "purple"
+            },
+            size: 6,
+            outline: {
+              color: "white",
+              size: 1.2
+            }
+          }]
+        },
+      };
+
+      // https://ais-faa.opendata.arcgis.com/datasets/0c6899de28af447c801231ed7ba7baa6_0?geometry=-118.045%2C31.838%2C-103.038%2C37.499&mapSize=map-maximize
+
+      let mtr = new FeatureLayer({
+        portalItem: {
+          id: "c28c414f6ec9419e8b1accaa758e9ff5"
+        },
+        title: "Military Training Routes",
+        popupTemplate: {
+          title: "MTR {mtr_ident}",
+          content: [{
+            type: "fields",
+            fieldInfos: [{
+              fieldName: "service",
+              label: "Jurisdiction"
+            }, {
+              fieldName: "elvnumflr",
+              label: "Elevation Floor (ft)",
+              format: {
+                digitSeparator: true,
+                places: 0
+              }
+            }, {
+              fieldName: "elvnumcl",
+              label: "Elevation Ceiling (ft)",
+              format: {
+                digitSeparator: true,
+                places: 0
+              }
+            }]
+          }]
+        },
+        renderer: initialRenderer,
+
+        elevationInfo: {
+          mode: "relative-to-ground",
+          featureExpressionInfo: {
+            expression: "$feature.elvnumflr"
+          },
+          unit: "feet"
+        }
+
+      });
+
+      const map = new Map({
+        basemap: "topo",
+        ground: "world-elevation",
+        layers: [ mtr ]
+      });
+
+      const view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        camera: {
+          position: {
+            spatialReference: {
+              latestWkid: 3857,
+              wkid: 102100
+            },
+            x: -12067533,
+            y: 4104506,
+            z: 76850
+          },
+          heading: 320,
+          tilt: 65
+        }
+      });
+
+      const dropTarget = new DropTargetWidget({ view: view });
+
+      dropTarget.on("drop",  event => {
+
+        // Clear previous results if new CSV is dropped
+
+        currentGeometry = null;
+        map.remove(windmillLayer);
+        windmillLayer = null;
+        mtr.renderer = initialRenderer;
+
+        const files = event.dataTransfer.files;
+        const file = files[0];
+        const url = URL.createObjectURL(file);
+
+        const projectPointsIcons = new CSVLayer({ 
+          url: url, 
+          delimiter: ",",
+          spatialReference: {
+            wkid: 3857
+          },
+          renderer: windmillRenderer,
+          elevationInfo: {
+            mode: "on-the-ground"
+          }
+        });
+
+        const turbineLayer = new CSVLayer({ 
+          url: url,
+          title: "Wind Turbines",
+          delimiter: ",",
+          spatialReference: {
+            wkid: 3857
+          },
+          renderer: turbineRenderer,
+          elevationInfo: {
+            mode: "on-the-ground"
+          },
+          popupTemplate: {
+            title: "{model} {type_tower}",
+            content: [{
+              type: "fields",
+              fieldInfos: [{
+                fieldName: "manufac",
+                label: "Manufacturer"
+              }, {
+                fieldName: "total_ht",
+                label: "Total Height (ft)"
+              }, {
+                fieldName: "tower_h",
+                label: "Tower Height (ft)"
+              }, {
+                fieldName: "blade_l",
+                label: "Blade Length (ft)"
+              }]
+            }]
+          }
+        });
+
+        windmillLayer = new GroupLayer({
+          title: "Proposed Wind Locations",
+          layers: [ projectPointsIcons, turbineLayer ],
+          listMode: "hide-children",
+          visibilityMode: "inherited"
+        });
+
+        map.add(windmillLayer);
+
+        let statsQuery = projectPointsIcons.createQuery();
+        statsQuery.outStatistics = [{
+          statisticType: "max",
+          onStatisticField: "total_ht",
+          outStatisticFieldName: "maxHeight"
+        }];
+
+        let maxHeight = 0;
+        projectPointsIcons.queryFeatures(statsQuery)
+          .then(results => {
+            const stats = results.features[0].attributes;
+            maxHeight = stats.maxHeight;
+            heightInputElem.value = maxHeight;
+            return projectPointsIcons.queryFeatures();
+          })
+          .then(results => {
+            const graphics = results.features;
+
+            let multipointGeom = new Multipoint({
+              spatialReference: { wkid: 3857 }
+            });
+
+            graphics.forEach(f => {
+              const point = f.geometry;
+              multipointGeom.addPoint(point);
+            });
+
+            currentGeometry = multipointGeom;
+            updateRenderer(multipointGeom, maxHeight);
+          });
+      });
+
+      view.ui.add(dropTarget);
+
+      const toggle = new BasemapToggle({
+        view: view,
+        nextBasemap: "hybrid"
+      });
+      view.ui.add(toggle, "bottom-left");
+
+      view.when(function() {
+        view.ui.add(new Expand({
+          view: view,
+          group: "top-left",
+          content: new Legend({ 
+            view: view,
+            layerInfos: [{
+              layer: mtr
+            }]
+          }),
+          expanded: true
+        }), "top-left");
+      });
+      const layerListExpand = new Expand({
+        view: view,
+        group: "top-left",
+        content: new LayerList({
+          view: view
+        })
+      });
+      view.ui.add(layerListExpand, "top-left");
+
+      initializeButtons();
+
+      let heightInputElem = document.getElementById("heightInput");
+      
+      heightInputElem.addEventListener("change", function(){
+        updateRenderer(currentGeometry);
+      });
+
+      function updateRenderer(geometry, height){
+        const inputHeight = heightInputElem.value;
+        const projectGeometry = geometry;
+        const projectHeight = height ? height : parseInt(inputHeight);
+
+        if(!projectGeometry || !projectHeight){
+          console.log("Missing parameters. Please draw a project area and enter a project height.");
+          return;
+        }
+
+        let rendererParams = {
+          projectGeometry: projectGeometry,
+          projectHeight: projectHeight
+        }
+
+        let classifiedRenderer = createClassification(rendererParams);
+        mtr.renderer = classifiedRenderer;
+
+        updateTurbineHeight(projectHeight);
+      }
+
+      function updateTurbineHeight(newHeight){
+        const layer = windmillLayer.layers.find(function(layer){
+          return layer.title === "Wind Turbines";
+        });
+        const renderer = layer.renderer.clone();
+        renderer.visualVariables = [{
+          type: "size",
+          valueExpression: newHeight.toString(),
+          axis: "height",
+          valueUnit: "feet"
+        }];
+        layer.renderer = renderer;
+      }
+
+      function initializeButtons(){
+
+        // reset button
+        document.getElementById("resetBtn").onclick = reset;
+
+        function reset(){
+          map.remove(windmillLayer);
+          windmillLayer = null;
+          mtr.renderer = initialRenderer;
+          heightInputElem.value = null;
+          setActiveButton();
+        }
+
+        function setActiveButton(selectedButton) {
+          view.focus();
+          let elements = document.getElementsByClassName("active");
+          for (let i = 0; i < elements.length; i++) {
+            elements[i].classList.remove("active");
+          }
+          if (selectedButton) {
+            selectedButton.classList.add("active");
+          }
+        }
+      }
+
+      const zoomBtn = document.getElementById("zoomBtn");
+      view.ui.add(zoomBtn, { position: "top-left", index: 3 });
+      view.ui.add(new Home({ view: view }), { position: "top-left", index: 3 });
+      zoomBtn.addEventListener("click", function(){
+        view.goTo(new Camera({
+          position: {
+            spatialReference: {
+              latestWkid: 3857,
+              wkid: 102100
+            },
+            x: -12198525,
+            y: 4274266,
+            z: 1989
+          },
+          heading: 290.5,
+          tilt: 88.6
+        }));
+      });
+
+      document.getElementById("downloadBtn").addEventListener("click", function(){
+        window.open("az_fake_windmills.csv");
+      });
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv">
+    <button class="action-button esri-icon-zoom-in-fixed" id="zoomBtn" title="Zoom to turbines"></button>
+    <div id="topbar">
+      Height (ft): <input id="heightInput" class="esri-widget" type="number">
+      <button class="action-button esri-icon-down-arrow-circled" id="downloadBtn" title="Download CSV"></button>
+      <button class="action-button esri-icon-trash" id="resetBtn" title="Clear graphics"></button>
+    </div>
+  </div>
+</body>
+</html>
