@@ -165,9 +165,7 @@ import lang = require("esri/core/lang");
       newRenderer.attributes = attributes;
       layer.renderer = newRenderer;
       opacity = opacity + 0.01;
-      // setTimeout(function() {
-        requestAnimationFrame(updateStep);
-      // }, 10);
+      requestAnimationFrame(updateStep);
 
     }
     requestAnimationFrame(updateStep);

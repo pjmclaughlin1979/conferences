@@ -27,6 +27,9 @@ import Expand = require("esri/widgets/Expand");
         position: "top-right",
         breakpoint: false
       }
+    },
+    constraints: {
+      maxScale: 35000
     }
   });
 
@@ -34,7 +37,7 @@ import Expand = require("esri/widgets/Expand");
   const dotDensityRenderer = new DotDensityRenderer({
     referenceDotValue: 100,
     outline: null,
-    referenceScale: view.scale,
+    referenceScale: 577790,
     legendOptions: {
       unit: "people"
     },
@@ -87,7 +90,7 @@ import Expand = require("esri/widgets/Expand");
   const layer = new FeatureLayer({
     url: url,
     minScale: 20000000,
-    maxScale: 70000,
+    maxScale: 35000,
     title: "Current Population Estimates (ACS)",
     popupTemplate: {
       title: "{County}, {State}",
@@ -176,36 +179,45 @@ import Expand = require("esri/widgets/Expand");
 
   view.ui.add([
     new Expand({
-      view: view,
+      view,
       content: legendContainer,
       group: "top-left",
       expanded: true,
       expandIconClass: "esri-icon-layer-list"
     }),
     new Expand({
-      view: view,
+      view,
       content: new Bookmarks({ view }),
       group: "top-left"
-    })], "top-left" );
+    }),
+    new Expand({
+      view,
+      expandIconClass: "esri-icon-minus",
+      content: document.getElementById("sliderDiv"),
+      group: "top-left"
+    })
+  ], "top-left" );
 
-  legendContainer.addEventListener("mousemove", eventListener);
-  legendContainer.addEventListener("click", eventListener);
+
+
+  legendContainer.addEventListener("mousemove", legendEventListener);
+  legendContainer.addEventListener("click", legendEventListener);
 
   let mousemoveEnabled = true;
-  function eventListener (event:any) {
+  function legendEventListener (event:any) {
     const selectedText = event.target.alt || event.target.innerText;
-    const legendInfos = legend.activeLayerInfos.getItemAt(0).legendElements[0].infos;
+    const legendInfos: Array<any> = legend.activeLayerInfos.getItemAt(0).legendElements[0].infos;
     const matchFound = legendInfos.filter( (info:any) => info.label === selectedText ).length > 0;
-
+    
     if (matchFound){
       showSelectedField(selectedText);
       if (event.type === "click"){
         mousemoveEnabled = !mousemoveEnabled;
 
         if(mousemoveEnabled){
-          legendContainer.addEventListener("mousemove", eventListener);
+          legendContainer.addEventListener("mousemove", legendEventListener);
         } else {
-          legendContainer.removeEventListener("mousemove", eventListener);
+          legendContainer.removeEventListener("mousemove", legendEventListener);
         }
       }
     } else {
@@ -223,4 +235,16 @@ import Expand = require("esri/widgets/Expand");
     newRenderer.attributes = attributes;
     layer.renderer = newRenderer;
   }
+
+  const dotValueSlider = document.getElementById("dotValueInput") as HTMLInputElement;
+  const dotValueDisplay = document.getElementById("dotValueDisplay") as HTMLSpanElement;
+  dotValueSlider.addEventListener("input", () => {
+    const oldRenderer = layer.renderer as DotDensityRenderer;
+    const newRenderer = oldRenderer.clone();
+    dotValueDisplay.innerText = dotValueSlider.value;
+    const dotValue = parseInt(dotValueSlider.value);
+    newRenderer.referenceDotValue = dotValue;
+    layer.renderer = newRenderer;
+  });
+
 })();

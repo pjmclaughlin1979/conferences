@@ -14,7 +14,15 @@ Have you hesitated to build 3D apps because they look complicated or you lack th
 
 ### Outline
 
-
+- Building extrusion
+  - with attributes
+  - OSM building data
+- EMU app
+  - comparison with 2D
+- 
+  - Analysis app with 3D models
+  - contours 
+  - the others
 
 ### Demos
 

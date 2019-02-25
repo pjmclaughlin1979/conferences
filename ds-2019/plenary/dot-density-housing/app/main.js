@@ -87,9 +87,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 newRenderer.attributes = attributes;
                 layer.renderer = newRenderer;
                 opacity = opacity + 0.01;
-                // setTimeout(function() {
                 requestAnimationFrame(updateStep);
-                // }, 10);
             }
             requestAnimationFrame(updateStep);
             return {

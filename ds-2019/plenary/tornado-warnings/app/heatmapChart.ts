@@ -1,119 +1,125 @@
 import esri = __esri;
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
-import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
+import Color = require("esri/Color");
+import { seasons, timesOfDay } from "./constants";
 
-declare var am4core: any;
-declare var am4charts: any;
-
-declare var am4themes_dataviz: any;
-declare var am4themes_animated: any;
-
-am4core.useTheme(am4themes_dataviz);
-am4core.useTheme(am4themes_animated);
-
-let overHandler: any;
 let mousemoveEnabled = true;
 
-export function createChart(layerView: esri.FeatureLayerView, data: ChartData[]): any {
-  let chart = am4core.create("chartDiv", am4charts.XYChart);
-  chart.maskBullets = false;
+let highlighted:CellHighlight = null;
+let layerView: esri.FeatureLayerView = null;
 
-  let xAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-  let yAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+let data: ChartData[] = [];
 
-  xAxis.dataFields.category = "timeOfDay";
-  yAxis.dataFields.category = "season";
+const start = new Color("#efe6e6");
+const end = new Color("#672929");
+const numCols = 4;
+const numRows = 4;
 
-  xAxis.renderer.grid.template.disabled = true;
-  xAxis.renderer.minGridDistance = 40;
+function normalize(value:number, minValue:number, maxValue:number) {
+  return (value - minValue) / (maxValue - minValue);
+}
 
-  yAxis.renderer.grid.template.disabled = true;
-  yAxis.renderer.inversed = true;
-  yAxis.renderer.minGridDistance = 30;
+export function updateGrid(newData?: ChartData[], lv?: esri.FeatureLayerView) {
+  data = newData ? newData : data;
+  layerView = lv ? lv : layerView;
+  const pixelRatio = window.devicePixelRatio;
+  const canvas = document.getElementById("chartCanvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d");
+  const width = canvas.clientWidth * pixelRatio;
+  const height = canvas.clientHeight * pixelRatio;
+  canvas.width = width;
+  canvas.height = height;
+  const cellWidth = width / numCols;
+  const cellHeight = height / numRows;
+  
+  let minValue = +Infinity;
+  let maxValue = -Infinity;
+  
+  for (const {value} of data) {
+    minValue = Math.min(value, minValue);
+    maxValue = Math.max(value, maxValue);
+  }
 
-  let series = chart.series.push(new am4charts.ColumnSeries());
-  series.dataFields.categoryX = "timeOfDay";
-  series.dataFields.categoryY = "season";
-  series.dataFields.value = "value";
-  series.sequencedInterpolation = true;
-  series.defaultState.transitionDuration = 3000;
+  ctx.clearRect(0, 0, width, height);
 
-  let bgColor = new am4core.InterfaceColorSet().getFor("background");
+  for (const { col, row, value} of data) {
+    const ratio = normalize(value, minValue, maxValue);
+    ctx.fillStyle = new Color({
+      r: Math.round(start.r + (end.r - start.r) * ratio),
+      g: Math.round(start.g + (end.g - start.g) * ratio),
+      b: Math.round(start.b + (end.b - start.b) * ratio),
+      a: Math.round(start.a + (end.a - start.a) * ratio)
+    }).toCss();
+    ctx.fillRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
 
-  let columnTemplate = series.columns.template;
-  columnTemplate.strokeWidth = 1;
-  columnTemplate.strokeOpacity = 0.2;
-  columnTemplate.stroke = bgColor;
-  columnTemplate.tooltipText = "{season}, {timeOfDay}: {value.workingValue.formatNumber('#.')}";
-  columnTemplate.width = am4core.percent(100);
-  columnTemplate.height = am4core.percent(100);
+    // Draw text
+    ctx.fillStyle = "black";
+    ctx.textBaseline = "middle";
+    ctx.font = `${12 * pixelRatio}px "Avenir Next W00","Helvetica Neue",Helvetica,Arial,sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillText(
+      "" + value,
+      col * cellWidth + cellWidth / 2,
+      row * cellHeight + cellHeight / 2
+    );
+  }
 
-  series.heatRules.push({
-    target: columnTemplate,
-    property: "fill",
-    min: am4core.color(bgColor),
-    max: chart.colors.getIndex(0)
+  // draw highlighted cell
+  if (highlighted) {
+    const w = 3 * pixelRatio;
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = w;
+    ctx.strokeRect(highlighted.col * cellWidth + w / 2, highlighted.row * cellHeight + w / 2, cellWidth - w, cellHeight - w);
+  } else {
+    ctx.strokeStyle = null;
+    ctx.lineWidth = 0;
+  }
+}
+
+function addCanvasListeners() {
+  const canvas = document.getElementById("chartCanvas") as HTMLCanvasElement;
+
+  function selectCell (event: any) {
+    const pixelRatio = window.devicePixelRatio;
+    const { width, height } = canvas;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    onCellSelect({
+      col: Math.floor(x / (width / pixelRatio) * numCols), 
+      row: Math.floor(y / (height / pixelRatio) * numRows)
+    });
+  }
+
+  canvas.addEventListener("mousemove", selectCell);
+  canvas.addEventListener("click", (event) => {
+    mousemoveEnabled = !mousemoveEnabled;
+    selectCell(event);
   });
 
-  // heat legend
-  let heatLegend = chart.bottomAxesContainer.createChild(am4charts.HeatLegend);
-  heatLegend.width = am4core.percent(100);
-  heatLegend.series = series;
-  heatLegend.valueAxis.renderer.labels.template.fontSize = 9;
-  heatLegend.valueAxis.renderer.minGridDistance = 30;
-
-  function filterChart (event: any) {
-    // console.log("over", event);
-    handleHover(event.target);
-
-    const dataItem = event.target.dataItem;
-    const season = dataItem.categoryY;
-    const timeOfDay = dataItem.categoryX;
-    if(mousemoveEnabled){
-      layerView.filter = new FeatureFilter({
-        where: `Season = '${season}' AND timeOfDay = '${timeOfDay}'`
-      });
-    }
-    
-  }
-
-  // heat legend behavior
-  overHandler = series.columns.template.events.on("over", filterChart);
-
-  series.columns.template.events.on("hit", (event: any) => {
-    mousemoveEnabled = !mousemoveEnabled;
-    filterChart(event);
-    console.log("hit", event);
-    handleHover(event.target);
-    console.log("event handler: ", overHandler);
-  })
-
-  function handleHover(column: any) {
-    if (!isNaN(column.dataItem.value)) {
-      heatLegend.valueAxis.showTooltipAt(column.dataItem.value)
-    }
-    else {
-      heatLegend.valueAxis.hideTooltip();
-    }
-  }
-
-  document.getElementById("chartDiv").addEventListener("mouseleave", () => {
+  canvas.addEventListener("mouseleave", () => {
     if(mousemoveEnabled){
       layerView.filter = new FeatureFilter({
         where: `1=1`
       });
+      highlighted = null;
+      updateGrid();
     }
   });
-
-  series.columns.template.events.on("out", (event: any) => {
-    // console.log("out", event);
-    heatLegend.valueAxis.hideTooltip();
-  })
-
-  chart.data = data;
-  return chart;
 }
 
-export function updateChart(chart:any, data: Object[]){
-  chart.data = data;
+function onCellSelect(cell:CellHighlight) {
+  
+  const season = seasons[cell.row];
+  const timeOfDay = timesOfDay[cell.col];
+
+  if(mousemoveEnabled){
+    highlighted = { col: cell.col, row: cell.row };
+    layerView.filter = new FeatureFilter({
+      where: `Season = '${season}' AND timeOfDay = '${timeOfDay}'`
+    });
+  }
+  updateGrid();
 }
+
+addCanvasListeners();
