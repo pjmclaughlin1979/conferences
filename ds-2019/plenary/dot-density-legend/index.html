@@ -21,6 +21,11 @@
   <body>
     <div id="viewDiv"></div>
     <div id="legendDiv"></div>
+    <div id="sliderDiv" class="esri-widget">
+      Dot Value: <span id="dotValueDisplay">100</span>
+      <input type="range" class="esri-widget" id="dotValueInput" min="1" max="1000" step="1" value="100">
+    </div>
+    <!-- <div id="playBtn"><span class="font-size-3 esri-icon-play"></span>  Play Animation</div> -->
     <script>require(["app/main"]);</script>
   </body>
 </html>

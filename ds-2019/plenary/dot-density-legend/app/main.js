@@ -38,7 +38,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(_this, void 0, void 0, function () {
-        function eventListener(event) {
+        function legendEventListener(event) {
             var selectedText = event.target.alt || event.target.innerText;
             var legendInfos = legend.activeLayerInfos.getItemAt(0).legendElements[0].infos;
             var matchFound = legendInfos.filter(function (info) { return info.label === selectedText; }).length > 0;
@@ -47,10 +47,10 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                 if (event.type === "click") {
                     mousemoveEnabled = !mousemoveEnabled;
                     if (mousemoveEnabled) {
-                        legendContainer.addEventListener("mousemove", eventListener);
+                        legendContainer.addEventListener("mousemove", legendEventListener);
                     }
                     else {
-                        legendContainer.removeEventListener("mousemove", eventListener);
+                        legendContainer.removeEventListener("mousemove", legendEventListener);
                     }
                 }
             }
@@ -68,7 +68,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
             newRenderer.attributes = attributes;
             layer.renderer = newRenderer;
         }
-        var map, view, dotDensityRenderer, url, layer, legendContainer, legend, mousemoveEnabled;
+        var map, view, dotDensityRenderer, url, layer, legendContainer, legend, mousemoveEnabled, dotValueSlider, dotValueDisplay;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -90,6 +90,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                                 position: "top-right",
                                 breakpoint: false
                             }
+                        },
+                        constraints: {
+                            maxScale: 35000
                         }
                     });
                     return [4 /*yield*/, view.when()];
@@ -98,7 +101,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     dotDensityRenderer = new DotDensityRenderer({
                         referenceDotValue: 100,
                         outline: null,
-                        referenceScale: view.scale,
+                        referenceScale: 577790,
                         legendOptions: {
                             unit: "people"
                         },
@@ -149,7 +152,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     layer = new FeatureLayer({
                         url: url,
                         minScale: 20000000,
-                        maxScale: 70000,
+                        maxScale: 35000,
                         title: "Current Population Estimates (ACS)",
                         popupTemplate: {
                             title: "{County}, {State}",
@@ -245,11 +248,27 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                             view: view,
                             content: new Bookmarks({ view: view }),
                             group: "top-left"
+                        }),
+                        new Expand({
+                            view: view,
+                            expandIconClass: "esri-icon-minus",
+                            content: document.getElementById("sliderDiv"),
+                            group: "top-left"
                         })
                     ], "top-left");
-                    legendContainer.addEventListener("mousemove", eventListener);
-                    legendContainer.addEventListener("click", eventListener);
+                    legendContainer.addEventListener("mousemove", legendEventListener);
+                    legendContainer.addEventListener("click", legendEventListener);
                     mousemoveEnabled = true;
+                    dotValueSlider = document.getElementById("dotValueInput");
+                    dotValueDisplay = document.getElementById("dotValueDisplay");
+                    dotValueSlider.addEventListener("input", function () {
+                        var oldRenderer = layer.renderer;
+                        var newRenderer = oldRenderer.clone();
+                        dotValueDisplay.innerText = dotValueSlider.value;
+                        var dotValue = parseInt(dotValueSlider.value);
+                        newRenderer.referenceDotValue = dotValue;
+                        layer.renderer = newRenderer;
+                    });
                     return [2 /*return*/];
             }
         });
