@@ -149,7 +149,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             extentIndex = extentIndex === 0 ? 1 : 0;
             view.goTo(extents[extentIndex]);
         }
-        var url, layer, countiesLayer, map, view, seasonsElement, seasonsExpand, zoomBtn, layerView, layerStats, mousemoveEnabled, extentIndex, extents;
+        var url, layer, countiesLayer, map, view, seasonsElement, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, mousemoveEnabled, highlight, extentIndex, extents;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -164,9 +164,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         portalItem: {
                             id: "7566e0221e5646f99ea249a197116605"
                         },
+                        opacity: 0,
                         renderer: new renderers_1.SimpleRenderer({
                             symbol: new symbols_1.SimpleFillSymbol({
-                                color: [0, 0, 0, 0],
+                                color: [0, 0, 0, 1],
                                 outline: null
                             })
                         })
@@ -179,7 +180,12 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         map: map,
                         container: "viewDiv",
                         center: [-89.89219164308874, 38.32818747333555],
-                        zoom: 4
+                        zoom: 4,
+                        highlightOptions: {
+                            color: "#262626",
+                            haloOpacity: 1,
+                            fillOpacity: 0
+                        }
                     });
                     return [4 /*yield*/, view.when()];
                 case 1:
@@ -205,8 +211,11 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
-                    return [4 /*yield*/, queryLayerStatistics(layer)];
+                    return [4 /*yield*/, view.whenLayerView(countiesLayer)];
                 case 3:
+                    countiesLayerView = _a.sent();
+                    return [4 /*yield*/, queryLayerStatistics(layer)];
+                case 4:
                     layerStats = _a.sent();
                     console.log(JSON.stringify(layerStats));
                     heatmapChart_1.updateGrid(layerStats, layerView);
@@ -224,6 +233,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         }
                     });
                     console.log(view);
+                    highlight = null;
                     view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
                         var hitResponse, hitResults, graphic, geometry, queryOptions, filterOptions, stats;
                         return __generator(this, function (_a) {
@@ -236,6 +246,11 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                     hitResults = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; });
                                     if (!(hitResults.length > 0)) return [3 /*break*/, 3];
                                     graphic = hitResults[0].graphic;
+                                    if (highlight) {
+                                        highlight.remove();
+                                        highlight = null;
+                                    }
+                                    highlight = countiesLayerView.highlight([graphic.attributes.FID]);
                                     geometry = graphic && graphic.geometry;
                                     queryOptions = {
                                         geometry: geometry,

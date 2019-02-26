@@ -29,9 +29,10 @@ import { timesOfDay, seasons } from "./constants";
     portalItem: {
       id: "7566e0221e5646f99ea249a197116605"
     },
+    opacity: 0,
     renderer: new SimpleRenderer({
       symbol: new SimpleFillSymbol({
-        color: [ 0,0,0,0 ],
+        color: [ 0,0,0,1 ],
         outline: null
       })
     })
@@ -46,7 +47,12 @@ import { timesOfDay, seasons } from "./constants";
     map: map,
     container: "viewDiv",
     center: [ -89.89219164308874, 38.32818747333555 ],
-    zoom: 4
+    zoom: 4,
+    highlightOptions: {
+      color: "#262626",
+      haloOpacity: 1,
+      fillOpacity: 0
+    }
   });
 
   await view.when();
@@ -71,6 +77,7 @@ import { timesOfDay, seasons } from "./constants";
   zoomBtn.addEventListener("click", toggleExtent);
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
+  const countiesLayerView = await view.whenLayerView(countiesLayer) as esri.FeatureLayerView;
 
   const layerStats = await queryLayerStatistics(layer);
   console.log(JSON.stringify(layerStats));
@@ -115,7 +122,7 @@ import { timesOfDay, seasons } from "./constants";
   });
 
   console.log(view);
-
+  let highlight = null;
   view.on("drag", ["Control"], async (event) => {
     event.stopPropagation();
 
@@ -123,6 +130,11 @@ import { timesOfDay, seasons } from "./constants";
     const hitResults = hitResponse.results.filter( hit => hit.graphic.layer === countiesLayer );
     if(hitResults.length > 0){
       const graphic = hitResults[0].graphic;
+      if (highlight) {
+        highlight.remove();
+        highlight = null;
+      }
+      highlight = countiesLayerView.highlight([graphic.attributes.FID]);
       const geometry = graphic && graphic.geometry;
       let queryOptions = {
         geometry,//: view.toMap(event),
