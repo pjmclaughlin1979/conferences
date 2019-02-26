@@ -50,6 +50,14 @@ This sample demonstrates how to create a data exploration app using the Smart Ma
 
 ##### [Clustering - 311 calls in NYC](https://ekenes.github.io/conferences/ds-2018/2d-viz/demos/smart-mapping/)
 
+##### [Dot Density - Population]()
+
+##### [Dot Density - Housing growth animation]()
+
+##### [Dot Density Explorer](https://ekenes.github.io/esri-ts-samples/visualization/dot-density/)
+
+##### [Predominance Explorer](https://ekenes.github.io/esri-ts-samples/visualization/smart-mapping/predominance/boise-housing/)
+
 ## Resources
 
 * [Community](https://developers.arcgis.com/en/javascript/jshelp/community.html)
