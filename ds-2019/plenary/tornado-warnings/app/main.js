@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/views/layers/support/FeatureEffect", "esri/tasks/support/StatisticDefinition", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand", "./constants"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, FeatureEffect, StatisticDefinition, symbols_1, renderers_1, heatmapChart_1, Expand, constants_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/views/layers/support/FeatureFilter", "esri/views/layers/support/FeatureEffect", "esri/tasks/support/StatisticDefinition", "esri/geometry", "esri/symbols", "esri/renderers", "./heatmapChart", "esri/widgets/Expand", "./constants"], function (require, exports, EsriMap, MapView, FeatureLayer, FeatureFilter, FeatureEffect, StatisticDefinition, geometry_1, symbols_1, renderers_1, heatmapChart_1, Expand, constants_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -145,7 +145,11 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             return formattedChartData;
         }
-        var url, layer, countiesLayer, map, view, seasonsExpand, layerView, layerStats, mousemoveEnabled, seasonsElement;
+        function toggleExtent() {
+            extentIndex = extentIndex === 0 ? 1 : 0;
+            view.goTo(extents[extentIndex]);
+        }
+        var url, layer, countiesLayer, map, view, seasonsElement, seasonsExpand, zoomBtn, layerView, layerStats, mousemoveEnabled, extentIndex, extents;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -174,19 +178,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     view = new MapView({
                         map: map,
                         container: "viewDiv",
-                        extent: {
-                            "spatialReference": {
-                                "wkid": 3857
-                            },
-                            "xmin": -12413984.889735641,
-                            "ymin": 2697099.652298753,
-                            "xmax": -7370364.015367912,
-                            "ymax": 6865057.930631735
-                        }
+                        center: [-89.89219164308874, 38.32818747333555],
+                        zoom: 4
                     });
                     return [4 /*yield*/, view.when()];
                 case 1:
                     _a.sent();
+                    seasonsElement = document.getElementById("seasons-filter");
+                    seasonsElement.style.visibility = "visible";
                     view.ui.add(new Expand({
                         view: view,
                         content: document.getElementById("chartDiv"),
@@ -195,11 +194,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     }), "top-left");
                     seasonsExpand = new Expand({
                         view: view,
-                        content: document.getElementById("seasons-filter"),
+                        content: seasonsElement,
                         expandIconClass: "esri-icon-filter",
                         group: "top-left"
                     });
                     view.ui.add(seasonsExpand, "top-left");
+                    zoomBtn = document.getElementById("zoomBtn");
+                    view.ui.add(zoomBtn, "top-left");
+                    zoomBtn.addEventListener("click", toggleExtent);
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
                     layerView = _a.sent();
@@ -209,7 +211,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     console.log(JSON.stringify(layerStats));
                     heatmapChart_1.updateGrid(layerStats, layerView);
                     mousemoveEnabled = true;
-                    seasonsElement = document.getElementById("seasons-filter");
                     seasonsElement.addEventListener("click", filterBySeason);
                     seasonsExpand.watch("expanded", function () {
                         var seasonsNodes = document.querySelectorAll(".season-item");
@@ -258,6 +259,19 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             }
                         });
                     }); });
+                    extentIndex = 0;
+                    extents = [
+                        view.extent.clone(),
+                        new geometry_1.Extent({
+                            "spatialReference": {
+                                "wkid": 3857
+                            },
+                            "xmin": -10868752.477228628,
+                            "ymin": 3300368.82862141,
+                            "xmax": -9154117.05873601,
+                            "ymax": 4158909.530320281
+                        })
+                    ];
                     return [2 /*return*/];
             }
         });

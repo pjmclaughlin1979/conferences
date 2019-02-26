@@ -6,7 +6,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
 import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
 import StatisticDefinition = require("esri/tasks/support/StatisticDefinition");
-import { Geometry } from "esri/geometry";
+import { Geometry, Extent } from "esri/geometry";
 import Graphic = require("esri/Graphic");
 import { SimpleFillSymbol } from "esri/symbols";
 import { SimpleRenderer } from "esri/renderers";
@@ -45,18 +45,13 @@ import { timesOfDay, seasons } from "./constants";
   const view = new MapView({
     map: map,
     container: "viewDiv",
-    extent: {
-      "spatialReference": {
-        "wkid": 3857
-      },
-      "xmin": -12413984.889735641,
-      "ymin": 2697099.652298753,
-      "xmax": -7370364.015367912,
-      "ymax": 6865057.930631735
-    }
+    center: [ -89.89219164308874, 38.32818747333555 ],
+    zoom: 4
   });
 
   await view.when();
+  const seasonsElement = document.getElementById("seasons-filter");
+  seasonsElement.style.visibility = "visible";
   view.ui.add(new Expand({
     view,
     content: document.getElementById("chartDiv"),
@@ -65,11 +60,15 @@ import { timesOfDay, seasons } from "./constants";
   }), "top-left");
   const seasonsExpand = new Expand({
     view,
-    content: document.getElementById("seasons-filter"),
+    content: seasonsElement,
     expandIconClass: "esri-icon-filter",
     group: "top-left"
   });
   view.ui.add(seasonsExpand, "top-left");
+
+  const zoomBtn = document.getElementById("zoomBtn");
+  view.ui.add(zoomBtn, "top-left");
+  zoomBtn.addEventListener("click", toggleExtent);
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
 
@@ -79,7 +78,7 @@ import { timesOfDay, seasons } from "./constants";
   updateGrid(layerStats, layerView);
 
   let mousemoveEnabled = true;
-  const seasonsElement = document.getElementById("seasons-filter");
+  
   seasonsElement.addEventListener("click", filterBySeason);
 
   function filterBySeason (event: any) {
@@ -232,6 +231,24 @@ import { timesOfDay, seasons } from "./constants";
     });
 
     return formattedChartData;
+  }
+
+  let extentIndex = 0;
+  const extents = [
+    view.extent.clone(),
+    new Extent({
+      "spatialReference": {
+        "wkid": 3857
+      },
+      "xmin": -10868752.477228628,
+      "ymin": 3300368.82862141,
+      "xmax": -9154117.05873601,
+      "ymax": 4158909.530320281
+    })
+  ]
+  function toggleExtent () {
+    extentIndex = extentIndex === 0 ? 1 : 0;
+    view.goTo(extents[extentIndex]);
   }
 
 })();
