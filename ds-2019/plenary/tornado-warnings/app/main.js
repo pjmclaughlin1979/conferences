@@ -40,7 +40,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     (function () { return __awaiter(_this, void 0, void 0, function () {
         function filterBySeason(event) {
             var selectedSeason = event.target.getAttribute("data-season");
-            var seasonsNodes = document.querySelectorAll(".season-item");
+            // const seasonsNodes = document.querySelectorAll(`.season-item`);
             seasonsNodes.forEach(function (node) {
                 var season = node.innerText;
                 if (season !== selectedSeason) {
@@ -56,6 +56,48 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             layerView.filter = new FeatureFilter({
                 where: "Season = '" + selectedSeason + "'"
+            });
+        }
+        function eventListener(event) {
+            return __awaiter(this, void 0, void 0, function () {
+                var hitResponse, hitResults, graphic, geometry, queryOptions, filterOptions, stats;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            event.stopPropagation();
+                            return [4 /*yield*/, view.hitTest(event)];
+                        case 1:
+                            hitResponse = _a.sent();
+                            hitResults = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; });
+                            if (!(hitResults.length > 0)) return [3 /*break*/, 3];
+                            graphic = hitResults[0].graphic;
+                            if (highlight) {
+                                highlight.remove();
+                                highlight = null;
+                            }
+                            highlight = countiesLayerView.highlight([graphic.attributes.FID]);
+                            geometry = graphic && graphic.geometry;
+                            queryOptions = {
+                                geometry: geometry,
+                                // distance: 50,
+                                // units: "miles",
+                                spatialRelationship: "intersects"
+                            };
+                            filterOptions = new FeatureFilter(queryOptions);
+                            // layerView.filter = filterOptions;
+                            layerView.effect = new FeatureEffect({
+                                filter: filterOptions,
+                                // insideEffect: "saturate(25%)",
+                                outsideEffect: "grayscale(75%) opacity(60%)"
+                            });
+                            return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
+                        case 2:
+                            stats = _a.sent();
+                            heatmapChart_1.updateGrid(stats);
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
+                    }
+                });
             });
         }
         function queryTimeStatistics(layerView, params) {
@@ -149,8 +191,19 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             extentIndex = extentIndex === 0 ? 1 : 0;
             view.goTo(extents[extentIndex]);
         }
-        var url, layer, countiesLayer, map, view, seasonsElement, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, mousemoveEnabled, highlight, extentIndex, extents;
-        var _this = this;
+        function resetVisuals() {
+            layerView.filter = null;
+            layerView.effect = null;
+            if (highlight) {
+                highlight.remove();
+                highlight = null;
+            }
+            seasonsNodes.forEach(function (node) {
+                node.classList.add("visible-season");
+            });
+            heatmapChart_1.updateGrid(layerStats, layerView);
+        }
+        var url, layer, countiesLayer, map, view, seasonsElement, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, mousemoveEnabled, seasonsNodes, highlight, extentIndex, extents, resetBtn;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -164,6 +217,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         portalItem: {
                             id: "7566e0221e5646f99ea249a197116605"
                         },
+                        popupTemplate: null,
                         opacity: 0,
                         renderer: new renderers_1.SimpleRenderer({
                             symbol: new symbols_1.SimpleFillSymbol({
@@ -205,6 +259,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         group: "top-left"
                     });
                     view.ui.add(seasonsExpand, "top-left");
+                    view.ui.add("titleDiv", "top-right");
                     zoomBtn = document.getElementById("zoomBtn");
                     view.ui.add(zoomBtn, "top-left");
                     zoomBtn.addEventListener("click", toggleExtent);
@@ -221,59 +276,16 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     heatmapChart_1.updateGrid(layerStats, layerView);
                     mousemoveEnabled = true;
                     seasonsElement.addEventListener("click", filterBySeason);
+                    seasonsNodes = document.querySelectorAll(".season-item");
                     seasonsExpand.watch("expanded", function () {
-                        var seasonsNodes = document.querySelectorAll(".season-item");
                         if (!seasonsExpand.expanded) {
-                            seasonsNodes.forEach(function (node) {
-                                node.classList.add("visible-season");
-                            });
-                            layerView.filter = new FeatureFilter({
-                                where: "1=1"
-                            });
+                            resetVisuals();
                         }
                     });
                     console.log(view);
                     highlight = null;
-                    view.on("drag", ["Control"], function (event) { return __awaiter(_this, void 0, void 0, function () {
-                        var hitResponse, hitResults, graphic, geometry, queryOptions, filterOptions, stats;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    event.stopPropagation();
-                                    return [4 /*yield*/, view.hitTest(event)];
-                                case 1:
-                                    hitResponse = _a.sent();
-                                    hitResults = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; });
-                                    if (!(hitResults.length > 0)) return [3 /*break*/, 3];
-                                    graphic = hitResults[0].graphic;
-                                    if (highlight) {
-                                        highlight.remove();
-                                        highlight = null;
-                                    }
-                                    highlight = countiesLayerView.highlight([graphic.attributes.FID]);
-                                    geometry = graphic && graphic.geometry;
-                                    queryOptions = {
-                                        geometry: geometry,
-                                        // distance: 50,
-                                        // units: "miles",
-                                        spatialRelationship: "intersects"
-                                    };
-                                    filterOptions = new FeatureFilter(queryOptions);
-                                    // layerView.filter = filterOptions;
-                                    layerView.effect = new FeatureEffect({
-                                        filter: filterOptions,
-                                        // insideEffect: "saturate(25%)",
-                                        outsideEffect: "grayscale(75%) opacity(60%)"
-                                    });
-                                    return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
-                                case 2:
-                                    stats = _a.sent();
-                                    heatmapChart_1.updateGrid(stats);
-                                    _a.label = 3;
-                                case 3: return [2 /*return*/];
-                            }
-                        });
-                    }); });
+                    view.on("drag", ["Control"], eventListener);
+                    view.on("click", ["Control"], eventListener);
                     extentIndex = 0;
                     extents = [
                         view.extent.clone(),
@@ -287,6 +299,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             "ymax": 4158909.530320281
                         })
                     ];
+                    resetBtn = document.getElementById("resetBtn");
+                    resetBtn.addEventListener("click", resetVisuals);
                     return [2 /*return*/];
             }
         });

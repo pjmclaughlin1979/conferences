@@ -8,8 +8,15 @@ body, #viewDiv {
 }
 
 #chartDiv {
-  width: 400px;
-  height: 400px;
+  padding: 10px;
+  background-color: white;
+}
+
+#resetBtn {
+  float: right;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
 }
 
 #seasons-filter {
@@ -19,7 +26,7 @@ body, #viewDiv {
   visibility: hidden;
 }
 
-#zoomBtn {
+/* #zoomBtn {
   font-size: 16px;
   background-color: white;
   border: 1px solid #D3D3D3;
@@ -29,10 +36,10 @@ body, #viewDiv {
   text-align: center;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-}
+} */
 
 .season-item {
-  background-color: rgba(103, 41, 41, 0.5);
+  background-color: rgba(50,50,50,0.5);
   color: #fff;
   margin: 1px;
   width: 100%;
@@ -45,7 +52,7 @@ body, #viewDiv {
 
 .visible-season {
   color: #fff;
-  background-color: #672929;
+  background-color: rgba(50,50,50,0.9);
 }
 
 .chart-widget {
@@ -82,3 +89,37 @@ body, #viewDiv {
 .row-label2 { grid-area: row-label2; }
 .row3 { grid-area: row3; }
 .row4 { grid-area: row4; }
+
+#titleDiv {
+ padding: 10px;
+ background-color: rgba(50,50,50,0.9);
+ color: white;
+}
+#titleText {
+  font-size: 32pt;
+  font-weight: 600;
+  padding: 5px 5px 10px 5px;
+}
+
+#dataDescription {
+  font-size: 12pt;
+  padding: 10px 5px 0px 5px;
+}
+
+.esri-widget--button {
+  font-size: 14px;
+  background-color: rgba(50,50,50,0.9);
+  color: white;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 125ms ease-in-out;
+}

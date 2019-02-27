@@ -29,6 +29,7 @@ import { timesOfDay, seasons } from "./constants";
     portalItem: {
       id: "7566e0221e5646f99ea249a197116605"
     },
+    popupTemplate: null,
     opacity: 0,
     renderer: new SimpleRenderer({
       symbol: new SimpleFillSymbol({
@@ -71,6 +72,7 @@ import { timesOfDay, seasons } from "./constants";
     group: "top-left"
   });
   view.ui.add(seasonsExpand, "top-left");
+  view.ui.add("titleDiv", "top-right");
 
   const zoomBtn = document.getElementById("zoomBtn");
   view.ui.add(zoomBtn, "top-left");
@@ -87,10 +89,11 @@ import { timesOfDay, seasons } from "./constants";
   let mousemoveEnabled = true;
   
   seasonsElement.addEventListener("click", filterBySeason);
+  const seasonsNodes = document.querySelectorAll(`.season-item`);
 
   function filterBySeason (event: any) {
     const selectedSeason = event.target.getAttribute("data-season");
-    const seasonsNodes = document.querySelectorAll(`.season-item`);
+    // const seasonsNodes = document.querySelectorAll(`.season-item`);
     seasonsNodes.forEach( (node:HTMLDivElement) => {
       const season = node.innerText;
       if(season !== selectedSeason){
@@ -110,20 +113,17 @@ import { timesOfDay, seasons } from "./constants";
   }
 
   seasonsExpand.watch("expanded", () => {
-    const seasonsNodes = document.querySelectorAll(`.season-item`);
     if (!seasonsExpand.expanded){
-      seasonsNodes.forEach( (node:HTMLDivElement) => {
-        node.classList.add("visible-season");
-      });
-      layerView.filter = new FeatureFilter({
-        where: `1=1`
-      });
+      resetVisuals();
     }
   });
 
   console.log(view);
-  let highlight = null;
-  view.on("drag", ["Control"], async (event) => {
+  let highlight:any = null;
+  view.on("drag", ["Control"], eventListener);
+  view.on("click", ["Control"], eventListener);
+
+  async function eventListener (event:any) {
     event.stopPropagation();
 
     const hitResponse = await view.hitTest(event);
@@ -155,7 +155,7 @@ import { timesOfDay, seasons } from "./constants";
       const stats = await queryTimeStatistics(layerView, queryOptions);
       updateGrid(stats);
     }
-  });
+  }
 
   interface QueryTimeStatsParams {
     geometry?: esri.Geometry,
@@ -261,6 +261,23 @@ import { timesOfDay, seasons } from "./constants";
   function toggleExtent () {
     extentIndex = extentIndex === 0 ? 1 : 0;
     view.goTo(extents[extentIndex]);
+  }
+
+  const resetBtn = document.getElementById("resetBtn");
+
+  resetBtn.addEventListener("click", resetVisuals);
+
+  function resetVisuals () {
+    layerView.filter = null;
+    layerView.effect = null;
+    if(highlight){
+      highlight.remove();
+      highlight = null;
+    }
+    seasonsNodes.forEach( (node:HTMLDivElement) => {
+      node.classList.add("visible-season");
+    });
+    updateGrid(layerStats, layerView);
   }
 
 })();
