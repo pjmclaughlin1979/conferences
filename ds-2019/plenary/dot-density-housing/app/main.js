@@ -64,6 +64,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             var animating = true;
             var opacity = 0;
             var colorIndex = 0;
+            var startYear = 1930;
             function updateStep() {
                 var oldRenderer = layer.renderer;
                 var newRenderer = oldRenderer.clone();
@@ -78,7 +79,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     }
                 }
                 else {
-                    yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+                    yearDiv.style.visibility = "visible";
+                    var approxYear = startYear + (colorIndex * 10) + Math.round(opacity / 0.1);
+                    yearDiv.innerText = approxYear.toString();
+                    // yearDiv.innerText = newRenderer.attributes[colorIndex].label;
                 }
                 var attributes = newRenderer.attributes.map(function (attribute, i) {
                     attribute.color.a = i === colorIndex ? opacity : attribute.color.a;
@@ -117,37 +121,37 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             {
                                 field: "ACSBLT1939",
                                 color: "orange",
-                                label: "Before 1939"
+                                label: "Before 1940"
                             },
                             {
                                 field: "ACSBLT1940",
                                 color: "#8be04e",
-                                label: "1940-1949"
+                                label: "1940s"
                             },
                             {
                                 field: "ACSBLT1950",
                                 color: "#5ad45a",
-                                label: "1950-1959"
+                                label: "1950s"
                             },
                             {
                                 field: "ACSBLT1960",
                                 color: "#00b7c7",
-                                label: "1960-1969"
+                                label: "1960s"
                             },
                             {
                                 field: "ACSBLT1970",
                                 color: "#1a53ff",
-                                label: "1970-1979"
+                                label: "1970s"
                             },
                             {
                                 field: "ACSBLT1980",
                                 color: "#4421af",
-                                label: "1980-1989"
+                                label: "1980s"
                             },
                             {
                                 field: "ACSBLT1990",
                                 color: "#7c1158",
-                                label: "1990-1999"
+                                label: "1990s"
                             },
                             {
                                 valueExpression: "$feature.ACSBLT2000 + $feature.ACSBLT2010 + $feature.ACSBLT2014",

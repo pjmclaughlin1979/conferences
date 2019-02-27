@@ -19,37 +19,37 @@ import lang = require("esri/core/lang");
       {
         field: "ACSBLT1939",
         color: "orange",
-        label: "Before 1939"
+        label: "Before 1940"
       },
       {
         field: "ACSBLT1940",
         color: "#8be04e",
-        label: "1940-1949"
+        label: "1940s"
       },
       {
         field: "ACSBLT1950",
         color: "#5ad45a",
-        label: "1950-1959"
+        label: "1950s"
       },
       {
         field: "ACSBLT1960",
         color: "#00b7c7",
-        label: "1960-1969"
+        label: "1960s"
       },
       {
         field: "ACSBLT1970",
         color: "#1a53ff",
-        label: "1970-1979"
+        label: "1970s"
       },
       {
         field: "ACSBLT1980",
         color: "#4421af",
-        label: "1980-1989"
+        label: "1980s"
       },
       {
         field: "ACSBLT1990",
         color: "#7c1158",
-        label: "1990-1999"
+        label: "1990s"
       },
       {
         valueExpression: "$feature.ACSBLT2000 + $feature.ACSBLT2010 + $feature.ACSBLT2014",
@@ -138,9 +138,8 @@ import lang = require("esri/core/lang");
     let animating = true;
     let opacity = 0;
     let colorIndex = 0;
-
+    let startYear = 1930;
     function updateStep() {
-
       const oldRenderer = layer.renderer as DotDensityRenderer;
       const newRenderer = oldRenderer.clone();
       if (!animating) {
@@ -154,7 +153,10 @@ import lang = require("esri/core/lang");
           stopAnimation();
         }
       } else {
-        yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+        yearDiv.style.visibility = "visible";
+        const approxYear = startYear + ( colorIndex * 10) + Math.round(opacity / 0.1);
+        yearDiv.innerText = approxYear.toString();
+        // yearDiv.innerText = newRenderer.attributes[colorIndex].label;
       }
 
       const attributes = newRenderer.attributes.map( (attribute, i) => {
@@ -165,6 +167,7 @@ import lang = require("esri/core/lang");
       newRenderer.attributes = attributes;
       layer.renderer = newRenderer;
       opacity = opacity + 0.01;
+
       requestAnimationFrame(updateStep);
 
     }
