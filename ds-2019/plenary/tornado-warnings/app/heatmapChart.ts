@@ -19,7 +19,8 @@ function normalize(value:number, minValue:number, maxValue:number) {
   return (value - minValue) / (maxValue - minValue);
 }
 
-export function updateGrid(newData?: ChartData[], lv?: esri.FeatureLayerView) {
+export function updateGrid(newData?: ChartData[], lv?: esri.FeatureLayerView, clearHighlight?: boolean) {
+  highlighted = clearHighlight ? null : highlighted;
   data = newData ? newData : data;
   layerView = lv ? lv : layerView;
   const pixelRatio = window.devicePixelRatio;
@@ -99,14 +100,16 @@ function addCanvasListeners() {
 
   canvas.addEventListener("mouseleave", () => {
     if(mousemoveEnabled){
-      layerView.filter = new FeatureFilter({
-        where: `1=1`
-      });
-      highlighted = null;
-      updateGrid();
+      layerView.filter = null;
+      updateGrid(null, null, true);
+      // clearCellHighlight();
     }
   });
 }
+
+// export function clearCellHighlight (){
+//   highlighted = null;
+// }
 
 function onCellSelect(cell:CellHighlight) {
   

@@ -12,7 +12,8 @@ define(["require", "exports", "esri/views/layers/support/FeatureFilter", "esri/C
     function normalize(value, minValue, maxValue) {
         return (value - minValue) / (maxValue - minValue);
     }
-    function updateGrid(newData, lv) {
+    function updateGrid(newData, lv, clearHighlight) {
+        highlighted = clearHighlight ? null : highlighted;
         data = newData ? newData : data;
         layerView = lv ? lv : layerView;
         var pixelRatio = window.devicePixelRatio;
@@ -82,14 +83,15 @@ define(["require", "exports", "esri/views/layers/support/FeatureFilter", "esri/C
         });
         canvas.addEventListener("mouseleave", function () {
             if (mousemoveEnabled) {
-                layerView.filter = new FeatureFilter({
-                    where: "1=1"
-                });
-                highlighted = null;
-                updateGrid();
+                layerView.filter = null;
+                updateGrid(null, null, true);
+                // clearCellHighlight();
             }
         });
     }
+    // export function clearCellHighlight (){
+    //   highlighted = null;
+    // }
     function onCellSelect(cell) {
         var season = constants_1.seasons[cell.row];
         var timeOfDay = constants_1.timesOfDay[cell.col];

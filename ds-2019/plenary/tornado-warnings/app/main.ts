@@ -50,7 +50,7 @@ import { timesOfDay, seasons } from "./constants";
     center: [ -89.89219164308874, 38.32818747333555 ],
     zoom: 4,
     highlightOptions: {
-      color: "#262626",
+      color: "white",//"#262626",
       haloOpacity: 1,
       fillOpacity: 0
     }
@@ -59,12 +59,12 @@ import { timesOfDay, seasons } from "./constants";
   await view.when();
   const seasonsElement = document.getElementById("seasons-filter");
   seasonsElement.style.visibility = "visible";
-  view.ui.add(new Expand({
+  const chartExpand = new Expand({
     view,
     content: document.getElementById("chartDiv"),
     expandIconClass: "esri-icon-chart",
     group: "top-left"
-  }), "top-left");
+  });
   const seasonsExpand = new Expand({
     view,
     content: seasonsElement,
@@ -72,6 +72,7 @@ import { timesOfDay, seasons } from "./constants";
     group: "top-left"
   });
   view.ui.add(seasonsExpand, "top-left");
+  view.ui.add(chartExpand, "top-left");
   view.ui.add("titleDiv", "top-right");
 
   const zoomBtn = document.getElementById("zoomBtn");
@@ -85,15 +86,12 @@ import { timesOfDay, seasons } from "./constants";
   console.log(JSON.stringify(layerStats));
 
   updateGrid(layerStats, layerView);
-
-  let mousemoveEnabled = true;
   
   seasonsElement.addEventListener("click", filterBySeason);
   const seasonsNodes = document.querySelectorAll(`.season-item`);
 
   function filterBySeason (event: any) {
     const selectedSeason = event.target.getAttribute("data-season");
-    // const seasonsNodes = document.querySelectorAll(`.season-item`);
     seasonsNodes.forEach( (node:HTMLDivElement) => {
       const season = node.innerText;
       if(season !== selectedSeason){
@@ -112,11 +110,14 @@ import { timesOfDay, seasons } from "./constants";
     });
   }
 
-  seasonsExpand.watch("expanded", () => {
-    if (!seasonsExpand.expanded){
+  function resetOnCollapse (expanded:boolean) {
+    if (!expanded){
       resetVisuals();
     }
-  });
+  }
+
+  seasonsExpand.watch("expanded", resetOnCollapse);
+  chartExpand.watch("expanded", resetOnCollapse);
 
   console.log(view);
   let highlight:any = null;
@@ -148,8 +149,8 @@ import { timesOfDay, seasons } from "./constants";
       // layerView.filter = filterOptions;
       layerView.effect = new FeatureEffect({
         filter: filterOptions,
-        // insideEffect: "saturate(25%)",
-        outsideEffect: "grayscale(75%) opacity(60%)"
+        // insideEffect: "opacity(75%)",
+        outsideEffect: "grayscale(75%) opacity(40%)"
       });
 
       const stats = await queryTimeStatistics(layerView, queryOptions);
@@ -277,7 +278,8 @@ import { timesOfDay, seasons } from "./constants";
     seasonsNodes.forEach( (node:HTMLDivElement) => {
       node.classList.add("visible-season");
     });
-    updateGrid(layerStats, layerView);
+    updateGrid(layerStats, layerView, true);
+
   }
 
 })();

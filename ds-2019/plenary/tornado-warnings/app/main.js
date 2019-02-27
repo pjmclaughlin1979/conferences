@@ -40,7 +40,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     (function () { return __awaiter(_this, void 0, void 0, function () {
         function filterBySeason(event) {
             var selectedSeason = event.target.getAttribute("data-season");
-            // const seasonsNodes = document.querySelectorAll(`.season-item`);
             seasonsNodes.forEach(function (node) {
                 var season = node.innerText;
                 if (season !== selectedSeason) {
@@ -57,6 +56,11 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             layerView.filter = new FeatureFilter({
                 where: "Season = '" + selectedSeason + "'"
             });
+        }
+        function resetOnCollapse(expanded) {
+            if (!expanded) {
+                resetVisuals();
+            }
         }
         function eventListener(event) {
             return __awaiter(this, void 0, void 0, function () {
@@ -87,8 +91,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             // layerView.filter = filterOptions;
                             layerView.effect = new FeatureEffect({
                                 filter: filterOptions,
-                                // insideEffect: "saturate(25%)",
-                                outsideEffect: "grayscale(75%) opacity(60%)"
+                                // insideEffect: "opacity(75%)",
+                                outsideEffect: "grayscale(75%) opacity(40%)"
                             });
                             return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
                         case 2:
@@ -201,9 +205,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             seasonsNodes.forEach(function (node) {
                 node.classList.add("visible-season");
             });
-            heatmapChart_1.updateGrid(layerStats, layerView);
+            heatmapChart_1.updateGrid(layerStats, layerView, true);
         }
-        var url, layer, countiesLayer, map, view, seasonsElement, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, mousemoveEnabled, seasonsNodes, highlight, extentIndex, extents, resetBtn;
+        var url, layer, countiesLayer, map, view, seasonsElement, chartExpand, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, seasonsNodes, highlight, extentIndex, extents, resetBtn;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -236,7 +240,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         center: [-89.89219164308874, 38.32818747333555],
                         zoom: 4,
                         highlightOptions: {
-                            color: "#262626",
+                            color: "white",
                             haloOpacity: 1,
                             fillOpacity: 0
                         }
@@ -246,12 +250,12 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     _a.sent();
                     seasonsElement = document.getElementById("seasons-filter");
                     seasonsElement.style.visibility = "visible";
-                    view.ui.add(new Expand({
+                    chartExpand = new Expand({
                         view: view,
                         content: document.getElementById("chartDiv"),
                         expandIconClass: "esri-icon-chart",
                         group: "top-left"
-                    }), "top-left");
+                    });
                     seasonsExpand = new Expand({
                         view: view,
                         content: seasonsElement,
@@ -259,6 +263,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         group: "top-left"
                     });
                     view.ui.add(seasonsExpand, "top-left");
+                    view.ui.add(chartExpand, "top-left");
                     view.ui.add("titleDiv", "top-right");
                     zoomBtn = document.getElementById("zoomBtn");
                     view.ui.add(zoomBtn, "top-left");
@@ -274,14 +279,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     layerStats = _a.sent();
                     console.log(JSON.stringify(layerStats));
                     heatmapChart_1.updateGrid(layerStats, layerView);
-                    mousemoveEnabled = true;
                     seasonsElement.addEventListener("click", filterBySeason);
                     seasonsNodes = document.querySelectorAll(".season-item");
-                    seasonsExpand.watch("expanded", function () {
-                        if (!seasonsExpand.expanded) {
-                            resetVisuals();
-                        }
-                    });
+                    seasonsExpand.watch("expanded", resetOnCollapse);
+                    chartExpand.watch("expanded", resetOnCollapse);
                     console.log(view);
                     highlight = null;
                     view.on("drag", ["Control"], eventListener);
