@@ -187,18 +187,19 @@ import Expand = require("esri/widgets/Expand");
     }),
     new Expand({
       view,
-      content: new Bookmarks({ view }),
-      group: "top-left"
-    }),
-    new Expand({
-      view,
       expandIconClass: "esri-icon-minus",
       content: document.getElementById("sliderDiv"),
       group: "top-left"
     })
   ], "top-left" );
 
-
+  view.ui.add(
+    new Expand({
+      view,
+      content: new Bookmarks({ view }),
+      group: "top-right",
+      expanded: true
+    }), "top-right");
 
   legendContainer.addEventListener("mousemove", legendEventListener);
   legendContainer.addEventListener("click", legendEventListener);

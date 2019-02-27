@@ -246,16 +246,17 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                         }),
                         new Expand({
                             view: view,
-                            content: new Bookmarks({ view: view }),
-                            group: "top-left"
-                        }),
-                        new Expand({
-                            view: view,
                             expandIconClass: "esri-icon-minus",
                             content: document.getElementById("sliderDiv"),
                             group: "top-left"
                         })
                     ], "top-left");
+                    view.ui.add(new Expand({
+                        view: view,
+                        content: new Bookmarks({ view: view }),
+                        group: "top-right",
+                        expanded: true
+                    }), "top-right");
                     legendContainer.addEventListener("mousemove", legendEventListener);
                     legendContainer.addEventListener("click", legendEventListener);
                     mousemoveEnabled = true;
