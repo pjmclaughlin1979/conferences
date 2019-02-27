@@ -6,6 +6,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import DotDensityRenderer = require("esri/renderers/DotDensityRenderer");
 import Legend = require("esri/widgets/Legend");
 import lang = require("esri/core/lang");
+import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./ArcadeExpressions";
 
 ( async () => {
 
@@ -13,7 +14,7 @@ import lang = require("esri/core/lang");
     referenceDotValue: 1,
     outline: null,
     legendOptions: {
-      unit: "house"
+      unit: "House"
     },
     attributes: [
       {
@@ -75,12 +76,17 @@ import lang = require("esri/core/lang");
       id: "453a70e1e36b4318a5af017d7d0188de"
     },
     renderer,
-    minScale: 0
+    minScale: 0,
+    popupTemplate: generateChartPopupTemplate(renderer.attributes)
   });
 
 
   const map = new EsriMap({
-    basemap: "gray-vector",
+    basemap: {
+      portalItem: {
+        id: "3582b744bba84668b52a16b0b6942544"
+      }
+    },
     layers: [ layer ]
   });
 
@@ -91,10 +97,21 @@ import lang = require("esri/core/lang");
       "spatialReference": {
         "wkid": 3857
       },
-      "xmin": -10704888.39266741,
-      "ymin": 3415868.1631658636,
-      "xmax": -10542689.018646205,
-      "ymax": 3526090.3579531303
+      "xmin": -10689548.884426521,
+      "ymin": 3432124.7664550575,
+      "xmax": -10542789.79011918,
+      "ymax": 3514676.757002936
+    },
+    popup: {
+      dockEnabled: true,
+      dockOptions: {
+        breakpoint: false,
+        position: "bottom-right"
+      }
+    },
+    constraints: {
+      maxScale: 140000,
+      minScale: 580000
     }
   });
 
@@ -103,6 +120,8 @@ import lang = require("esri/core/lang");
   new Legend({ view, container: "legendDiv" });
   view.ui.add("controlDiv", "bottom-left");
   view.ui.add("yearDiv", "top-right");
+
+  
 
   const yearDiv = document.getElementById("yearDiv") as HTMLDivElement;
 
