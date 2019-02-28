@@ -75,11 +75,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             hitResults = hitResponse.results.filter(function (hit) { return hit.graphic.layer === countiesLayer; });
                             if (!(hitResults.length > 0)) return [3 /*break*/, 3];
                             graphic = hitResults[0].graphic;
+                            if (!(previousId !== graphic.attributes.FID)) return [3 /*break*/, 3];
+                            previousId = graphic.attributes.FID;
                             if (highlight) {
                                 highlight.remove();
                                 highlight = null;
                             }
-                            highlight = countiesLayerView.highlight([graphic.attributes.FID]);
+                            highlight = countiesLayerView.highlight([previousId]);
                             geometry = graphic && graphic.geometry;
                             queryOptions = {
                                 geometry: geometry,
@@ -92,7 +94,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             layerView.effect = new FeatureEffect({
                                 filter: filterOptions,
                                 // insideEffect: "opacity(75%)",
-                                outsideEffect: "grayscale(75%) opacity(40%)"
+                                outsideEffect: "grayscale(90%) opacity(15%)"
                             });
                             return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
                         case 2:
@@ -207,7 +209,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             });
             heatmapChart_1.updateGrid(layerStats, layerView, true);
         }
-        var url, layer, countiesLayer, map, view, seasonsElement, chartExpand, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, seasonsNodes, highlight, extentIndex, extents, resetBtn;
+        var url, layer, countiesLayer, map, view, seasonsElement, chartExpand, seasonsExpand, zoomBtn, layerView, countiesLayerView, layerStats, seasonsNodes, highlight, previousId, extentIndex, extents, resetBtn;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -266,7 +268,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     view.ui.add(chartExpand, "top-left");
                     view.ui.add("titleDiv", "top-right");
                     zoomBtn = document.getElementById("zoomBtn");
-                    view.ui.add(zoomBtn, "top-left");
+                    view.ui.add("zoomBtn", "top-left");
                     zoomBtn.addEventListener("click", toggleExtent);
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 2:
@@ -283,7 +285,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     seasonsNodes = document.querySelectorAll(".season-item");
                     seasonsExpand.watch("expanded", resetOnCollapse);
                     chartExpand.watch("expanded", resetOnCollapse);
-                    console.log(view);
                     highlight = null;
                     view.on("drag", ["Control"], eventListener);
                     view.on("click", ["Control"], eventListener);

@@ -45,30 +45,42 @@ export function updateGrid(newData?: ChartData[], lv?: esri.FeatureLayerView, cl
 
   for (const { col, row, value} of data) {
     const ratio = normalize(value, minValue, maxValue);
-    ctx.fillStyle = new Color({
+
+    const fillColor = new Color({
       r: Math.round(start.r + (end.r - start.r) * ratio),
       g: Math.round(start.g + (end.g - start.g) * ratio),
       b: Math.round(start.b + (end.b - start.b) * ratio),
       a: Math.round(start.a + (end.a - start.a) * ratio)
-    }).toCss();
+    });
+
+    ctx.fillStyle = fillColor.toCss();
     ctx.fillRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
 
     // Draw text
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "#511e1f";
+    // ctx.fill
+    ctx.lineWidth = 4;
     ctx.textBaseline = "middle";
     ctx.font = `${12 * pixelRatio}px "Avenir Next W00","Helvetica Neue",Helvetica,Arial,sans-serif`;
     ctx.textAlign = "center";
+    ctx.strokeText(
+      "" + value,
+      col * cellWidth + cellWidth / 2,
+      row * cellHeight + cellHeight / 2
+    );
     ctx.fillText(
       "" + value,
       col * cellWidth + cellWidth / 2,
       row * cellHeight + cellHeight / 2
     );
+    
   }
 
   // draw highlighted cell
   if (highlighted) {
     const w = 3 * pixelRatio;
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "rgba(50,50,50,1)";
     ctx.lineWidth = w;
     ctx.strokeRect(highlighted.col * cellWidth + w / 2, highlighted.row * cellHeight + w / 2, cellWidth - w, cellHeight - w);
   } else {

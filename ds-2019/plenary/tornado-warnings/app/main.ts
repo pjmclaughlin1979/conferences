@@ -6,8 +6,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
 import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
 import StatisticDefinition = require("esri/tasks/support/StatisticDefinition");
-import { Geometry, Extent } from "esri/geometry";
-import Graphic = require("esri/Graphic");
+import { Extent } from "esri/geometry";
 import { SimpleFillSymbol } from "esri/symbols";
 import { SimpleRenderer } from "esri/renderers";
 import { updateGrid } from "./heatmapChart";
@@ -74,9 +73,8 @@ import { timesOfDay, seasons } from "./constants";
   view.ui.add(seasonsExpand, "top-left");
   view.ui.add(chartExpand, "top-left");
   view.ui.add("titleDiv", "top-right");
-
   const zoomBtn = document.getElementById("zoomBtn");
-  view.ui.add(zoomBtn, "top-left");
+  view.ui.add("zoomBtn", "top-left");
   zoomBtn.addEventListener("click", toggleExtent);
 
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
@@ -119,11 +117,10 @@ import { timesOfDay, seasons } from "./constants";
   seasonsExpand.watch("expanded", resetOnCollapse);
   chartExpand.watch("expanded", resetOnCollapse);
 
-  console.log(view);
   let highlight:any = null;
   view.on("drag", ["Control"], eventListener);
   view.on("click", ["Control"], eventListener);
-
+  let previousId: number;
   async function eventListener (event:any) {
     event.stopPropagation();
 
@@ -131,30 +128,34 @@ import { timesOfDay, seasons } from "./constants";
     const hitResults = hitResponse.results.filter( hit => hit.graphic.layer === countiesLayer );
     if(hitResults.length > 0){
       const graphic = hitResults[0].graphic;
-      if (highlight) {
-        highlight.remove();
-        highlight = null;
+      if(previousId !== graphic.attributes.FID){
+        previousId = graphic.attributes.FID;
+        if (highlight) {
+          highlight.remove();
+          highlight = null;
+        }
+        
+        highlight = countiesLayerView.highlight([previousId]);
+        const geometry = graphic && graphic.geometry;
+        let queryOptions = {
+          geometry,//: view.toMap(event),
+          // distance: 50,
+          // units: "miles",
+          spatialRelationship: "intersects"
+        };
+
+        const filterOptions = new FeatureFilter(queryOptions);
+
+        // layerView.filter = filterOptions;
+        layerView.effect = new FeatureEffect({
+          filter: filterOptions,
+          // insideEffect: "opacity(75%)",
+          outsideEffect: "grayscale(90%) opacity(15%)"
+        });
+
+        const stats = await queryTimeStatistics(layerView, queryOptions);
+        updateGrid(stats);
       }
-      highlight = countiesLayerView.highlight([graphic.attributes.FID]);
-      const geometry = graphic && graphic.geometry;
-      let queryOptions = {
-        geometry,//: view.toMap(event),
-        // distance: 50,
-        // units: "miles",
-        spatialRelationship: "intersects"
-      };
-
-      const filterOptions = new FeatureFilter(queryOptions);
-
-      // layerView.filter = filterOptions;
-      layerView.effect = new FeatureEffect({
-        filter: filterOptions,
-        // insideEffect: "opacity(75%)",
-        outsideEffect: "grayscale(75%) opacity(40%)"
-      });
-
-      const stats = await queryTimeStatistics(layerView, queryOptions);
-      updateGrid(stats);
     }
   }
 
