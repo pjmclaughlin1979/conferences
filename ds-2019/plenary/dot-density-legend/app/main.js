@@ -74,7 +74,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                 case 0:
                     map = new WebMap({
                         portalItem: {
-                            id: "56b5bd522c52409c90d902285732e9f1"
+                            id: "da83595b291349b79c7e56e5fabc5fde"
                         }
                     });
                     view = new MapView({
@@ -254,9 +254,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     view.ui.add(new Expand({
                         view: view,
                         content: new Bookmarks({ view: view }),
-                        group: "top-right",
+                        group: "bottom-right",
                         expanded: true
-                    }), "top-right");
+                    }), "bottom-right");
                     legendContainer.addEventListener("mousemove", legendEventListener);
                     legendContainer.addEventListener("click", legendEventListener);
                     mousemoveEnabled = true;
