@@ -82,7 +82,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     yearDiv.style.visibility = "visible";
                     var approxYear = startYear + (colorIndex * 10) + Math.round(opacity / 0.1);
                     yearDiv.innerText = approxYear.toString();
-                    // yearDiv.innerText = newRenderer.attributes[colorIndex].label;
                 }
                 var attributes = newRenderer.attributes.map(function (attribute, i) {
                     attribute.color.a = i === colorIndex ? opacity : attribute.color.a;

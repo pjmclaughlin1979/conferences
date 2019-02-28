@@ -2,18 +2,22 @@ define(["require", "exports", "esri/PopupTemplate"], function (require, exports,
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function createArcadeFields(fieldInfos) {
-        var arcadeFields = [];
+        var fieldNames = extractFieldNamesFromAttributeInfos(fieldInfos);
+        return fieldNames.map(function (fieldName) { return "$feature[\"" + fieldName + "\"]"; });
+    }
+    function extractFieldNamesFromAttributeInfos(fieldInfos) {
         var fieldNames = [];
+        var arcadeFields = [];
         fieldInfos.forEach(function (fieldInfo) {
             if (fieldInfo.field) {
                 fieldNames.push(fieldInfo.field);
             }
             if (fieldInfo.valueExpression) {
-                arcadeFields = fieldInfo.valueExpression.replace(/\s/g, '').split("+");
+                arcadeFields = fieldInfo.valueExpression.replace(/\s/g, '').split("+").map(function (arcadeField) { return arcadeField.replace('$feature.', ''); });
             }
         });
-        arcadeFields = arcadeFields.concat(fieldNames.map(function (fieldName) { return "$feature[\"" + fieldName + "\"]"; }));
-        return arcadeFields;
+        fieldNames = fieldNames.concat(arcadeFields);
+        return fieldNames;
     }
     function generatePredominantValueArcade(fieldInfos) {
         var arcadeFields = createArcadeFields(fieldInfos);
@@ -21,10 +25,11 @@ define(["require", "exports", "esri/PopupTemplate"], function (require, exports,
     }
     function generatePredominantAliasArcade(fieldInfos) {
         var arcadeFields = createArcadeFields(fieldInfos);
-        var fieldAliases = fieldInfos.map(function (field) {
-            return field.label ? "\"" + field.label + "\"" : "\"" + field.field + "\"";
+        var fieldNames = extractFieldNamesFromAttributeInfos(fieldInfos);
+        var fieldAliases = fieldNames.map(function (fieldName, i) {
+            return fieldInfos[i] && fieldInfos[i].field && fieldInfos[i].label ? "\"" + fieldInfos[i].label + "\"" : "\"" + fieldName.replace("ACSBLT", "") + "s\"";
         });
-        return "\n    " + arcadeFields.join("\n") + "\n    var fieldNames = [ " + arcadeFields + " ]; \n    var fieldAliases = [ " + fieldAliases + " ];\n    var numFields = " + arcadeFields.length + ";\n    var maxFieldAlias = null;\n    var maxValue = -Infinity;\n    var value, i;\n\n    for(i = 0; i < numFields; i++) {\n      value = fieldNames[i];\n\n      if(value > 0) {\n        if(value > maxValue) {\n          maxValue = value;\n          maxFieldAlias = fieldAliases[i];\n        }\n        else if (value == maxValue) {\n          maxFieldAlias = \"Tie\";\n        }\n      }\n      \n    }\n    return maxFieldAlias;\n  ";
+        return "\n    " + arcadeFields.join("\n") + "\n    var fieldNames = [ " + arcadeFields + " ]; \n    var fieldAliases = [ " + fieldAliases + " ];\n    var numFields = " + fieldInfos.length + ";\n    var maxFieldAlias = null;\n    var maxValue = -Infinity;\n    var value, i;\n\n    for(i = 0; i < numFields; i++) {\n      value = fieldNames[i];\n\n      if(value > 0) {\n        if(value > maxValue) {\n          maxValue = value;\n          maxFieldAlias = fieldAliases[i];\n        }\n        else if (value == maxValue) {\n          maxFieldAlias = \"Tie\";\n        }\n      }\n      \n    }\n    return maxFieldAlias;\n  ";
     }
     function generatePredominantTotalArcade(fieldInfos) {
         var arcadeFields = createArcadeFields(fieldInfos);

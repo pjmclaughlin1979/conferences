@@ -2,20 +2,25 @@ import esri = __esri;
 import PopupTemplate = require("esri/PopupTemplate");
 
 function createArcadeFields (fieldInfos: esri.AttributeColorInfo[]): string[] {
-  let arcadeFields: string[] = [];
+  let fieldNames = extractFieldNamesFromAttributeInfos(fieldInfos);
+  return fieldNames.map( fieldName => `$feature["${fieldName}"]`);
+}
+
+function extractFieldNamesFromAttributeInfos (fieldInfos: esri.AttributeColorInfo[]): string[] {
   let fieldNames: string[] = [];
+  let arcadeFields: string[] = [];
 
   fieldInfos.forEach( fieldInfo => {
     if(fieldInfo.field){
       fieldNames.push(fieldInfo.field);
     }
     if(fieldInfo.valueExpression){
-      arcadeFields = fieldInfo.valueExpression.replace(/\s/g, '').split("+");
+      arcadeFields = fieldInfo.valueExpression.replace(/\s/g, '').split("+").map( arcadeField => arcadeField.replace('$feature.',''));
     }
-  })
+  });
 
-  arcadeFields = arcadeFields.concat(fieldNames.map( fieldName => `$feature["${fieldName}"]`));
-  return arcadeFields;
+  fieldNames = fieldNames.concat(arcadeFields);
+  return fieldNames;
 }
 
 function generatePredominantValueArcade(fieldInfos: esri.AttributeColorInfo[]): string {
@@ -50,15 +55,16 @@ function generatePredominantValueArcade(fieldInfos: esri.AttributeColorInfo[]): 
 
 function generatePredominantAliasArcade(fieldInfos: esri.AttributeColorInfo[]): string {
   const arcadeFields = createArcadeFields(fieldInfos);
-  const fieldAliases = fieldInfos.map( field => {
-    return field.label ? `"${field.label}"` : `"${field.field}"`;
+  const fieldNames = extractFieldNamesFromAttributeInfos(fieldInfos);
+  const fieldAliases = fieldNames.map( (fieldName, i) => {
+    return fieldInfos[i] && fieldInfos[i].field && fieldInfos[i].label ? `"${fieldInfos[i].label}"` : `"${fieldName.replace("ACSBLT", "")}s"`;
   });
 
   return `
     ${arcadeFields.join(`\n`)}
     var fieldNames = [ ${arcadeFields} ]; 
     var fieldAliases = [ ${fieldAliases} ];
-    var numFields = ${arcadeFields.length};
+    var numFields = ${fieldInfos.length};
     var maxFieldAlias = null;
     var maxValue = -Infinity;
     var value, i;

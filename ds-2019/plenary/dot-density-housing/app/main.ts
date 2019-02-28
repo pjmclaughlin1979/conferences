@@ -175,7 +175,6 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
         yearDiv.style.visibility = "visible";
         const approxYear = startYear + ( colorIndex * 10) + Math.round(opacity / 0.1);
         yearDiv.innerText = approxYear.toString();
-        // yearDiv.innerText = newRenderer.attributes[colorIndex].label;
       }
 
       const attributes = newRenderer.attributes.map( (attribute, i) => {
