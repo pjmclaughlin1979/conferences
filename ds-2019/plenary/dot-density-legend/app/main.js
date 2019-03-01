@@ -246,7 +246,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                         }),
                         new Expand({
                             view: view,
-                            expandIconClass: "esri-icon-minus",
+                            expandIconClass: "esri-icon-filter",
                             content: document.getElementById("sliderDiv"),
                             group: "top-left"
                         })

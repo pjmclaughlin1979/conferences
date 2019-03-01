@@ -187,7 +187,7 @@ import Expand = require("esri/widgets/Expand");
     }),
     new Expand({
       view,
-      expandIconClass: "esri-icon-minus",
+      expandIconClass: "esri-icon-filter",
       content: document.getElementById("sliderDiv"),
       group: "top-left"
     })
