@@ -14,14 +14,46 @@ Sometimes simple calculations can provide more insight than field values when cr
 
 ### Outline
 
-
+I. Intro to the session (Kristian) <1>
+II. Intro to Arcade (Mohan) <5>
+  - What is Arcade?
+  - Example with some code
+    - Simple unit conversion in labels
+III. Why Arcade? (Kristian) <2>
+IV. Language Overview (Mohan) <10>
+  - doc (Kristian)
+  - Playground (Mohan)
+V. Profiles (Kristian) <3>
+VI. New Features <5>
+  - Feature Set in popups (also calculate)
+VII. Use Arcade in the JS API (Kristian) <12>
+  - A few slides
+  - JS API examples
+    - [Full labeling (multi-line sample)]((https://developers.arcgis.com/javascript/latest/sample-code/labels-multiline/index.html))
+      - simple expressions, implicit casting, multi-line expressions (in script)
+    - Simple viz sample (in sample - in AGO)
+    - Predominance visualization (TDB)
+    - [Elevation offset (use JS API sample or Yann's app)](https://ycabon.github.io/2019-devsummit-plenary/2_geojson.html)
+    - [JS API sample](https://developers.arcgis.com/javascript/latest/sample-code/scene-elevationinfo/index.html)
+    - Popup sample
+    - Popup Feature Set - Use something in my localhost I've already done
+VIII. Generating Arcade (Kristian) <10>
+  - Slide
+  - Examples
+    - Simple case (matches with simple viz sample)
+    - Site suitability - WOW
+    - Popup template generator
+    - Smart mapping (same app)
+IX. Conclusion (Kristian) <2>
+  - Resources
+  - Future
+X. Questions (Kristian) <10>
 
 ### Demos
 
 ##### [Playground](https://developers.arcgis.com/arcade/playground/)
 
 The playground allows you to choose an Arcade profile and experiment with any expression with test data.
-
 
 ##### [ArcGIS Online web map](https://jsapi.maps.arcgis.com/home/webmap/viewer.html?webmap=f3f83b97f9c14c1abe79ed49810ba023)
 
@@ -33,22 +65,23 @@ The playground allows you to choose an Arcade profile and experiment with any ex
 
 ###### Labels
 
-3. % population that didn't report education
-5. Predominant gap (label)
-
-
-##### [Predominance in JS app](https://ekenes.github.io/conferences/ds-2018/arcade/demos/political-parties/)
-
-This app visualizes the predominant political party among registered voters in the county level across the United States. The `Decode()` function of Arcade matches the maximum count of all relevant fields to a string value representing the respective party. This prevents the user or GIS analyst from unnecessarily preforming a series of field calculations in new fields. If the expression is incorrect in any way, it is relatively simple to fix the script as opposed to recalculating fields. Also note that an Arcade expression is used to drive opacity. More opaque features represent counties where the predominant political party is relatively strong. Transparent counties indicate the predominant party barely edges the rival parties based on total count.
-
-
-##### [Weather](https://ekenes.github.io/conferences/ds-2018/arcade/demos/weather/)
+##### [Weather station](https://developers.arcgis.com/javascript/latest/sample-code/labels-multiline/index.html)
 
 This app demonstrates how to use Arcade in simple and complex labeling expressions. As of the time of this presentation, the labeling profile is supported only in the 3.x versions of the ArcGIS API for JavaScript.
 
 The calculation for determining wind direction (N/S/E/W) is done using a field that contains the compass direction of the wind (0-360).
 
 [See a 3D version of this app](https://developers.arcgis.com/javascript/latest/sample-code/layers-featurelayer-labeling-3d/live/index.html)
+
+Other Labeling samples:
+
+- % population that didn't report education
+- Predominant gap (label)
+
+##### [Predominance in JS app](https://ekenes.github.io/conferences/ds-2018/arcade/demos/political-parties/)
+
+This app visualizes the predominant political party among registered voters in the county level across the United States. The `Decode()` function of Arcade matches the maximum count of all relevant fields to a string value representing the respective party. This prevents the user or GIS analyst from unnecessarily preforming a series of field calculations in new fields. If the expression is incorrect in any way, it is relatively simple to fix the script as opposed to recalculating fields. Also note that an Arcade expression is used to drive opacity. More opaque features represent counties where the predominant political party is relatively strong. Transparent counties indicate the predominant party barely edges the rival parties based on total count.
+
 
 ##### [Wind Chill](https://ekenes.github.io/conferences/ds-2018/arcade/demos/wind-chill/)
 
@@ -63,12 +96,6 @@ This sample demonstrates how to use the date functions and time offsets to rende
 ##### [NYC 311 calls](https://ekenes.github.io/conferences/ds-2018/plenary/clustering/)
 
 This sample demonstrates how to use the date functions and time offsets to render data based on the local time in the time zone in which the event occurred. In this case we visualize 311 calls in New York City (2015 data) based on whether or not they occurred in the morning, afternoon, evening, or nighttime of the local time of the event.
-
-##### [Portability: RendererList](https://ekenes.github.io/conferences/ds-2018/arcade/demos/renderer-list/)
-
-This app uses the LayerList widget to provide options to the user for setting different renderers on the same data source. Therefore the app avoids making duplicate layer/data queries when loading the visualizations saved in a web map. This sample demonstrates the portability of Arcade since most of the renderers were authored with Arcade in the ArcGIS Online map viewer, but can be read into a custom web application using the ArcGIS API for JavaScript. 
-
-The renderers and data used in this sample were loaded from the [Mexico educational attainment](https://jsapi.maps.arcgis.com/home/item.html?id=8bcfd58b039a4477a0eb734fe6c8d4fe) web map.
 
 
 ##### [Reference Arcade expressions in PopupTemplate](https://developers.arcgis.com/javascript/latest/sample-code/popuptemplate-arcade/live/index.html)
