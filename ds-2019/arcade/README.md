@@ -66,6 +66,10 @@ The playground allows you to choose an Arcade profile and experiment with any ex
 
 ### Labels
 
+[Unit Conversion](https://ekenes.github.io/conferences/ds-2019/arcade/demos/unit-conversion/)
+
+Converts temperature values from Fahrenheit to Celsius and displays the result as nicely formated labels for weather stations.
+
 [Weather stations](https://developers.arcgis.com/javascript/latest/sample-code/labels-multiple-classes/index.html)
 
 This app demonstrates how to use Arcade in simple and complex labeling expressions. As of the time of this presentation, the labeling profile is supported only in the 3.x versions of the ArcGIS API for JavaScript.
@@ -142,6 +146,10 @@ An Arcade expression can be used to offset the elevation of features from the su
 [Aggregation and Normalization](https://ekenes.github.io/esri-ts-samples/visualization/smart-mapping/arcade/)
 
 Demonstrates how to generate arcade expressions based on user input and handle field aggregation and normalization for them without constructing complicated UIs.
+
+[Explore data from a dynamic workspace](https://developers.arcgis.com/javascript/latest/sample-code/visualization-sm-sublayer/index.html)
+
+This sample demonstrates how to use the Smart Mapping renderer creators to generate a renderer for a Sublayer created from a dynamic data layer. The dynamic layer joins ancestry data from a table in a dynamic workspace to a map service layer. Select elements are provided to the user, allowing him/her to dynamically change the renderer based on different ancestry variables and classification methods.
 
 [Predominance explorer](https://ekenes.github.io/esri-ts-samples/visualization/smart-mapping/predominance/popup-template/)
 
