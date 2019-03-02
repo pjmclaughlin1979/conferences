@@ -129,6 +129,8 @@ Presents a polygon layer that queries a point layer of crimes and lists the top 
 
 [GeoJSONLayer with z](https://ycabon.github.io/2019-devsummit-plenary/2_geojson.html)
 
+Renders earthquakes at their real-world depth based on an attribute value.
+
 [Elevation options sample](https://developers.arcgis.com/javascript/latest/sample-code/scene-elevationinfo/live/index.html)
 
 This sample shows how to change the elevation information of a 2D FeatureLayer for 3D visualization. Various options are available to customize the elevation of features in a 3D scene by modifying the elevationInfo property of a FeatureLayer.
@@ -144,5 +146,3 @@ Demonstrates how to generate arcade expressions based on user input and handle f
 [Predominance explorer](https://ekenes.github.io/esri-ts-samples/visualization/smart-mapping/predominance/popup-template/)
 
 This app demonstrates the predominance style in smart mapping, which generates Arcade in behalf of developers and users for visualization purposes. It also demonstrates how you can create your own functions for generating expressions dynamically in behalf of users.
-
-[Site Suitability]()
