@@ -29,7 +29,7 @@ VI. New Features <5>
 VII. Use Arcade in the JS API (Kristian) <12>
   - A few slides
   - JS API examples
-    - [Full labeling (multi-line sample)]((https://developers.arcgis.com/javascript/latest/sample-code/labels-multiline/index.html))
+    - [Full labeling (multiple label classes sample)](https://developers.arcgis.com/javascript/latest/sample-code/labels-multiple-classes/index.html)
       - simple expressions, implicit casting, multi-line expressions (in script)
     - Simple viz sample (in sample - in AGO)
     - Predominance visualization (TDB)
@@ -65,7 +65,9 @@ The playground allows you to choose an Arcade profile and experiment with any ex
 
 ###### Labels
 
-##### [Weather station](https://developers.arcgis.com/javascript/latest/sample-code/labels-multiline/index.html)
+##### [Weather station](https://developers.arcgis.com/javascript/latest/sample-code/labels-multiple-classes/index.html)
+
+[Full labeling (multi-line sample)]((https://developers.arcgis.com/javascript/latest/sample-code/labels-multiline/index.html))
 
 This app demonstrates how to use Arcade in simple and complex labeling expressions. As of the time of this presentation, the labeling profile is supported only in the 3.x versions of the ArcGIS API for JavaScript.
 
