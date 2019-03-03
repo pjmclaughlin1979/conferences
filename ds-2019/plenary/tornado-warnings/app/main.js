@@ -154,7 +154,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                     statisticType: "count"
                                 })
                             ];
-                            query.groupByFieldsForStatistics = ["Season + '-' + timeOfDay"];
+                            query.groupByFieldsForStatistics = ["SEASON + '-' + timeOfDay"];
                             return [4 /*yield*/, layer.queryFeatures(query)];
                         case 1:
                             queryResponse = _a.sent();

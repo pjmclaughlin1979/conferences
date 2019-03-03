@@ -205,7 +205,7 @@ import { timesOfDay, seasons } from "./constants";
         statisticType: "count"
       })
     ];
-    query.groupByFieldsForStatistics = [ "Season + '-' + timeOfDay" ];
+    query.groupByFieldsForStatistics = [ "SEASON + '-' + timeOfDay" ];
 
     const queryResponse = await layer.queryFeatures(query);
 
