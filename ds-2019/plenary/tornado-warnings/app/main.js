@@ -85,16 +85,12 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             geometry = graphic && graphic.geometry;
                             queryOptions = {
                                 geometry: geometry,
-                                // distance: 50,
-                                // units: "miles",
                                 spatialRelationship: "intersects"
                             };
                             filterOptions = new FeatureFilter(queryOptions);
-                            // layerView.filter = filterOptions;
                             layerView.effect = new FeatureEffect({
                                 filter: filterOptions,
-                                // insideEffect: "opacity(75%)",
-                                outsideEffect: "grayscale(90%) opacity(15%)"
+                                excludedEffect: "grayscale(90%) opacity(15%)"
                             });
                             return [4 /*yield*/, queryTimeStatistics(layerView, queryOptions)];
                         case 2:
@@ -121,7 +117,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                                     statisticType: "count"
                                 })
                             ];
-                            query.groupByFieldsForStatistics = ["Season + '-' + timeOfDay"];
+                            query.groupByFieldsForStatistics = ["SEASON + '-' + timeOfDay"];
                             query.geometry = geometry;
                             query.distance = distance;
                             query.units = units;
@@ -213,10 +209,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    url = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Tornado_Warnings_2002_through_2011/FeatureServer/0";
+                    url = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Tornado_warnings_2002_to_2011_for_interactive_demo/FeatureServer/0";
                     layer = new FeatureLayer({
-                        url: url,
-                        outFields: ["*"]
+                        // url,
+                        portalItem: {
+                            id: "105fee001d244d33b90bf3ae5a243679"
+                        },
+                        outFields: ["timeOfDay", "SEASON"]
                     });
                     countiesLayer = new FeatureLayer({
                         title: "counties",
@@ -279,7 +278,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, queryLayerStatistics(layer)];
                 case 4:
                     layerStats = _a.sent();
-                    console.log(JSON.stringify(layerStats));
+                    console.log(layerStats);
                     heatmapChart_1.updateGrid(layerStats, layerView);
                     seasonsElement.addEventListener("click", filterBySeason);
                     seasonsNodes = document.querySelectorAll(".season-item");

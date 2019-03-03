@@ -16,11 +16,14 @@ import { timesOfDay, seasons } from "./constants";
 
 ( async () => {
 
-  const url = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Tornado_Warnings_2002_through_2011/FeatureServer/0";
+  const url = "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Tornado_warnings_2002_to_2011_for_interactive_demo/FeatureServer/0";
 
   const layer = new FeatureLayer({
-    url,
-    outFields: ["*"]
+    // url,
+    portalItem: {
+      id: "105fee001d244d33b90bf3ae5a243679"
+    },
+    outFields: [ "timeOfDay", "SEASON" ]
   });
 
   const countiesLayer = new FeatureLayer({
@@ -81,8 +84,7 @@ import { timesOfDay, seasons } from "./constants";
   const countiesLayerView = await view.whenLayerView(countiesLayer) as esri.FeatureLayerView;
 
   const layerStats = await queryLayerStatistics(layer);
-  console.log(JSON.stringify(layerStats));
-
+  console.log(layerStats)
   updateGrid(layerStats, layerView);
   
   seasonsElement.addEventListener("click", filterBySeason);
@@ -138,19 +140,15 @@ import { timesOfDay, seasons } from "./constants";
         highlight = countiesLayerView.highlight([previousId]);
         const geometry = graphic && graphic.geometry;
         let queryOptions = {
-          geometry,//: view.toMap(event),
-          // distance: 50,
-          // units: "miles",
+          geometry,
           spatialRelationship: "intersects"
         };
 
         const filterOptions = new FeatureFilter(queryOptions);
 
-        // layerView.filter = filterOptions;
         layerView.effect = new FeatureEffect({
           filter: filterOptions,
-          // insideEffect: "opacity(75%)",
-          outsideEffect: "grayscale(90%) opacity(15%)"
+          excludedEffect: "grayscale(90%) opacity(15%)"
         });
 
         const stats = await queryTimeStatistics(layerView, queryOptions);
@@ -177,7 +175,7 @@ import { timesOfDay, seasons } from "./constants";
         statisticType: "count"
       })
     ];
-    query.groupByFieldsForStatistics = [ "Season + '-' + timeOfDay" ];
+    query.groupByFieldsForStatistics = [ "SEASON + '-' + timeOfDay" ];
     query.geometry = geometry;
     query.distance = distance;
     query.units = units;
