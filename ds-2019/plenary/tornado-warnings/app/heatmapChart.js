@@ -99,11 +99,11 @@ define(["require", "exports", "esri/views/layers/support/FeatureFilter", "esri/C
     // }
     function onCellSelect(cell) {
         var season = constants_1.seasons[cell.row];
-        var timeOfDay = constants_1.timesOfDay[cell.col];
+        var duration = constants_1.durations[cell.col];
         if (mousemoveEnabled) {
             highlighted = { col: cell.col, row: cell.row };
             layerView.filter = new FeatureFilter({
-                where: "Season = '" + season + "' AND timeOfDay = '" + timeOfDay + "'"
+                where: "Season = '" + season + "' AND DurationClass = '" + duration + "'"
             });
         }
         updateGrid();

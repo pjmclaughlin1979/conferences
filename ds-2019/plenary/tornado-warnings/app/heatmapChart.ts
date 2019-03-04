@@ -1,7 +1,7 @@
 import esri = __esri;
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
 import Color = require("esri/Color");
-import { seasons, timesOfDay } from "./constants";
+import { seasons, durations } from "./constants";
 
 let mousemoveEnabled = true;
 
@@ -126,12 +126,12 @@ function addCanvasListeners() {
 function onCellSelect(cell:CellHighlight) {
   
   const season = seasons[cell.row];
-  const timeOfDay = timesOfDay[cell.col];
+  const duration = durations[cell.col];
 
   if(mousemoveEnabled){
     highlighted = { col: cell.col, row: cell.row };
     layerView.filter = new FeatureFilter({
-      where: `Season = '${season}' AND timeOfDay = '${timeOfDay}'`
+      where: `Season = '${season}' AND DurationClass = '${duration}'`
     });
   }
   updateGrid();
