@@ -213,7 +213,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     layer = new FeatureLayer({
                         // url,
                         portalItem: {
-                            id: "105fee001d244d33b90bf3ae5a243679"
+                            // f9e348953b3848ec8b69964d5bceae02
+                            // 105fee001d244d33b90bf3ae5a243679
+                            id: "f9e348953b3848ec8b69964d5bceae02"
                         },
                         outFields: ["timeOfDay", "SEASON"]
                     });
