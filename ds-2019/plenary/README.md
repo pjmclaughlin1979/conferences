@@ -6,7 +6,7 @@ This app visualizes U.S. population by Census Tract using Dot Density. Each dot 
 
 [View live app](https://ekenes.github.io/conferences/ds-2019/plenary/dot-density-legend/index.html)
 
-[![dot-density-race](../images/dot-density-race.gif)](https://ekenes.github.io/conferences/ds-2019/plenary/dot-density-legend/index.html)
+[![dot-density-race](https://ekenes.github.io/conferences/ds-2019/plenary/images/dot-density-race.gif)](https://ekenes.github.io/conferences/ds-2019/plenary/dot-density-legend/index.html)
 
 ## Dot Density - Housing growth
 
@@ -14,7 +14,7 @@ This app visualizes housing growth by decade using Dot Density. Each dot represe
 
 [View live app](https://ekenes.github.io/conferences/ds-2019/plenary/dot-density-housing/index.html)
 
-[![dot-density-housing](../images/dot-density-housing.gif)](https://ekenes.github.io/conferences/ds-2019/plenary/dot-density-housing/index.html)
+[![dot-density-housing](https://ekenes.github.io/conferences/ds-2019/plenary/images/dot-density-housing.gif)](https://ekenes.github.io/conferences/ds-2019/plenary/dot-density-housing/index.html)
 
 ## Flash Flood Warnings
 
@@ -22,4 +22,4 @@ This app visualizes flash flood warnings over a 10-year span. You can view spati
 
 [View live app](https://ekenes.github.io/conferences/ds-2019/plenary/flash-flood-warnings/index.html)
 
-[![flash-floods](../images/flash-floods.gif)](https://ekenes.github.io/conferences/ds-2019/plenary/flash-flood-warnings/index.html)
+[![flash-floods](https://ekenes.github.io/conferences/ds-2019/plenary/images/flash-floods.gif)](https://ekenes.github.io/conferences/ds-2019/plenary/flash-flood-warnings/index.html)
