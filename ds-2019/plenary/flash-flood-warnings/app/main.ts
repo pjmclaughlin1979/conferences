@@ -6,7 +6,6 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import FeatureFilter = require("esri/views/layers/support/FeatureFilter");
 import FeatureEffect = require("esri/views/layers/support/FeatureEffect");
 import StatisticDefinition = require("esri/tasks/support/StatisticDefinition");
-import { Extent } from "esri/geometry";
 import { SimpleFillSymbol } from "esri/symbols";
 import { SimpleRenderer } from "esri/renderers";
 import { updateGrid } from "./heatmapChart";
