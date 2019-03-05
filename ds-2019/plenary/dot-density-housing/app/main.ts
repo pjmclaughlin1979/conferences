@@ -6,6 +6,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import DotDensityRenderer = require("esri/renderers/DotDensityRenderer");
 import Legend = require("esri/widgets/Legend");
 import lang = require("esri/core/lang");
+import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./ArcadeExpressions";
 
 ( async () => {
 
@@ -13,43 +14,43 @@ import lang = require("esri/core/lang");
     referenceDotValue: 1,
     outline: null,
     legendOptions: {
-      unit: "house"
+      unit: "House"
     },
     attributes: [
       {
         field: "ACSBLT1939",
         color: "orange",
-        label: "Before 1939"
+        label: "Before 1940"
       },
       {
         field: "ACSBLT1940",
         color: "#8be04e",
-        label: "1940-1949"
+        label: "1940s"
       },
       {
         field: "ACSBLT1950",
         color: "#5ad45a",
-        label: "1950-1959"
+        label: "1950s"
       },
       {
         field: "ACSBLT1960",
         color: "#00b7c7",
-        label: "1960-1969"
+        label: "1960s"
       },
       {
         field: "ACSBLT1970",
         color: "#1a53ff",
-        label: "1970-1979"
+        label: "1970s"
       },
       {
         field: "ACSBLT1980",
         color: "#4421af",
-        label: "1980-1989"
+        label: "1980s"
       },
       {
         field: "ACSBLT1990",
         color: "#7c1158",
-        label: "1990-1999"
+        label: "1990s"
       },
       {
         valueExpression: "$feature.ACSBLT2000 + $feature.ACSBLT2010 + $feature.ACSBLT2014",
@@ -75,12 +76,17 @@ import lang = require("esri/core/lang");
       id: "453a70e1e36b4318a5af017d7d0188de"
     },
     renderer,
-    minScale: 0
+    minScale: 0,
+    popupTemplate: generateChartPopupTemplate(renderer.attributes)
   });
 
 
   const map = new EsriMap({
-    basemap: "gray-vector",
+    basemap: {
+      portalItem: {
+        id: "3582b744bba84668b52a16b0b6942544"
+      }
+    },
     layers: [ layer ]
   });
 
@@ -91,10 +97,21 @@ import lang = require("esri/core/lang");
       "spatialReference": {
         "wkid": 3857
       },
-      "xmin": -10704888.39266741,
-      "ymin": 3415868.1631658636,
-      "xmax": -10542689.018646205,
-      "ymax": 3526090.3579531303
+      "xmin": -10689548.884426521,
+      "ymin": 3432124.7664550575,
+      "xmax": -10542789.79011918,
+      "ymax": 3514676.757002936
+    },
+    popup: {
+      dockEnabled: true,
+      dockOptions: {
+        breakpoint: false,
+        position: "bottom-right"
+      }
+    },
+    constraints: {
+      maxScale: 140000,
+      minScale: 580000
     }
   });
 
@@ -103,6 +120,8 @@ import lang = require("esri/core/lang");
   new Legend({ view, container: "legendDiv" });
   view.ui.add("controlDiv", "bottom-left");
   view.ui.add("yearDiv", "top-right");
+
+  
 
   const yearDiv = document.getElementById("yearDiv") as HTMLDivElement;
 
@@ -138,9 +157,8 @@ import lang = require("esri/core/lang");
     let animating = true;
     let opacity = 0;
     let colorIndex = 0;
-
+    let startYear = 1930;
     function updateStep() {
-
       const oldRenderer = layer.renderer as DotDensityRenderer;
       const newRenderer = oldRenderer.clone();
       if (!animating) {
@@ -154,7 +172,9 @@ import lang = require("esri/core/lang");
           stopAnimation();
         }
       } else {
-        yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+        yearDiv.style.visibility = "visible";
+        const approxYear = startYear + ( colorIndex * 10) + Math.round(opacity / 0.1);
+        yearDiv.innerText = approxYear.toString();
       }
 
       const attributes = newRenderer.attributes.map( (attribute, i) => {
@@ -165,6 +185,7 @@ import lang = require("esri/core/lang");
       newRenderer.attributes = attributes;
       layer.renderer = newRenderer;
       opacity = opacity + 0.01;
+
       requestAnimationFrame(updateStep);
 
     }

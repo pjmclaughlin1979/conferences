@@ -10,7 +10,7 @@ import Expand = require("esri/widgets/Expand");
 
   const map = new WebMap({
     portalItem: {
-      id: "56b5bd522c52409c90d902285732e9f1"
+      id: "da83595b291349b79c7e56e5fabc5fde"
     }
   });
 
@@ -187,18 +187,19 @@ import Expand = require("esri/widgets/Expand");
     }),
     new Expand({
       view,
-      content: new Bookmarks({ view }),
-      group: "top-left"
-    }),
-    new Expand({
-      view,
-      expandIconClass: "esri-icon-minus",
+      expandIconClass: "esri-icon-filter",
       content: document.getElementById("sliderDiv"),
       group: "top-left"
     })
   ], "top-left" );
 
-
+  view.ui.add(
+    new Expand({
+      view,
+      content: new Bookmarks({ view }),
+      group: "bottom-right",
+      expanded: true
+    }), "bottom-right");
 
   legendContainer.addEventListener("mousemove", legendEventListener);
   legendContainer.addEventListener("click", legendEventListener);

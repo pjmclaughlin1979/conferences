@@ -10,6 +10,7 @@ body,
 #controlDiv {
   width: 170px;
   padding: 5px 5px 5px 5px;
+  font-size: 14pt;
 }
 
 #playBtn{
@@ -19,6 +20,8 @@ body,
 }
 
 #yearDiv{
-  font-size: 36pt;
-  background-color: rgba(0,0,0,0);
+  font-size: 72pt;
+  padding: 10px;
+  background-color: rgba(255,255,255,0.8);
+  visibility: hidden;
 }

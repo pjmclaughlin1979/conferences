@@ -6,17 +6,8 @@
 
 <title>Create a custom visualization using Arcade</title>
 
-<link rel="stylesheet" href="https://js.arcgis.com/4.7/esri/themes/dark/main.css">
-
-<script>
-  var dojoConfig = {
-    has: {
-      "esri-featurelayer-webgl": 1
-    }
-  }
-</script>
-
-<script src="https://js.arcgis.com/4.7/"></script>
+<link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/dark/main.css">
+<script src="https://js.arcgis.com/4.11/"></script>
 
 <style>
   html,
@@ -106,12 +97,12 @@ require([
 
   // Get Arcade expression returning the winning party from the
   // winning-party script referenced above.
-  var winnerArcade = document.getElementById("winning-party").text;
+  const winnerArcade = document.getElementById("winning-party").text;
 
   // Add the expression to a unique value renderer and create a fill
   // symbol for each possible value.
 
-  var renderer = new UniqueValueRenderer({
+  const renderer = new UniqueValueRenderer({
     valueExpression: winnerArcade,
     valueExpressionTitle: "Counties by dominant party among registered voters",
     uniqueValueInfos: [{
@@ -136,7 +127,7 @@ require([
 
   // Get Arcade expression returning the strength of the win from the
   // `strength` script referenced above.
-  var strengthArcade = document.getElementById("strength").text;
+  const strengthArcade = document.getElementById("strength").text;
 
   renderer.visualVariables = [{
     type: "opacity",
@@ -150,11 +141,10 @@ require([
 
   // Create FeatureLayer instance with popupTemplate
 
-  var layer = new FeatureLayer({
+  const layer = new FeatureLayer({
     portalItem: {
       id: "8444e275037549c1acab02d2626daaee"
     },
-    outFields: [ "MP06025a_B", "MP06024a_B", "MP06026a_B", "COUNTY", "STATE", "POP18UP_CY" ],
     renderer: renderer,
     popupTemplate: {
       title: "{COUNTY}, {STATE}",
@@ -193,7 +183,7 @@ require([
     }
   });
 
-  var map = new Map({
+  const map = new Map({
     basemap: "dark-gray",
     layers: [ layer ]
   });
@@ -201,14 +191,14 @@ require([
   // The minSize and maxSize of volumetric symbols are determined
   // based on the view/camera the data will be displayed in.
 
-  var view = new MapView({
+  const view = new MapView({
     container: "viewDiv",
     map: map,
     center: [-95,38],
     zoom: 5
   });
 
-  var legend = new Legend({
+  const legend = new Legend({
     view: view,
     layerInfos: [{
       layer: layer,

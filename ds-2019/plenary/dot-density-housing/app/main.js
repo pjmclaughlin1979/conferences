@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend"], function (require, exports, EsriMap, MapView, FeatureLayer, DotDensityRenderer, Legend) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "./ArcadeExpressions"], function (require, exports, EsriMap, MapView, FeatureLayer, DotDensityRenderer, Legend, ArcadeExpressions_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -64,6 +64,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             var animating = true;
             var opacity = 0;
             var colorIndex = 0;
+            var startYear = 1930;
             function updateStep() {
                 var oldRenderer = layer.renderer;
                 var newRenderer = oldRenderer.clone();
@@ -78,7 +79,9 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     }
                 }
                 else {
-                    yearDiv.innerText = newRenderer.attributes[colorIndex].label;
+                    yearDiv.style.visibility = "visible";
+                    var approxYear = startYear + (colorIndex * 10) + Math.round(opacity / 0.1);
+                    yearDiv.innerText = approxYear.toString();
                 }
                 var attributes = newRenderer.attributes.map(function (attribute, i) {
                     attribute.color.a = i === colorIndex ? opacity : attribute.color.a;
@@ -111,43 +114,43 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         referenceDotValue: 1,
                         outline: null,
                         legendOptions: {
-                            unit: "house"
+                            unit: "House"
                         },
                         attributes: [
                             {
                                 field: "ACSBLT1939",
                                 color: "orange",
-                                label: "Before 1939"
+                                label: "Before 1940"
                             },
                             {
                                 field: "ACSBLT1940",
                                 color: "#8be04e",
-                                label: "1940-1949"
+                                label: "1940s"
                             },
                             {
                                 field: "ACSBLT1950",
                                 color: "#5ad45a",
-                                label: "1950-1959"
+                                label: "1950s"
                             },
                             {
                                 field: "ACSBLT1960",
                                 color: "#00b7c7",
-                                label: "1960-1969"
+                                label: "1960s"
                             },
                             {
                                 field: "ACSBLT1970",
                                 color: "#1a53ff",
-                                label: "1970-1979"
+                                label: "1970s"
                             },
                             {
                                 field: "ACSBLT1980",
                                 color: "#4421af",
-                                label: "1980-1989"
+                                label: "1980s"
                             },
                             {
                                 field: "ACSBLT1990",
                                 color: "#7c1158",
-                                label: "1990-1999"
+                                label: "1990s"
                             },
                             {
                                 valueExpression: "$feature.ACSBLT2000 + $feature.ACSBLT2010 + $feature.ACSBLT2014",
@@ -164,10 +167,15 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             id: "453a70e1e36b4318a5af017d7d0188de"
                         },
                         renderer: renderer,
-                        minScale: 0
+                        minScale: 0,
+                        popupTemplate: ArcadeExpressions_1.generateChartPopupTemplate(renderer.attributes)
                     });
                     map = new EsriMap({
-                        basemap: "gray-vector",
+                        basemap: {
+                            portalItem: {
+                                id: "3582b744bba84668b52a16b0b6942544"
+                            }
+                        },
                         layers: [layer]
                     });
                     view = new MapView({
@@ -177,10 +185,21 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             "spatialReference": {
                                 "wkid": 3857
                             },
-                            "xmin": -10704888.39266741,
-                            "ymin": 3415868.1631658636,
-                            "xmax": -10542689.018646205,
-                            "ymax": 3526090.3579531303
+                            "xmin": -10689548.884426521,
+                            "ymin": 3432124.7664550575,
+                            "xmax": -10542789.79011918,
+                            "ymax": 3514676.757002936
+                        },
+                        popup: {
+                            dockEnabled: true,
+                            dockOptions: {
+                                breakpoint: false,
+                                position: "bottom-right"
+                            }
+                        },
+                        constraints: {
+                            maxScale: 140000,
+                            minScale: 580000
                         }
                     });
                     return [4 /*yield*/, view.when()];
