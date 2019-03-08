@@ -24,9 +24,7 @@ IV. Language Overview (Mohan) <10>
   - doc (Kristian)
   - Playground (Mohan)
 V. Profiles (Kristian) <3>
-VI. New Features <5>
-  - Feature Set in popups (also calculate)
-VII. Use Arcade in the JS API (Kristian) <12>
+VI. Use Arcade in the JS API (Kristian) <12>
   - A few slides
   - JS API examples
     - Labeling with multiple label classes
@@ -36,6 +34,8 @@ VII. Use Arcade in the JS API (Kristian) <12>
     - Elevation offset
     - Popup sample
     - Popup Feature Set - Use something in my localhost I've already done
+VII. New Features <5>
+  - Feature Set in popups (also calculate)
 VIII. Generating Arcade (Kristian) <10>
   - Slide
   - Examples
@@ -109,7 +109,7 @@ This sample demonstrates how to leverage geometry operations within Arcade expre
 
 ### Popups
 
-[Reference Arcade expressions in PopupTemplate](https://developers.arcgis.com/javascript/latest/sample-code/popuptemplate-arcade/live/index.html)
+[Reference Arcade expressions in PopupTemplate](https://ekenes.github.io/conferences/ds-2019/arcade/demos/popup-template/)
 
 This sample demonstrates how to display values returned from an Arcade expression in a PopupTemplate defined on a FeatureLayer. Arcade is useful for creating visualizations in a FeatureLayer based on a value calculated from an expression executed on the client. PopupTemplates can reference the same expressions used in renderers to effectively communicate the data-driven visualization.
 

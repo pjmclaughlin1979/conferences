@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Scale feature sizes based on real world sizes (2D) - 4.10</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/SceneView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Legend"
+    ], function(
+      Map, SceneView,
+      FeatureLayer,
+      Legend
+    ) {
+
+      var realWorldDiameter = {
+        type: "size",
+        field: "Width_EW",
+        valueUnit: "feet", // values of Width_EW are expressed in feet
+        valueRepresentation: "diameter"
+      };
+        
+      var carbonStorage = {
+        type: "color",
+        field: "C_Storage", // Carbon storage
+        legendOptions: {
+          title: "Carbon Storage"
+        },
+        stops: [
+          {
+            value: 0,
+            color: "#f7fcb9"
+          }, // features with zero carbon
+          {
+            value: 8000,
+            color: "#31a354"
+          } // features with 8000 carbon
+        ]
+        // Values between 0-8000 will be assigned a color linearly along the ramp
+      };
+
+      var renderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: "green",
+          size: 6,
+          outline: {
+            color: "lightgray",
+            width: 0.5
+          }
+        },
+        label: "tree",
+        visualVariables: [ realWorldDiameter, carbonStorage ]
+      };
+
+      // Assign the renderer to the layer
+      var treesLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0",
+        renderer: renderer
+      });
+
+      var map = new Map({
+        basemap: "osm",
+        layers: [ treesLayer ]
+      });
+
+      var view = new SceneView({
+        container: "viewDiv",
+        map: map,
+        center: [-82.441933, 35.611474],
+        zoom: 18
+      });
+
+      view.ui.add(new Legend({ view: view }), "bottom-left");
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Thematic visualization with realistic 3D symbols - 4.10</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.10/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    require([
+        "esri/Map",
+        "esri/views/SceneView",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Legend"
+      ],
+      function(
+        Map, SceneView, FeatureLayer, Legend
+      ) {
+
+        var treeHeight = {
+          type: "size",
+          axis: "height",
+          field: "Height", // tree height
+          valueUnit: "feet"
+        }; 
+          
+        var treeWidth = {
+          type: "size",
+          axis: "width",
+          field: "Width_EW", // crown diameter from east to west
+          valueUnit: "feet"
+        }; 
+        
+        var treeDepth = {
+          type: "size",
+          axis: "depth",
+          field: "Width_NS", // crown diameter from north to south
+          valueUnit: "feet"
+        };
+          
+        var carbonStorage = {
+          type: "color",
+          field: "C_Storage", // Carbon storage
+          stops: [
+            {
+              value: 0,
+              color: "#f7fcb9"
+            }, // features with zero carbon
+            {
+              value: 10000,
+              color: "#31a354"
+            } // features with 800 carbon
+          ],
+          legendOptions: {
+            title: "Carbon Storage"
+          }
+        };
+
+        var renderer = {
+          type: "simple",
+          symbol: {
+            type: "web-style",
+            styleName: "esriRealisticTreesStyle",
+            name: "Other"
+          },
+          label: "tree",
+          visualVariables: [ treeDepth, treeHeight, treeWidth, carbonStorage ]
+        };
+
+        // Construct the layer and set the renderer and popupTemplate on it
+        var treesLayer = new FeatureLayer({
+          url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0",
+          renderer: renderer,
+          popupTemplate: { // autocasts as new PopupTemplate()
+            title: "{Cmn_Name}",
+            content: "<i>{Sci_Name}</i><br>" +
+              "This tree is in {Condition} condition and is {Height} feet in height."
+          }
+        });
+
+        var map = new Map({
+          basemap: "osm",
+          ground: "world-elevation",
+          layers: [treesLayer]
+        });
+
+        var view = new SceneView({
+          container: "viewDiv",
+          map: map,
+          camera: {
+            position: {
+              x: -9177356,
+              y: 4246783,
+              z: 723,
+              spatialReference: {
+                wkid: 3857
+              }
+            },
+            heading: 0,
+            tilt: 83
+          },
+          // Set dock options on the view's popup
+          popup: {
+            dockEnabled: true,
+            dockOptions: {
+              breakpoint: false
+            }
+          },
+          // enable shadows to be cast from the features
+          environment: {
+            lighting: {
+              directShadowsEnabled: true
+            }
+          }
+        });
+
+        view.when(function() {
+          var legend = new Legend({
+            view: view
+          });
+          view.ui.add(legend, "top-right");
+        });
+
+      });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

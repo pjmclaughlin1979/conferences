@@ -50,21 +50,20 @@ const percentWinner = {
 
 const winnerRenderer = new UniqueValueRenderer({
   field: "PRS_PARTY_16",  // PRS_PARTY_12
-  defaultSymbol: createSymbol("#a7c636", true),
+  defaultSymbol: createSymbol("#a7c636", false),
   defaultLabel: "Other",
   legendOptions: {
     title: "Winner"
   },
   uniqueValueInfos: [{
     value: "Dem",
-    symbol: createSymbol("#149ece", true),
+    symbol: createSymbol("#149ece", false),
     label: "Clinton"
   }, {
     value: "GOP",
-    symbol: createSymbol("#ed5151", true),
+    symbol: createSymbol("#ed5151", false),
     label: "Trump"
-  }],
-  visualVariables: [ percentWinner, totalVotes ]
+  }]
 });
 
 const layer = new FeatureLayer({
