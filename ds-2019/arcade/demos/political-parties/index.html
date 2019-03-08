@@ -129,15 +129,15 @@ require([
   // `strength` script referenced above.
   const strengthArcade = document.getElementById("strength").text;
 
-  renderer.visualVariables = [{
-    type: "opacity",
-    valueExpression: strengthArcade,
-    valueExpressionTitle: "Share of registered voters comprising the dominant party",
-    stops: [
-      { value: 33, opacity: 0.05, label: "< 33%" },
-      { value: 44, opacity: 1.0, label: "> 44%" }
-    ]
-  }];
+  // renderer.visualVariables = [{
+  //   type: "opacity",
+  //   valueExpression: strengthArcade,
+  //   valueExpressionTitle: "Share of registered voters comprising the dominant party",
+  //   stops: [
+  //     { value: 33, opacity: 0.05, label: "< 33%" },
+  //     { value: 44, opacity: 1.0, label: "> 44%" }
+  //   ]
+  // }];
 
   // Create FeatureLayer instance with popupTemplate
 
