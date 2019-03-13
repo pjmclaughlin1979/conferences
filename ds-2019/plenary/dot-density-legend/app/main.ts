@@ -74,7 +74,7 @@ import Expand = require("esri/widgets/Expand");
       },
       {
         field: "B03002_008E",
-        color: "#ff6a00", // ff6a00  a632ff
+        color: "#ff6a00",
         label: "Other race"
       },
       {
