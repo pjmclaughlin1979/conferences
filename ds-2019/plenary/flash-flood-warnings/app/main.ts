@@ -111,7 +111,7 @@ import { durations, seasons } from "./constants";
   seasonsExpand.watch("expanded", resetOnCollapse);
   chartExpand.watch("expanded", resetOnCollapse);
 
-  let highlight:any = null;
+  let highlight:esri.Handle = null;
   view.on("drag", ["Control"], eventListener);
   view.on("click", ["Control"], eventListener);
   let previousId: number;

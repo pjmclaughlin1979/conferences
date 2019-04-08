@@ -4,6 +4,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import DotDensityRenderer = require("esri/renderers/DotDensityRenderer");
 import Legend = require("esri/widgets/Legend");
 import Bookmarks = require("esri/widgets/Bookmarks");
+import Search = require("esri/widgets/Search")
 import Expand = require("esri/widgets/Expand");
 
 ( async () => {
@@ -19,7 +20,7 @@ import Expand = require("esri/widgets/Expand");
     map: map,
     highlightOptions: {
       fillOpacity: 0,
-      color: [50, 50, 50]
+      color: "white"
     },
     popup: {
       dockEnabled: true,
@@ -29,7 +30,7 @@ import Expand = require("esri/widgets/Expand");
       }
     },
     constraints: {
-      maxScale: 35000
+      // maxScale: 35000
     }
   });
 
@@ -189,6 +190,11 @@ import Expand = require("esri/widgets/Expand");
       view,
       expandIconClass: "esri-icon-filter",
       content: document.getElementById("sliderDiv"),
+      group: "top-left"
+    }),
+    new Expand({
+      view,
+      content: new Search({ view }),
       group: "top-left"
     })
   ], "top-left" );

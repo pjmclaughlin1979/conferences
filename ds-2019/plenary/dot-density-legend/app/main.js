@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "esri/widgets/Bookmarks", "esri/widgets/Expand"], function (require, exports, WebMap, MapView, FeatureLayer, DotDensityRenderer, Legend, Bookmarks, Expand) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "esri/widgets/Bookmarks", "esri/widgets/Search", "esri/widgets/Expand"], function (require, exports, WebMap, MapView, FeatureLayer, DotDensityRenderer, Legend, Bookmarks, Search, Expand) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -82,7 +82,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                         map: map,
                         highlightOptions: {
                             fillOpacity: 0,
-                            color: [50, 50, 50]
+                            color: "white"
                         },
                         popup: {
                             dockEnabled: true,
@@ -92,7 +92,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                             }
                         },
                         constraints: {
-                            maxScale: 35000
+                        // maxScale: 35000
                         }
                     });
                     return [4 /*yield*/, view.when()];
@@ -248,6 +248,11 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                             view: view,
                             expandIconClass: "esri-icon-filter",
                             content: document.getElementById("sliderDiv"),
+                            group: "top-left"
+                        }),
+                        new Expand({
+                            view: view,
+                            content: new Search({ view: view }),
                             group: "top-left"
                         })
                     ], "top-left");
