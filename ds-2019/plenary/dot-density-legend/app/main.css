@@ -10,3 +10,21 @@ body,
 #sliderDiv{
   padding: 15px;
 }
+
+.esri-legend__layer-row{
+  cursor: pointer;
+}
+
+#buttonDiv{
+  text-align: center;
+  padding-bottom: 15px;
+}
+
+button {
+  cursor: pointer;
+}
+
+#instructions{
+  font-style: italic;
+  padding-bottom: 5px;
+}

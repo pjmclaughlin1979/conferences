@@ -33,7 +33,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "esri/widgets/Bookmarks", "esri/widgets/Expand"], function (require, exports, WebMap, MapView, FeatureLayer, DotDensityRenderer, Legend, Bookmarks, Expand) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "esri/widgets/Bookmarks", "esri/widgets/Search", "esri/widgets/Expand"], function (require, exports, WebMap, MapView, FeatureLayer, DotDensityRenderer, Legend, Bookmarks, Search, Expand) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -45,13 +45,8 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
             if (matchFound) {
                 showSelectedField(selectedText);
                 if (event.type === "click") {
-                    mousemoveEnabled = !mousemoveEnabled;
-                    if (mousemoveEnabled) {
-                        legendContainer.addEventListener("mousemove", legendEventListener);
-                    }
-                    else {
-                        legendContainer.removeEventListener("mousemove", legendEventListener);
-                    }
+                    mousemoveEnabled = false;
+                    legendContainer.removeEventListener("mousemove", legendEventListener);
                 }
             }
             else {
@@ -68,7 +63,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
             newRenderer.attributes = attributes;
             layer.renderer = newRenderer;
         }
-        var map, view, dotDensityRenderer, url, layer, legendContainer, legend, mousemoveEnabled, dotValueSlider, dotValueDisplay;
+        var map, view, dotDensityRenderer, url, layer, legendContainer, legend, mousemoveEnabled, resetButton, dotValueSlider, dotValueDisplay;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -82,7 +77,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                         map: map,
                         highlightOptions: {
                             fillOpacity: 0,
-                            color: [50, 50, 50]
+                            color: "white"
                         },
                         popup: {
                             dockEnabled: true,
@@ -239,7 +234,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     view.ui.add([
                         new Expand({
                             view: view,
-                            content: legendContainer,
+                            content: document.getElementById("controlDiv"),
                             group: "top-left",
                             expanded: true,
                             expandIconClass: "esri-icon-layer-list"
@@ -248,6 +243,11 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                             view: view,
                             expandIconClass: "esri-icon-filter",
                             content: document.getElementById("sliderDiv"),
+                            group: "top-left"
+                        }),
+                        new Expand({
+                            view: view,
+                            content: new Search({ view: view }),
                             group: "top-left"
                         })
                     ], "top-left");
@@ -260,6 +260,12 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     legendContainer.addEventListener("mousemove", legendEventListener);
                     legendContainer.addEventListener("click", legendEventListener);
                     mousemoveEnabled = true;
+                    resetButton = document.getElementById("reset-button");
+                    resetButton.addEventListener("click", function () {
+                        mousemoveEnabled = true;
+                        layer.renderer = dotDensityRenderer;
+                        legendContainer.addEventListener("mousemove", legendEventListener);
+                    });
                     dotValueSlider = document.getElementById("dotValueInput");
                     dotValueDisplay = document.getElementById("dotValueDisplay");
                     dotValueSlider.addEventListener("input", function () {

@@ -4,6 +4,7 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import DotDensityRenderer = require("esri/renderers/DotDensityRenderer");
 import Legend = require("esri/widgets/Legend");
 import Bookmarks = require("esri/widgets/Bookmarks");
+import Search = require("esri/widgets/Search")
 import Expand = require("esri/widgets/Expand");
 
 ( async () => {
@@ -19,7 +20,7 @@ import Expand = require("esri/widgets/Expand");
     map: map,
     highlightOptions: {
       fillOpacity: 0,
-      color: [50, 50, 50]
+      color: "white"
     },
     popup: {
       dockEnabled: true,
@@ -74,7 +75,7 @@ import Expand = require("esri/widgets/Expand");
       },
       {
         field: "B03002_008E",
-        color: "#ff6a00", // ff6a00  a632ff
+        color: "#ff6a00",
         label: "Other race"
       },
       {
@@ -180,7 +181,7 @@ import Expand = require("esri/widgets/Expand");
   view.ui.add([
     new Expand({
       view,
-      content: legendContainer,
+      content: document.getElementById("controlDiv"),
       group: "top-left",
       expanded: true,
       expandIconClass: "esri-icon-layer-list"
@@ -189,6 +190,11 @@ import Expand = require("esri/widgets/Expand");
       view,
       expandIconClass: "esri-icon-filter",
       content: document.getElementById("sliderDiv"),
+      group: "top-left"
+    }),
+    new Expand({
+      view,
+      content: new Search({ view }),
       group: "top-left"
     })
   ], "top-left" );
@@ -205,22 +211,25 @@ import Expand = require("esri/widgets/Expand");
   legendContainer.addEventListener("click", legendEventListener);
 
   let mousemoveEnabled = true;
+
+  // enables exploration on mouse move
+  const resetButton = document.getElementById("reset-button") as HTMLButtonElement;
+  resetButton.addEventListener("click", () => {
+    mousemoveEnabled = true;
+    layer.renderer = dotDensityRenderer;
+    legendContainer.addEventListener("mousemove", legendEventListener);
+  });
+
   function legendEventListener (event:any) {
-    const selectedText = event.target.alt || event.target.innerText;
+    const selectedText =   event.target.alt || event.target.innerText;
     const legendInfos: Array<any> = legend.activeLayerInfos.getItemAt(0).legendElements[0].infos;
     const matchFound = legendInfos.filter( (info:any) => info.label === selectedText ).length > 0;
-    
     if (matchFound){
       showSelectedField(selectedText);
       if (event.type === "click"){
-        mousemoveEnabled = !mousemoveEnabled;
-
-        if(mousemoveEnabled){
-          legendContainer.addEventListener("mousemove", legendEventListener);
-        } else {
-          legendContainer.removeEventListener("mousemove", legendEventListener);
-        }
-      }
+        mousemoveEnabled = false;
+        legendContainer.removeEventListener("mousemove", legendEventListener);
+      } 
     } else {
       layer.renderer = dotDensityRenderer;
     }
