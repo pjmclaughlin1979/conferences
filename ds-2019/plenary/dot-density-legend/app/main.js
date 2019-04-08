@@ -45,13 +45,8 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
             if (matchFound) {
                 showSelectedField(selectedText);
                 if (event.type === "click") {
-                    mousemoveEnabled = !mousemoveEnabled;
-                    if (mousemoveEnabled) {
-                        legendContainer.addEventListener("mousemove", legendEventListener);
-                    }
-                    else {
-                        legendContainer.removeEventListener("mousemove", legendEventListener);
-                    }
+                    mousemoveEnabled = false;
+                    legendContainer.removeEventListener("mousemove", legendEventListener);
                 }
             }
             else {
@@ -68,7 +63,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
             newRenderer.attributes = attributes;
             layer.renderer = newRenderer;
         }
-        var map, view, dotDensityRenderer, url, layer, legendContainer, legend, mousemoveEnabled, dotValueSlider, dotValueDisplay;
+        var map, view, dotDensityRenderer, url, layer, legendContainer, legend, mousemoveEnabled, resetButton, dotValueSlider, dotValueDisplay;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -92,7 +87,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                             }
                         },
                         constraints: {
-                        // maxScale: 35000
+                            maxScale: 35000
                         }
                     });
                     return [4 /*yield*/, view.when()];
@@ -239,7 +234,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     view.ui.add([
                         new Expand({
                             view: view,
-                            content: legendContainer,
+                            content: document.getElementById("controlDiv"),
                             group: "top-left",
                             expanded: true,
                             expandIconClass: "esri-icon-layer-list"
@@ -265,6 +260,12 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                     legendContainer.addEventListener("mousemove", legendEventListener);
                     legendContainer.addEventListener("click", legendEventListener);
                     mousemoveEnabled = true;
+                    resetButton = document.getElementById("reset-button");
+                    resetButton.addEventListener("click", function () {
+                        mousemoveEnabled = true;
+                        layer.renderer = dotDensityRenderer;
+                        legendContainer.addEventListener("mousemove", legendEventListener);
+                    });
                     dotValueSlider = document.getElementById("dotValueInput");
                     dotValueDisplay = document.getElementById("dotValueDisplay");
                     dotValueSlider.addEventListener("input", function () {
