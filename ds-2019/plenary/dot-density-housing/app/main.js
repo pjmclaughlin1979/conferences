@@ -138,7 +138,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     year = attribute.field ? parseInt(attribute.field.substr(attribute.field.length - 4)) : 2000;
                 }
                 else {
-                    attribute.color.a = 0;
+                    attribute.color.a = 0.1;
                 }
                 // attribute.color.a = attribute.label === label ? 1 : 0.1;
                 return attribute;

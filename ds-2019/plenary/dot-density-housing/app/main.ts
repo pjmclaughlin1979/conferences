@@ -251,7 +251,7 @@ import { generateChartPopupTemplate } from "./ArcadeExpressions";
         // if field doesn't exist, return 2000 (valueExpression is used for year 2000 and after)
         year = attribute.field ? parseInt(attribute.field.substr( attribute.field.length - 4)) : 2000;
       } else {
-        attribute.color.a = 0;
+        attribute.color.a = 0.1;
       }
       // attribute.color.a = attribute.label === label ? 1 : 0.1;
       return attribute;
