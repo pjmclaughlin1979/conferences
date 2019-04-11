@@ -173,7 +173,7 @@ import { generateChartPopupTemplate } from "./ArcadeExpressions";
   function animate() {
     let animating = true;
     let opacity = 0;
-    let colorIndex = 1;
+    let colorIndex = 1;  // starts animation with second attribute
     let startYear = 1930;
     function updateStep() {
       const oldRenderer = layer.renderer as DotDensityRenderer;
@@ -248,6 +248,7 @@ import { generateChartPopupTemplate } from "./ArcadeExpressions";
     const attributes = newRenderer.attributes.map( (attribute, i) => {
       if(attribute.label === label){
         attribute.color.a = 1;
+        // if field doesn't exist, return 2000 (valueExpression is used for year 2000 and after)
         year = attribute.field ? parseInt(attribute.field.substr( attribute.field.length - 4)) : 2000;
       } else {
         attribute.color.a = 0;

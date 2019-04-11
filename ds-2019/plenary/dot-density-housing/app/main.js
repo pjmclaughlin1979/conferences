@@ -74,7 +74,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
         function animate() {
             var animating = true;
             var opacity = 0;
-            var colorIndex = 1;
+            var colorIndex = 1; // starts animation with second attribute
             var startYear = 1930;
             function updateStep() {
                 var oldRenderer = layer.renderer;
@@ -134,6 +134,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             var attributes = newRenderer.attributes.map(function (attribute, i) {
                 if (attribute.label === label) {
                     attribute.color.a = 1;
+                    // if field doesn't exist, return 2000 (valueExpression is used for year 2000 and after)
                     year = attribute.field ? parseInt(attribute.field.substr(attribute.field.length - 4)) : 2000;
                 }
                 else {
