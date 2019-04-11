@@ -1,12 +1,11 @@
-import esri = __esri;
-
 import EsriMap = require("esri/Map");
 import MapView = require("esri/views/MapView");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import DotDensityRenderer = require("esri/renderers/DotDensityRenderer");
 import Legend = require("esri/widgets/Legend");
-import lang = require("esri/core/lang");
-import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./ArcadeExpressions";
+import Search = require("esri/widgets/Search");
+import Expand = require("esri/widgets/Expand");
+import { generateChartPopupTemplate } from "./ArcadeExpressions";
 
 ( async () => {
 
@@ -60,20 +59,36 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
     ]
   });
 
+  const yearDiv = document.getElementById("yearDiv") as HTMLDivElement;
+
   function hideAttributes(renderer: DotDensityRenderer){
-    renderer.attributes.forEach( attribute => {
-      attribute.color.a = 0;
+    renderer.attributes.forEach( (attribute, i) => {
+      if(i > 0){
+        attribute.color.a = 0;
+      } else {
+        attribute.color.a = 1;
+      }
     });
+    yearDiv.innerText = `Before 1940`;
   }
-  
+
+  function showAttributes(renderer: DotDensityRenderer): DotDensityRenderer {
+    const newRenderer = renderer.clone();
+    newRenderer.attributes.forEach( attribute => {
+      attribute.color.a = 1;
+    });
+    yearDiv.innerText = `After 2000`;
+    return newRenderer;
+  }
 
   hideAttributes(renderer);
 
   const layer = new FeatureLayer({
-    title: "Houston Housing",
-    // url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Boise_housing/FeatureServer/0",
+    title: "Housing units by decade",
     portalItem: {
-      id: "453a70e1e36b4318a5af017d7d0188de"
+      // 478888c07fe14d9b87e33d4708417c95 - U.S.
+      // 453a70e1e36b4318a5af017d7d0188de - Houston
+      id: "478888c07fe14d9b87e33d4708417c95"
     },
     renderer,
     minScale: 0,
@@ -94,13 +109,13 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
     map: map,
     container: "viewDiv",
     extent: {
-      "spatialReference": {
-        "wkid": 3857
+      spatialReference: {
+        wkid: 3857
       },
-      "xmin": -10689548.884426521,
-      "ymin": 3432124.7664550575,
-      "xmax": -10542789.79011918,
-      "ymax": 3514676.757002936
+      xmin: -10689548,
+      ymin: 3432124,
+      xmax: -10542789,
+      ymax: 3514676
     },
     popup: {
       dockEnabled: true,
@@ -116,14 +131,19 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
   });
 
   await view.when();
-  const layerView = await view.whenLayerView(layer);
-  new Legend({ view, container: "legendDiv" });
-  view.ui.add("controlDiv", "bottom-left");
+  const legendContainer = document.getElementById("legendDiv");
+  const legend = new Legend({ view, container: legendContainer });
+  view.ui.add(document.getElementById("controlDiv"), "bottom-left");
   view.ui.add("yearDiv", "top-right");
-
-  
-
-  const yearDiv = document.getElementById("yearDiv") as HTMLDivElement;
+  view.ui.add(new Expand({
+    group: "top-left",
+    view,
+    content: new Search({ 
+      view,
+      resultGraphicEnabled: false,
+      popupEnabled: false 
+    })
+  }), "top-left");
 
   const playBtn = document.getElementById("playBtn") as HTMLDivElement;
   playBtn.addEventListener("click", () => {
@@ -137,7 +157,7 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
     for( let i = 0; i <= attributes.length; i++){
       let attributeColor = attributes[i].color.clone();
       if (attributeColor.a < 1){
-        startAnimation(i);
+        startAnimation();
         break;
       }
     }
@@ -145,18 +165,15 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
 
   let animation: any;
 
-  function startAnimation(colorIndex: number) {
+  function startAnimation() {
     stopAnimation();
     animation = animate();
   }
 
   function animate() {
-    // const attributes = lang.clone(newRenderer.attributes);
-    // const updatedAttribute = attributes[colorIndex].clone();
-    // let color = updatedAttribute.color.clone();
     let animating = true;
     let opacity = 0;
-    let colorIndex = 0;
+    let colorIndex = 1;
     let startYear = 1930;
     function updateStep() {
       const oldRenderer = layer.renderer as DotDensityRenderer;
@@ -172,7 +189,6 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
           stopAnimation();
         }
       } else {
-        yearDiv.style.visibility = "visible";
         const approxYear = startYear + ( colorIndex * 10) + Math.round(opacity / 0.1);
         yearDiv.innerText = approxYear.toString();
       }
@@ -204,6 +220,52 @@ import { generateChartPopupTemplate, generateTopListPopupTemplate } from "./Arca
     }
     animation.remove();
     animation = null;
+  }
+
+  legendContainer.addEventListener("click", legendEventListener);
+
+  const resetButton = document.getElementById("reset-button") as HTMLButtonElement;
+  resetButton.addEventListener("click", () => {
+    stopAnimation();
+    layer.renderer = showAttributes(renderer);
+  });
+
+  function legendEventListener (event:any) {
+    const selectedText =   event.target.alt || event.target.innerText;
+    const legendInfos: Array<any> = legend.activeLayerInfos.getItemAt(0).legendElements[0].infos;
+    const matchFound = legendInfos.filter( (info:any) => info.label === selectedText ).length > 0;
+    if (matchFound){
+      showSelectedField(selectedText);
+    } else {
+      layer.renderer = showAttributes(renderer);
+    }
+  }
+
+  function showSelectedField (label: string) {
+    const oldRenderer = layer.renderer as DotDensityRenderer;
+    const newRenderer = oldRenderer.clone();
+    let year: number;
+    const attributes = newRenderer.attributes.map( (attribute, i) => {
+      if(attribute.label === label){
+        attribute.color.a = 1;
+        year = attribute.field ? parseInt(attribute.field.substr( attribute.field.length - 4)) : 2000;
+      } else {
+        attribute.color.a = 0;
+      }
+      // attribute.color.a = attribute.label === label ? 1 : 0.1;
+      return attribute;
+    });
+    newRenderer.attributes = attributes;
+    layer.renderer = newRenderer;
+    if (year < 1940){
+      yearDiv.innerText = `Before ${year}`;
+    } 
+    else if (year === 2000){
+      yearDiv.innerText = `After ${year}`;
+    }
+    else {
+      yearDiv.innerText = `${year} - ${year+10}`;
+    }
   }
 
 })();

@@ -33,37 +33,48 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "./ArcadeExpressions"], function (require, exports, EsriMap, MapView, FeatureLayer, DotDensityRenderer, Legend, ArcadeExpressions_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/renderers/DotDensityRenderer", "esri/widgets/Legend", "esri/widgets/Search", "esri/widgets/Expand", "./ArcadeExpressions"], function (require, exports, EsriMap, MapView, FeatureLayer, DotDensityRenderer, Legend, Search, Expand, ArcadeExpressions_1) {
     "use strict";
     var _this = this;
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(_this, void 0, void 0, function () {
         function hideAttributes(renderer) {
-            renderer.attributes.forEach(function (attribute) {
-                attribute.color.a = 0;
+            renderer.attributes.forEach(function (attribute, i) {
+                if (i > 0) {
+                    attribute.color.a = 0;
+                }
+                else {
+                    attribute.color.a = 1;
+                }
             });
+            yearDiv.innerText = "Before 1940";
+        }
+        function showAttributes(renderer) {
+            var newRenderer = renderer.clone();
+            newRenderer.attributes.forEach(function (attribute) {
+                attribute.color.a = 1;
+            });
+            yearDiv.innerText = "After 2000";
+            return newRenderer;
         }
         function showNextField(renderer) {
             var attributes = renderer.attributes;
             for (var i = 0; i <= attributes.length; i++) {
                 var attributeColor = attributes[i].color.clone();
                 if (attributeColor.a < 1) {
-                    startAnimation(i);
+                    startAnimation();
                     break;
                 }
             }
         }
-        function startAnimation(colorIndex) {
+        function startAnimation() {
             stopAnimation();
             animation = animate();
         }
         function animate() {
-            // const attributes = lang.clone(newRenderer.attributes);
-            // const updatedAttribute = attributes[colorIndex].clone();
-            // let color = updatedAttribute.color.clone();
             var animating = true;
             var opacity = 0;
-            var colorIndex = 0;
+            var colorIndex = 1;
             var startYear = 1930;
             function updateStep() {
                 var oldRenderer = layer.renderer;
@@ -79,7 +90,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     }
                 }
                 else {
-                    yearDiv.style.visibility = "visible";
                     var approxYear = startYear + (colorIndex * 10) + Math.round(opacity / 0.1);
                     yearDiv.innerText = approxYear.toString();
                 }
@@ -106,7 +116,45 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             animation.remove();
             animation = null;
         }
-        var renderer, layer, map, view, layerView, yearDiv, playBtn, animation;
+        function legendEventListener(event) {
+            var selectedText = event.target.alt || event.target.innerText;
+            var legendInfos = legend.activeLayerInfos.getItemAt(0).legendElements[0].infos;
+            var matchFound = legendInfos.filter(function (info) { return info.label === selectedText; }).length > 0;
+            if (matchFound) {
+                showSelectedField(selectedText);
+            }
+            else {
+                layer.renderer = showAttributes(renderer);
+            }
+        }
+        function showSelectedField(label) {
+            var oldRenderer = layer.renderer;
+            var newRenderer = oldRenderer.clone();
+            var year;
+            var attributes = newRenderer.attributes.map(function (attribute, i) {
+                if (attribute.label === label) {
+                    attribute.color.a = 1;
+                    year = attribute.field ? parseInt(attribute.field.substr(attribute.field.length - 4)) : 2000;
+                }
+                else {
+                    attribute.color.a = 0;
+                }
+                // attribute.color.a = attribute.label === label ? 1 : 0.1;
+                return attribute;
+            });
+            newRenderer.attributes = attributes;
+            layer.renderer = newRenderer;
+            if (year < 1940) {
+                yearDiv.innerText = "Before " + year;
+            }
+            else if (year === 2000) {
+                yearDiv.innerText = "After " + year;
+            }
+            else {
+                yearDiv.innerText = year + " - " + (year + 10);
+            }
+        }
+        var renderer, yearDiv, layer, map, view, legendContainer, legend, playBtn, animation, resetButton;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -159,12 +207,14 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                             }
                         ]
                     });
+                    yearDiv = document.getElementById("yearDiv");
                     hideAttributes(renderer);
                     layer = new FeatureLayer({
-                        title: "Houston Housing",
-                        // url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/ArcGIS/rest/services/Boise_housing/FeatureServer/0",
+                        title: "Housing units by decade",
                         portalItem: {
-                            id: "453a70e1e36b4318a5af017d7d0188de"
+                            // 478888c07fe14d9b87e33d4708417c95 - U.S.
+                            // 453a70e1e36b4318a5af017d7d0188de - Houston
+                            id: "478888c07fe14d9b87e33d4708417c95"
                         },
                         renderer: renderer,
                         minScale: 0,
@@ -182,13 +232,13 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         map: map,
                         container: "viewDiv",
                         extent: {
-                            "spatialReference": {
-                                "wkid": 3857
+                            spatialReference: {
+                                wkid: 3857
                             },
-                            "xmin": -10689548.884426521,
-                            "ymin": 3432124.7664550575,
-                            "xmax": -10542789.79011918,
-                            "ymax": 3514676.757002936
+                            xmin: -10689548,
+                            ymin: 3432124,
+                            xmax: -10542789,
+                            ymax: 3514676
                         },
                         popup: {
                             dockEnabled: true,
@@ -205,17 +255,29 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     return [4 /*yield*/, view.when()];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, view.whenLayerView(layer)];
-                case 2:
-                    layerView = _a.sent();
-                    new Legend({ view: view, container: "legendDiv" });
-                    view.ui.add("controlDiv", "bottom-left");
+                    legendContainer = document.getElementById("legendDiv");
+                    legend = new Legend({ view: view, container: legendContainer });
+                    view.ui.add(document.getElementById("controlDiv"), "bottom-left");
                     view.ui.add("yearDiv", "top-right");
-                    yearDiv = document.getElementById("yearDiv");
+                    view.ui.add(new Expand({
+                        group: "top-left",
+                        view: view,
+                        content: new Search({
+                            view: view,
+                            resultGraphicEnabled: false,
+                            popupEnabled: false
+                        })
+                    }), "top-left");
                     playBtn = document.getElementById("playBtn");
                     playBtn.addEventListener("click", function () {
                         hideAttributes(layer.renderer);
                         showNextField(layer.renderer);
+                    });
+                    legendContainer.addEventListener("click", legendEventListener);
+                    resetButton = document.getElementById("reset-button");
+                    resetButton.addEventListener("click", function () {
+                        stopAnimation();
+                        layer.renderer = showAttributes(renderer);
                     });
                     return [2 /*return*/];
             }
