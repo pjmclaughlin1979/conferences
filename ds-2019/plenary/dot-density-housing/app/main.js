@@ -163,6 +163,8 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         referenceDotValue: 1,
                         outline: null,
                         legendOptions: {
+                            // Legend will display
+                            // 1 Dot = 1 House
                             unit: "House"
                         },
                         attributes: [
@@ -211,7 +213,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                     yearDiv = document.getElementById("yearDiv");
                     hideAttributes(renderer);
                     layer = new FeatureLayer({
-                        title: "Housing units by decade",
+                        title: "Housing units built by decade",
                         portalItem: {
                             // 478888c07fe14d9b87e33d4708417c95 - U.S.
                             // 453a70e1e36b4318a5af017d7d0188de - Houston
