@@ -23,8 +23,17 @@
     <div id="controlDiv" class="esri-widget">
       <div id="playBtn"><span class="font-size-3 esri-icon-play"></span>  Play Animation</div>
       <div id="legendDiv"></div>
-      <div id="yearDiv" class="esri-widget"></div>
+      <div>
+        <div id="buttonDiv">
+            <button id="reset-button" class="esri-widget">Show all decades</button>
+        </div>
+      </div>
+        <div id="instructions">Dots are randomly drawn in Census Tract boundaries. 
+          They do not reflect the actual locations of homes. <strong>Click color or 
+          label to filter map by decade.</strong>
+        </div>
     </div>
+    <div id="yearDiv" class="esri-widget"></div>
     <script>require(["app/main"]);</script>
   </body>
 </html>

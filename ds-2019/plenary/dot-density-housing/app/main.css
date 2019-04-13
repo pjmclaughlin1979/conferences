@@ -8,20 +8,41 @@ body,
 }
 
 #controlDiv {
-  width: 170px;
-  padding: 5px 5px 5px 5px;
-  font-size: 14pt;
+  width: 210px;
+  padding: 10px;
 }
 
 #playBtn{
   text-align: center;
-  padding-top: 10px;
   cursor: pointer;
+  font-size: 14pt;
+}
+
+#instructions{
+  text-align: center;
+  font-size: 10pt;
 }
 
 #yearDiv{
   font-size: 72pt;
   padding: 10px;
   background-color: rgba(255,255,255,0.8);
-  visibility: hidden;
+}
+
+.esri-legend__layer-row{
+  cursor: pointer;
+}
+
+#buttonDiv{
+  text-align: center;
+  padding: 10px;
+}
+
+button {
+  cursor: pointer;
+}
+
+#instructions{
+  font-style: italic;
+  padding-bottom: 5px;
 }
