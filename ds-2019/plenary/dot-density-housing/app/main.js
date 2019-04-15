@@ -40,12 +40,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     (function () { return __awaiter(_this, void 0, void 0, function () {
         function hideAttributes(renderer) {
             renderer.attributes.forEach(function (attribute, i) {
-                if (i > 0) {
-                    attribute.color.a = 0;
-                }
-                else {
-                    attribute.color.a = 1;
-                }
+                attribute.color.a = (i > 0) ? 0 : 1;
             });
             yearDiv.innerText = "Before 1940";
         }
