@@ -234,8 +234,6 @@ import { generateChartPopupTemplate } from "./ArcadeExpressions";
     const matchFound = legendInfos.filter( (info:any) => info.label === selectedText ).length > 0;
     if (matchFound){
       showSelectedField(selectedText);
-    } else {
-      layer.renderer = showAttributes(renderer);
     }
   }
 

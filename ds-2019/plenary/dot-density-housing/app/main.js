@@ -118,9 +118,6 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             if (matchFound) {
                 showSelectedField(selectedText);
             }
-            else {
-                layer.renderer = showAttributes(renderer);
-            }
         }
         function showSelectedField(label) {
             var oldRenderer = layer.renderer;
