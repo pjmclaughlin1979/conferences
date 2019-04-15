@@ -65,11 +65,7 @@ import { generateChartPopupTemplate } from "./ArcadeExpressions";
 
   function hideAttributes(renderer: DotDensityRenderer){
     renderer.attributes.forEach( (attribute, i) => {
-      if(i > 0){
-        attribute.color.a = 0;
-      } else {
-        attribute.color.a = 1;
-      }
+      attribute.color.a = (i > 0) ? 0 : 1;
     });
     yearDiv.innerText = `Before 1940`;
   }
@@ -238,8 +234,6 @@ import { generateChartPopupTemplate } from "./ArcadeExpressions";
     const matchFound = legendInfos.filter( (info:any) => info.label === selectedText ).length > 0;
     if (matchFound){
       showSelectedField(selectedText);
-    } else {
-      layer.renderer = showAttributes(renderer);
     }
   }
 
