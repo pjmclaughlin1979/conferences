@@ -11,7 +11,7 @@ import Expand = require("esri/widgets/Expand");
 
   const map = new WebMap({
     portalItem: {
-      id: "11499dfc1c2b4defa204b245561b1cb8"
+      id: "f708e15ee9dd485b81b9741d91399b45"
     }
   });
 
