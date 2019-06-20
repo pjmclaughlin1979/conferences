@@ -69,7 +69,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                 case 0:
                     map = new WebMap({
                         portalItem: {
-                            id: "da83595b291349b79c7e56e5fabc5fde"
+                            id: "11499dfc1c2b4defa204b245561b1cb8"
                         }
                     });
                     view = new MapView({
@@ -102,123 +102,72 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/layers/
                         },
                         attributes: [
                             {
-                                field: "B03002_003E",
-                                color: "#f23c3f",
-                                label: "White (non-Hispanic)"
+                              field: "ReligionSA___Copy__Catholic",
+                              color: "#f23c3f",
+                              label: "Catholic"
                             },
                             {
-                                field: "B03002_012E",
-                                color: "#e8ca0d",
-                                label: "Hispanic"
+                              field: "ReligionSA___Copy__Protestantan",
+                              color: "#e8ca0d",
+                              label: "Protestant and Other Christian"
                             },
                             {
-                                field: "B03002_004E",
-                                color: "#00b6f1",
-                                label: "Black or African American"
+                              field: "ReligionSA___Copy__OtherReligio",
+                              color: "#00b6f1",
+                              label: "OtherReligions"
                             },
                             {
-                                field: "B03002_006E",
-                                color: "#32ef94",
-                                label: "Asian"
-                            },
-                            {
-                                field: "B03002_005E",
-                                color: "#ff7fe9",
-                                label: "American Indian/Alaskan Native"
-                            },
-                            {
-                                field: "B03002_007E",
-                                color: "#e2c4a5",
-                                label: "Pacific Islander/Hawaiian Native"
-                            },
-                            {
-                                field: "B03002_008E",
-                                color: "#ff6a00",
-                                label: "Other race"
-                            },
-                            {
-                                field: "B03002_009E",
-                                color: "#96f7ef",
-                                label: "Two or more races"
+                              field: "ReligionSA___Copy__ReligionNone",
+                              color: "#32ef94",
+                              label: "ReligionNone"
                             }
                         ]
                     });
-                    url = "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/ACS_Population_by_Race_and_Hispanic_Origin_Boundaries/FeatureServer/2";
+                    url = "https://services.arcgis.com/pMnvm7HXxTmNXxGi/ArcGIS/rest/services/NISRA_SA2011_Religion/FeatureServer/0";
                     layer = new FeatureLayer({
                         url: url,
                         minScale: 20000000,
                         maxScale: 35000,
-                        title: "Current Population Estimates (ACS)",
+                        title: "Religion 2011 Census",
                         popupTemplate: {
-                            title: "{County}, {State}",
+                            title: "{SA2011}, {SA2011}",
                             content: [
                                 {
-                                    type: "fields",
-                                    fieldInfos: [
-                                        {
-                                            fieldName: "B03002_003E",
-                                            label: "White (non-Hispanic)",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_012E",
-                                            label: "Hispanic",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_004E",
-                                            label: "Black or African American",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_006E",
-                                            label: "Asian",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_005E",
-                                            label: "American Indian/Alaskan Native",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_007E",
-                                            label: "Pacific Islander/Hawaiian Native",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_008E",
-                                            label: "Other race",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        },
-                                        {
-                                            fieldName: "B03002_009E",
-                                            label: "Two or more races",
-                                            format: {
-                                                digitSeparator: true,
-                                                places: 0
-                                            }
-                                        }
+                                  type: "fields",
+                                  fieldInfos: [
+                                    {
+                                      fieldName: "ReligionSA___Copy__Catholic",
+                                      label: "Catholic",
+                                      format: {
+                                        digitSeparator: true,
+                                        places: 0
+                                      }
+                                    },
+                                    {
+                                      fieldName: "ReligionSA___Copy__Protestantan",
+                                      label: "Protestant and Other Christian",
+                                      format: {
+                                        digitSeparator: true,
+                                        places: 0
+                                      }
+                                    },
+                                    {
+                                      fieldName: "ReligionSA___Copy__OtherReligio ",
+                                      label: "Other Religions",
+                                      format: {
+                                        digitSeparator: true,
+                                        places: 0
+                                      }
+                                    },
+                                    {
+                                      fieldName: "ReligionSA___Copy__ReligionNone",
+                                      label: "Religion None",
+                                      format: {
+                                        digitSeparator: true,
+                                        places: 0
+                                      }
+                                    }
+                                    
                                     ]
                                 }
                             ]
